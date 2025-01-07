@@ -61,7 +61,6 @@ def login_action(username_entry, password_entry, result_label):
         adminflag = "Admin"
     else:
         adminflag = "Não Admin"
-
     if username == "not_found" and password == "not_found":
         result_label.configure(text="Utilizador Inexistente.")
     else:
@@ -97,7 +96,7 @@ def register_render(frameLogin):
     password_entry.pack(padx=20, pady=10)
 
     # Botão de login
-    login_button = customtkinter.CTkButton(frameRegister, text="Login", command=login_action)
+    login_button = customtkinter.CTkButton(frameRegister, text="Login", command=lambda:login_render(frameRegister))
     login_button.pack(padx=20, pady=5)
 
     # Botão de criar conta
@@ -111,7 +110,11 @@ def register_render(frameLogin):
 
 ##########################################################
 
-def login_render():
+def login_render(frameRegister):
+    if frameRegister == "":
+        pass
+    else:
+        frameRegister.pack_forget()
     ################[LOGIN FORM]##############################
     #Frame
     frameLogin = customtkinter.CTkFrame(app, width=600, height=500)
@@ -143,6 +146,6 @@ def login_render():
     result_label.pack(padx=20, pady=20)
     #######################################################
 
-login_render()
+login_render("")
 # Loop de event listening
 app.mainloop()
