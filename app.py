@@ -68,9 +68,9 @@ def login_action(username_entry, password_entry, result_label):
 
 
 ################[RENDER SCREENS]##########################
-def register_render(frameLogin):
+def register_render(oldFrame):
     print("Register")
-    frameLogin.pack_forget()
+    oldFrame.pack_forget()
     ################[LOGIN FORM]##############################
     #Frame
     frameRegister = customtkinter.CTkFrame(app, width=600, height=500)
@@ -110,11 +110,11 @@ def register_render(frameLogin):
 
 ##########################################################
 
-def login_render(frameRegister):
-    if frameRegister == "":
+def login_render(oldFrame):
+    if oldFrame == "":
         pass
     else:
-        frameRegister.pack_forget()
+        oldFrame.pack_forget()
     ################[LOGIN FORM]##############################
     #Frame
     frameLogin = customtkinter.CTkFrame(app, width=600, height=500)
