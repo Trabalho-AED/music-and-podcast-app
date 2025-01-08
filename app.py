@@ -1,10 +1,29 @@
 import customtkinter
+import os
 
 customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light" Alterar entre tema escuro e claro
 #customtkinter.set_default_color_theme(".\\theme\\rime.json") # Tema de cores
 
-accountsPath = ".\\db\\user_accounts.csv" # Caminho para o ficheiro onde são armazenadas as contas
-adminListfile = ".\\db\\admin_list.csv" # Caminho para o ficheiro onde são armazenadas as contas que são admin
+###############[VERIFICAR SISTEMA OPERATIVO]##################
+def path_format():
+    """Retorna o formato de declarar caminhos, dependendo do Sistema Operativo"""
+
+    #Se os SO for windows
+    if os.name=="nt":
+        pathFormat = "\\"
+    #Se for outro SO
+    else:
+        pathFormat = "/"
+
+    return pathFormat # Retorna o formato
+
+pathFormat = path_format()
+##################################################################
+
+
+
+accountsPath = f".{pathFormat}db{pathFormat}user_accounts.csv" # Caminho para o ficheiro onde são armazenadas as contas
+adminListfile = f".{pathFormat}db{pathFormat}admin_list.csv" # Caminho para o ficheiro onde são armazenadas as contas que são admin
 
 # Inicializar app
 app = customtkinter.CTk()
