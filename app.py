@@ -3,8 +3,8 @@ import customtkinter
 customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light" Alterar entre tema escuro e claro
 #customtkinter.set_default_color_theme(".\\theme\\rime.json") # Tema de cores
 
-accountsPath = "user_accounts.csv" # Caminho para o ficheiro onde são armazenadas as contas
-adminListfile = "admin_list.csv" # Caminho para o ficheiro onde são armazenadas as contas que são admin
+accountsPath = ".\\db\\user_accounts.csv" # Caminho para o ficheiro onde são armazenadas as contas
+adminListfile = ".\\db\\admin_list.csv" # Caminho para o ficheiro onde são armazenadas as contas que são admin
 
 # Inicializar app
 app = customtkinter.CTk()
