@@ -32,8 +32,9 @@ app = customtkinter.CTk()
 app.title("Music App")
 
 # Define a dimensão da app
-appWidth = 600
-appHeight = 500
+appWidth = 1920
+appHeight = 1080
+
 # Obtém a dimensão do ecrã
 screenWidth = app.winfo_screenwidth()
 screenHeight = app.winfo_screenheight()
@@ -250,14 +251,112 @@ def mainwindow_render(oldFrame):
 
     oldFrame.pack_forget() # Apagar o estilo do frame anterior
 
-    frameMain = customtkinter.CTkFrame(app, width=600, height=500)
-    frameMain.pack(expand=True)
-    
-    sometextLabel = customtkinter.CTkLabel(frameMain, text="You are in the main window!")
-    sometextLabel.pack(padx=20, pady=5)
+
+###################################FRAMES#################################################
+
+    OptionsFrame = customtkinter.CTkFrame(app, width=246, height=890, fg_color="green")  #Frame grande das opcoes laterais lado direito 
+    #OptionsFrame.pack(expand=True)
+    OptionsFrame.place(x=0,y=0)
+
+    MusicFrame = customtkinter.CTkFrame(app, width=1920, height=139, fg_color="red") #Frame Grande em baixo onde se pode pausar a musica
+    #MusicFrame.pack(expand=True)
+    MusicFrame.place(x=0,y=890)
+
+    CollectionsFrame = customtkinter.CTkFrame(OptionsFrame, width=200, height=200, fg_color="blue") #Frame collection dentro da Optionsframe 
+    CollectionsFrame.place(x=0,y=890)
+
+    PlaylistFrame = customtkinter.CTkFrame(OptionsFrame, width=200, height=200, fg_color="blue") #Frame Playlist dentro da Optionsframe 
+    PlaylistFrame.place(x=0,y=890)
+
+##################################IMAGENS PARA OS BUTTONS#############################################################
+####################################### OPTIONSFRAME ###############################################
+
+    ImageIconbtn = customtkinter.CTkImage(Image.open(".\\image\\icons\\icone.png"), size=(39, 39))
+
+    ImageHomebtn = customtkinter.CTkImage(Image.open(".\\image\\icons\\homeicone.png"), size=(39, 39))
+
+    ImageMusicButton = customtkinter.CTkImage(Image.open(".\\image\\icons\\homeicone.png"), size=(39, 39))
+
+    ImageArtistButton = customtkinter.CTkImage(Image.open(".\\image\\icons\\cantor.png"), size=(39, 39))
+
+
+############################## APLICAÇAO DAS IMAGENS NOS BUTTONS E LAYERS PARA CADA BUTTON######################
+############################################### OPTIONSFRAME ###############################################
+
+
+    btnIcon = customtkinter.CTkLabel(OptionsFrame, image= ImageIconbtn , width = 39, height = 39,fg_color="transparent")
+    btnUser.place(x=10, y=470)
+
+    LabelIcone = customtkinter.CTkLabel(OptionsFrame,text='Nome da Aplicaçao',text_color="white", font=("Helvetica", 14))
+#---------------------------------------------------------------------------------------------------------------------
+    btnHome = customtkinter.CTkLabel(OptionsFrame, image= ImageHomebtn , width = 39, height = 39,fg_color="transparent")
+    btnHome.place(x=10, y=470)
+
+    LabelHome = customtkinter.CTkLabel(OptionsFrame,text='Home',text_color="white", font=("Helvetica", 14))
+#---------------------------------------------------------------------------------------------------------------------
+
+    btnMusic = customtkinter.CTkLabel(CollectionsFrame, image= ImageMusicButton , width = 39, height = 39,fg_color="transparent")
+    btnMusic.place(x=10, y=470)
+
+    btnMusic = customtkinter.CTkLabel(CollectionsFrame,text='Music',text_color="white", font=("Helvetica", 14))
+
+#---------------------------------------------------------------------------------------------------------------------
+
+    btnArtist = customtkinter.CTkLabel(CollectionsFrame, image= ImageArtistButton , width = 39, height = 39,fg_color="transparent")
+    btnArtist.place(x=10, y=470)
+
+    btnArtist = customtkinter.CTkLabel(CollectionsFrame,text='Artist',text_color="white", font=("Helvetica", 14))
+
+
+##################################IMAGENS PARA OS BUTTONS#############################################################
+####################################### MUSICFRAME ###############################################
+
+    ImagePlaybtn = customtkinter.CTkImage(Image.open(".\\image\\icons\\play.png"), size=(39, 39))
+
+    ImagePausebtn = customtkinter.CTkImage(Image.open(".\\image\\icons\\pause.png"), size=(39, 39))
+
+    ImageSkipButton = customtkinter.CTkImage(Image.open(".\\image\\icons\\skip.png"), size=(39, 39))
+
+    ImageGobackButton = customtkinter.CTkImage(Image.open(".\\image\\icons\\goback.png"), size=(39, 39))
+
+    ImageAudioButton = customtkinter.CTkImage(Image.open(".\\image\\icons\\audio.png"), size=(39, 39))
+
+
+############################## APLICAÇAO DAS IMAGENS NOS BUTTONS E LAYERS PARA CADA BUTTON######################
+############################################### MUSICFRAME ###############################################
+
+    btnPlay = customtkinter.CTkLabel(MusicFrame, image= ImagePlaybtn , width = 39, height = 39,fg_color="transparent")
+    btnPlay.place(x=10, y=470)
+
+    btnPause = customtkinter.CTkLabel(MusicFrame, image= ImagePausebtn , width = 39, height = 39,fg_color="transparent")
+    btnPause.place(x=10, y=470)
+
+    btnSkip = customtkinter.CTkLabel(MusicFrame, image= ImageSkipButton , width = 39, height = 39,fg_color="transparent")
+    btnSkip.place(x=10, y=470)
+
+    btnGoback = customtkinter.CTkLabel(MusicFrame, image= ImageGobackButton , width = 39, height = 39,fg_color="transparent")
+    btnGoback.place(x=10, y=470)
+
+    btnAudio = customtkinter.CTkLabel(MusicFrame, image= ImageAudioButton , width = 39, height = 39,fg_color="transparent")
+    btnAudio.place(x=10, y=470)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ##########################################################
-
 
 login_render("")
 # Loop de event listening
