@@ -31,7 +31,7 @@
     "border_width": 2,
     "fg_color": ["#F4F7F9", "#2D2F2F"],
     "border_color": ["#A3A8AB", "#6C6F71"],
-    "text_color":["#2A2C2F", "#F2F7FC"],
+    "text_color": ["#2A2C2F", "#F2F7FC"],
     "placeholder_text_color": ["#9B9F9F", "#A8A8A8"]
   },
   "CTkCheckBox": {
@@ -123,7 +123,7 @@
     "border_width": 0,
     "fg_color": ["#F4F7F9", "#2D2F2F"],
     "border_color": ["#A3A8AB", "#6C6F71"],
-    "text_color":["#2A2C2F", "#F2F7FC"],
+    "text_color": ["#2A2C2F", "#F2F7FC"],
     "scrollbar_button_color": ["#B4BCC1", "#6C6E71"],
     "scrollbar_button_hover_color": ["#9B9B9F", "#8A8C8D"]
   },
