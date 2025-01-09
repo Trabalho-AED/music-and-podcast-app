@@ -1,6 +1,10 @@
 import customtkinter
 from PIL import Image
 import os
+from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
+from comtypes import CLSCTX_ALL
+import tkinter as tk
+from tkinter import ttk
 
 customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light" Alterar entre tema escuro e claro
 #customtkinter.set_default_color_theme(".\\theme\\rime.json") # Tema de cores
@@ -275,7 +279,7 @@ def mainwindow_render(oldFrame):
     playlistMenuFrame.place(x=42,y=442)
 
     ##################################IMAGENS PARA OS BUTTONS#############################################################
-    ####################################### OPTIONSFRAME ###############################################
+    ####################################### UpperMenuFrame ###############################################
 
     # Icon user
     userIcon = customtkinter.CTkImage(Image.open(f"{imagePath}user_icon.png"), size=(39, 39))
@@ -297,7 +301,7 @@ def mainwindow_render(oldFrame):
 
 
     ############################## APLICAÇAO DAS IMAGENS NOS BUTTONS E LAYERS PARA CADA BUTTON######################
-    ############################################### OPTIONSFRAME ###############################################
+    ############################################### UpperMenuFrame ###############################################
 
     #Botão com Icon e texto de user
     btnUser = customtkinter.CTkButton(upperMenuFrame, image=userIcon, width=39, height=39, fg_color="transparent", text="User Name")
@@ -348,7 +352,7 @@ def mainwindow_render(oldFrame):
     #---------------------------------------------------------------------------------------------------------------------
 
     ##################################IMAGENS PARA OS BUTTONS#############################################################
-    ####################################### MUSICFRAME ###############################################
+    ####################################### PLAYFRAME ###############################################
 
     # Icon de play
     playIcon = customtkinter.CTkImage(Image.open(f"{imagePath}play_icon.png"), size=(53, 53))
@@ -363,7 +367,7 @@ def mainwindow_render(oldFrame):
     audioIcon = customtkinter.CTkImage(Image.open(f"{imagePath}audio_icon.png"), size=(53, 53)) 
 
     ############################## APLICAÇAO DAS IMAGENS NOS BUTTONS E LAYERS PARA CADA BUTTON######################
-    ############################################### MUSICFRAME ###############################################
+    ############################################### PLAYFRAME ###############################################
 
     #Frame para mostrar música e info na barra inferior
     showMusicFrame = customtkinter.CTkFrame(playFrame, width=180, height=53, fg_color="#0A090C")
@@ -405,13 +409,51 @@ def mainwindow_render(oldFrame):
 
     #------------------------------------------------------------------------------------------------------------------------
 
-    #Frame slider de aúdio (adicionar lógica)
-    audioSliderFrame = customtkinter.CTkFrame(playFrame, width=80, height=80, fg_color="#0A090C")
-    audioSliderFrame.place(x=1716, y=35)
+    #Frame slider de aúdio
+    audioSliderFrame = customtkinter.CTkFrame(playFrame, width=250, height=80, fg_color="#0A090C")
+    audioSliderFrame.place(x=1616, y=20)
 
     #Botão com Icone do áudio
-    btnAudio = customtkinter.CTkButton(audioSliderFrame, image=audioIcon, width=53, height=53, fg_color="transparent", text="")
-    btnAudio.place(x=0, y=0)
+    btnAudio = customtkinter.CTkButton(audioSliderFrame, image=audioIcon, width=53, height=53, fg_color="transparent", text="",
+    command=mute_volume)
+    btnAudio.place(x=0, y=10)
+
+    #Slider de audio
+    volume_slider = ttk.Scale(audioSliderFrame,from_=0,to=100,orient="horizontal",command=adjust_volume)
+    volume_slider.set(50)
+    volume_slider.place(x=80, y=27, width=150, height=30)
+
+def adjust_volume(val):
+    """Altera o volume"""
+
+    # Converter o valor do slider para o intervalo real de volume
+    volume_level = float(val) / 100.0  
+    devices = AudioUtilities.GetSpeakers()
+    interface = devices.Activate( IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
+    volume = interface.QueryInterface(IAudioEndpointVolume)
+
+    # Ajusta o volume no dispositivo
+    volume.SetMasterVolumeLevelScalar(volume_level, None)
+
+is_muted = False
+def mute_volume():
+    """Alterna entre mute e unmute no sistema"""
+    global is_muted  # Para alterar a variável global de estado
+
+    # Obter o dispositivo padrão de áudio
+    devices = AudioUtilities.GetSpeakers()
+    interface = devices.Activate(IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
+
+    # Obter a interface de controle de volume
+    volume = interface.QueryInterface(IAudioEndpointVolume)
+
+    # Verificar o estado atual e alternar
+    if is_muted:
+        volume.SetMute(0, None)  # Desativa o mute
+        is_muted = False  # Atualiza o estado para desmutado
+    else:
+        volume.SetMute(1, None)  # Ativa o mute
+        is_muted = True  # Atualiza o estado para mutado
 
 ##########################################################
 
