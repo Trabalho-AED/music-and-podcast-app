@@ -37,8 +37,8 @@ app = customtkinter.CTk()
 app.title("Music App")
 
 # Define a dimensão da app
-appWidth = 1920
-appHeight = 1009
+appWidth = 1400
+appHeight = 800
 
 # Obtém a dimensão do ecrã
 screenWidth = app.winfo_screenwidth()
@@ -262,7 +262,7 @@ def mainwindow_render(oldFrame):
 
     #Frame barra inferior com os comandos da música
     playFrame = customtkinter.CTkFrame(app, width=1920, height=131, fg_color="#0A090C",corner_radius=0) 
-    playFrame.place(x=0,y=879)
+    playFrame.place(x=0,y=650)
 
     #Frame separador user e home
     upperMenuFrame = customtkinter.CTkFrame(menuFrame, width=162, height=110, fg_color="transparent") 
@@ -367,7 +367,7 @@ def mainwindow_render(oldFrame):
     ############################## APLICAÇAO DAS IMAGENS NOS BUTTONS E LAYERS PARA CADA BUTTON######################
     ############################################### FRAMES BARRA MUSICA ###############################################
     #Frame com conteúdo
-    musicContentFrame = customtkinter.CTkFrame(playFrame, width=1720, height=70, fg_color="#0A090C")
+    musicContentFrame = customtkinter.CTkFrame(playFrame, width=1600, height=70, fg_color="#0A090C")
     musicContentFrame.place(x=107, y=43)
 
     #Frame para mostrar música e info na barra inferior
@@ -376,11 +376,11 @@ def mainwindow_render(oldFrame):
 
     #Frame dos botões para controlar música
     musicActionFrame = customtkinter.CTkFrame(musicContentFrame, width=626, height=100, fg_color="#0A090C")
-    musicActionFrame.place(x=547, y=0)
+    musicActionFrame.place(x=400, y=0)
     
     #Frame slider de aúdio
     audioSliderFrame = customtkinter.CTkFrame(musicContentFrame, width=150, height=30, fg_color="#0A090C")
-    audioSliderFrame.place(x=1570, y=16.5)
+    audioSliderFrame.place(x=1200, y=16.5)
 
     #-------------------------------------------------------------------------------------------------------
 
@@ -450,7 +450,6 @@ def adjust_volume(val):
 
 is_muted = False
 def mute_volume():
-
     global is_muted  # Para alterar a variável global de estado
 
     # Obter o dispositivo padrão de áudio
