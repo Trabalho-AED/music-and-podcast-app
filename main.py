@@ -318,7 +318,7 @@ def mainwindow_render(oldFrame):
     labelCollection.place(x=0, y=0) # Inicio do frame
 
     #Botão com Icon e texto de musica
-    btnMusic = customtkinter.CTkButton(collectionMenuFrame, image=musicIcon, width=39, height=39, fg_color="transparent", text="Music")
+    btnMusic = customtkinter.CTkButton(collectionMenuFrame,command=play_music,image=musicIcon, width=39, height=39, fg_color="transparent", text="Music")
     btnMusic.place(x=0, y=30)
 
     #Botão com Icon e texto de podcast
@@ -454,6 +454,76 @@ def mute_volume():
     else:
         volume.SetMute(1, None)  # Ativa o mute
         is_muted = True  # Atualiza o estado para mutado
+
+def play_music():
+
+    #Frame menu musicas
+    musicFrame = customtkinter.CTkFrame(app, width=246, height=890, fg_color="#0E0D11",corner_radius=0)  
+    musicFrame.place(x=0,y=0)
+
+##################################IMAGENS PARA OS BUTTONS DAS MUSICAS#############################################################
+    ####################################### MUSICFRAME ###############################################
+
+    musicArt1 = customtkinter.CTkImage(Image.open(f"{imagePath}jubel_arte.png"), size=(39, 39))
+
+    musicArt2 = customtkinter.CTkImage(Image.open(f"{imagePath}acid_arte.png"), size=(39, 39))
+
+    musicArt3 = customtkinter.CTkImage(Image.open(f"{imagePath}amor_de_ganga.png"), size=(39, 39))
+
+    musicArt4 = customtkinter.CTkImage(Image.open(f"{imagePath}dont_worry_arte.png"), size=(39, 39))
+
+    musicArt5 = customtkinter.CTkImage(Image.open(f"{imagePath}fui_mlk.png"), size=(39, 39))
+
+    musicArt6 = customtkinter.CTkImage(Image.open(f"{imagePath}madragora_arte.png"), size=(39, 39))
+
+    musicArt7 = customtkinter.CTkImage(Image.open(f"{imagePath}heute_match_arte.png"), size=(39, 39))
+
+    musicArt8 = customtkinter.CTkImage(Image.open(f"{imagePath}hardwell_music_arte.png"), size=(39, 39))
+
+    musicArt9 = customtkinter.CTkImage(Image.open(f"{imagePath}sem_chao_arte.png"), size=(39, 39))
+
+    musicArt10 = customtkinter.CTkImage(Image.open(f"{imagePath}sexbomb_arte.png"), size=(39, 39))
+
+############################## APLICAÇAO DAS IMAGENS NOS BUTTONS E LAYERS PARA CADA BUTTON######################
+    ############################################### MUSICFRAME ###############################################
+    
+    btnArt1 = customtkinter.CTkButton(musicFrame, image=musicArt1, width=39, height=39, fg_color="transparent")
+    btnArt1.place(x=0, y=0)
+
+    btnArt2 = customtkinter.CTkButton(musicFrame, image=musicArt2, width=39, height=39, fg_color="transparent")
+    btnArt2.place(x=0, y=0)
+
+    btnArt3 = customtkinter.CTkButton(musicFrame, image=musicArt3, width=39, height=39, fg_color="transparent")
+    btnArt3.place(x=0, y=0)
+
+    btnArt4 = customtkinter.CTkButton(musicFrame, image=musicArt4, width=39, height=39, fg_color="transparent")
+    btnArt4.place(x=0, y=0)
+
+    btnArt5 = customtkinter.CTkButton(musicFrame, image=musicArt5, width=39, height=39, fg_color="transparent")
+    btnArt5.place(x=0, y=0)
+
+    btnArt6 = customtkinter.CTkButton(musicFrame, image=musicArt6, width=39, height=39, fg_color="transparent")
+    btnArt6.place(x=0, y=0)
+
+    btnArt7 = customtkinter.CTkButton(musicFrame, image=musicArt7, width=39, height=39, fg_color="transparent")
+    btnArt7.place(x=0, y=0)
+
+    btnArt8 = customtkinter.CTkButton(musicFrame, image=musicArt8, width=39, height=39, fg_color="transparent")
+    btnArt8.place(x=0, y=0)
+
+    btnArt9 = customtkinter.CTkButton(musicFrame, image=musicArt9, width=39, height=39, fg_color="transparent")
+    btnArt9.place(x=0, y=0)
+
+    btnArt10 = customtkinter.CTkButton(musicFrame, image=musicArt10, width=39, height=39, fg_color="transparent")
+    btnArt10.place(x=0, y=0)
+
+
+
+
+
+
+
+
 
 ##########################################################
 
