@@ -1,5 +1,7 @@
 import customtkinter
 from PIL import Image
+from tkinter import filedialog
+import shutil #Copy images
 import os
 #from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
 #from comtypes import CLSCTX_ALL
@@ -9,7 +11,7 @@ from tkinter import ttk
 customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light" Alterar entre tema escuro e claro
 #customtkinter.set_default_color_theme(".\\theme\\rime.json") # Tema de cores
 
-###############[VERIFICAR SISTEMA OPERATIVO]##################
+################################[VERIFICAR SISTEMA OPERATIVO]######################################
 def path_format():
     """Retorna o formato de declarar caminhos, dependendo do Sistema Operativo"""
 
@@ -23,12 +25,91 @@ def path_format():
     return pathFormat # Retorna o formato
 
 pathFormat = path_format()
-##################################################################
+######################################################################################################
 
+
+#################################[CRIAR PASTAS]#######################################################
+def create_main_folders(folderPath):
+    #Cria as pastas principais
+
+    #Caso não exista
+    if not os.path.exists(f".{pathFormat}{folderPath}{pathFormat}"):
+        os.mkdir(f".{pathFormat}{folderPath}{pathFormat}")
+    #Caso exista
+    else:
+        print(f"Folder already exists: {folderPath}")
+
+def create_sub_folders(folderPath):
+    """Cria as subpastas"""
+
+    #Caso não exista
+    if not os.path.exists(f".{pathFormat}{folderPath}{pathFormat}"):
+        os.mkdir(f".{pathFormat}{folderPath}{pathFormat}")
+    #Caso exista
+    else:
+        print(f"Sub Folder already exists: {folderPath}")
+
+mainFolders = ["audios", "images", "db"] # Lista com as pastas principais
+subFolders = [f"images{pathFormat}cover_art", f"images{pathFormat}icons", f"audios{pathFormat}music"] # Lista com as pastas secundárias
+
+#Criar Pastas
+for folder in mainFolders:
+    create_main_folders(folder) 
+
+#Criar Subpastas
+for folder in subFolders:
+    create_sub_folders(folder)
+##########################################################################################################
+
+
+###############################[CRIAR FICHEIROS]##########################################################
+def create_main_files(filePath):
+    """Cria o ficheiro caso ele não exista."""
+
+    #Caso não exista
+    if not os.path.exists(filePath):
+        # Abre o ficheiro no modo write, criando-o caso não exista.
+        with open(filePath, "w", encoding="utf-8") as file:
+            #Adiciona o username admin por defeito à lista de admins
+            if filePath == f".{pathFormat}db{pathFormat}admin_list.csv":
+                file.writelines("admin")
+                file.close()
+            #Adiciona o user admin com o username admin e password admin por defeito à lista de utilizadores por defeito
+            elif filePath == f".{pathFormat}db{pathFormat}user_accounts.csv":
+                file.writelines("admin;admin;Admin")
+                file.close()
+            else:
+                pass  # O ficheiro será criado vazio.
+        print(f"File created: {filePath}")
+    #Caso já exista
+    else:
+        print(f"File already exists: {filePath}")
+
+#Lista com os ficheiros da base de dados
+mainFiles = [f".{pathFormat}db{pathFormat}user_accounts.csv",f".{pathFormat}db{pathFormat}music_list.csv",f".{pathFormat}db{pathFormat}admin_list.csv"]
+
+#Criar ficheiros
+for file in mainFiles:
+    create_main_files(file)
+############################################################################################################
+
+
+##########################################[CAMINHOS]############################################################
 
 imagePath = f".{pathFormat}images{pathFormat}icons{pathFormat}" # Caminho para o diretório onde são armazenadas as imagens
 accountsPath = f".{pathFormat}db{pathFormat}user_accounts.csv" # Caminho para o ficheiro onde são armazenadas as contas
-adminListfile = f".{pathFormat}db{pathFormat}admin_list.csv" # Caminho para o ficheiro onde são armazenadas as contas que são admin
+musicPath = f".{pathFormat}db{pathFormat}music_list.csv" # Caminho para o ficheiro onde são armazenadas as contas
+adminListfile = f".{pathFormat}db{pathFormat}admin_list.csv" # Caminho para o ficheiro onde são armazenadas as músicas
+coverArtPath = f".{pathFormat}images{pathFormat}cover_art{pathFormat}" # Caminho para o diretório onde são armazenadas as imagens das músicas
+musicAudioPath = f".{pathFormat}audios{pathFormat}music{pathFormat}" # Caminho para o diretório onde são armazenadas as músicas
+
+#################################################################################################################
+
+
+###########################################################
+tempCoverName = "" # Para salvar o nome da imagem da música
+tempAudioName = "" # Para salvar o nome do aúdio da música
+###########################################################
 
 # Inicializar app
 app = customtkinter.CTk()
@@ -53,7 +134,6 @@ y = (screenHeight / 2) - (appHeight / 2)
 
 # Define o tamanho da app e começa no centro da tela
 app.geometry(f"{appWidth}x{appHeight}+{int(x)}+{int(y)}")
-
 
 
 ##################[ALGORITMOS DA APP]################################
@@ -253,6 +333,117 @@ def login_render(oldFrame):
     resultLabel = customtkinter.CTkLabel(frameLogin, text="")
     resultLabel.pack(padx=20, pady=20)
 
+def selectFile(musicCoverImg, musicAudioPathLabel):
+    """Seleciona um ficheiro"""
+
+    global tempCoverName, tempAudioName  # Indicar as variáveis globais
+
+    if musicCoverImg == "" and musicAudioPathLabel != "":
+        filePath = filedialog.askopenfilename(title="Select File", initialdir=".", filetypes=(("mp3 files", "*.mp3"), ("wav files", ".wav"))) # Escolher ficheiro, 
+
+        shutil.copy(filePath, musicAudioPath) # Copia o aúdio escolhido para a pasta do aúdio da app
+
+        tempAudioName = os.path.basename(filePath) # Guarda o nome do ficheiro de aúdio numa variável temporária
+
+        musicAudioPathLabel.configure(text=f"{musicAudioPath+tempAudioName}") # Muda o texto da label para apresentar o aúdio
+
+        print(musicAudioPath+tempAudioName) # Print para confirmação
+    
+    else:
+        filePath = filedialog.askopenfilename(title="Select File", initialdir=".", filetypes=(("png files", "*.png"), ("jpg files", "*.jpg"))) #Escolher ficheiro, png ou jpg
+
+        shutil.copy(filePath, coverArtPath) # Copia a imagem escolhido para a pasta de cover art da app
+
+        coverImage = customtkinter.CTkImage(Image.open(filePath), size=(150,150)) # Abre a imagem escolhida
+
+        tempCoverName = os.path.basename(filePath) # Guarda o nome do ficheiro da imagem numa variável temporária
+
+        musicCoverImg.configure(image=coverImage) # Muda a imagem da label para a imagem escolhida
+
+        print(coverArtPath+tempCoverName) # Print para confirmação
+
+def confirmMusic(musicNameEntry, musicAuthorEntry):
+    """Guarda os dados da música a adicionar"""
+    
+    #Variável com a estrutura de dados
+    musicData = f"{musicNameEntry.get()};{musicAuthorEntry.get()};{tempCoverName};{tempAudioName}\n"
+
+    #Abre o caminho da música no formato "append" para adicionar a linha sem apagar o conteúdo existente
+    with open(musicPath, "a", encoding="utf-8") as file:
+        file.writelines(musicData) # escreve os dados com a estrutura anteriormente definida
+        file.close
+
+def addMusic():
+    """Abre um frame para adicionar músicas"""
+
+    #Frame para adicionar música
+    musicFrame = customtkinter.CTkFrame(app, width=appWidth-246, height=916)
+    musicFrame.place(relx=1,rely=0, anchor="ne") #Abre o frame no canto superior direito
+    
+    #----------------------------[Nome da Música]--------------------------------#
+
+    #Label para mostar o texto "Music Name:"
+    musicNameLabel = customtkinter.CTkLabel(musicFrame, text="Music Name:")
+    musicNameLabel.pack(expand=True)
+
+    #Entry para o nome da música
+    musicNameEntry = customtkinter.CTkEntry(musicFrame)
+    musicNameEntry.pack(expand=True)
+
+    #----------------------------------------------------------------------------#
+
+
+    #----------------------------[Autor da Música]-------------------------------#
+    
+    #Label para mostrar o texto "Author:"
+    musicAuthorLabel = customtkinter.CTkLabel(musicFrame, text="Author:")
+    musicAuthorLabel.pack(expand=True)
+
+    #Entry para o nome do autor
+    musicAuthorEntry = customtkinter.CTkEntry(musicFrame)
+    musicAuthorEntry.pack(expand=True)
+
+    #----------------------------------------------------------------------------#
+
+
+    #----------------------------[Imagem da Música]------------------------------#
+    
+    #Label para mostrar o texto "Cover Art:"
+    musicCoverLabel = customtkinter.CTkLabel(musicFrame, text="Cover Art:")
+    musicCoverLabel.pack(expand=True)
+
+    #Label para mostrar a imagem escolhida
+    musicCoverImg = customtkinter.CTkLabel(musicFrame, text="")
+    musicCoverImg.pack(expand=True)
+
+    #Botão para escolher a imagem da música
+    musicCoverBtn = customtkinter.CTkButton(musicFrame, width=300, height=100, text="Add cover art", command=lambda:selectFile(musicCoverImg, ""))
+    musicCoverBtn.pack(expand=True)
+
+    #--------------------------------------------------------------------------#
+
+
+    #----------------------------[Aúdio da Música]-----------------------------#
+    
+    #Label para mostrar a o texto "Audio:"
+    musicAudioLabel = customtkinter.CTkLabel(musicFrame, text="Audio:")
+    musicAudioLabel.pack(expand=True)
+
+    #Label para mostrar o aúdio a ser adicionado
+    musicAudioPathLabel = customtkinter.CTkLabel(musicFrame, text="")
+    musicAudioPathLabel.pack(expand=True)
+
+    #Botão para escolher o aúdio
+    musicAudioBtn = customtkinter.CTkButton(musicFrame, width=300, height=100, text="Add audio", command=lambda:selectFile("", musicAudioPathLabel))
+    musicAudioBtn.pack(expand=True)
+
+    #--------------------------------------------------------------------------#
+
+
+    #Botão para salvar a os dados
+    confirmBtn = customtkinter.CTkButton(musicFrame, width=300, height=100, text="Confirm", command=lambda:confirmMusic(musicNameEntry, musicAuthorEntry))
+    confirmBtn.pack(expand=True)
+
 
 def mainwindow_render(oldFrame):
     """Rendriza a frame da janela principal"""
@@ -262,6 +453,9 @@ def mainwindow_render(oldFrame):
     #Frame menu lateral
     menuFrame = customtkinter.CTkFrame(app, width=246, height=916, fg_color="#0E0D11",corner_radius=0)  
     menuFrame.place(relx=0, rely=0,anchor="nw")
+
+    addBtn = customtkinter.CTkButton(app, width=300, height=100, fg_color="blue", corner_radius=20, text="Add Music", command=addMusic)
+    addBtn.place(x=800, y=500)
 
     #Frame barra inferior com os comandos da música
     playFrame = customtkinter.CTkFrame(app, width=1920, height=131, fg_color="#0A090C",corner_radius=0) 
