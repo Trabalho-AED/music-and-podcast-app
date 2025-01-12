@@ -333,9 +333,11 @@ def login_render(oldFrame):
     resultLabel = customtkinter.CTkLabel(frameLogin, text="")
     resultLabel.pack(padx=20, pady=20)
 
-def confirmMusic(musicNameEntry, musicAuthorEntry, errorAddMusicLabel):
+def confirmMusic(musicNameEntry, musicAuthorEntry,musicCoverImg,musicAudioPathLabel, errorAddMusicLabel):
     """Guarda os dados da música a adicionar"""
     
+    global tempCoverName, tempAudioName  # Indicar as variáveis globais
+
     if musicNameEntry.get() and musicAuthorEntry.get() and tempAudioName and tempCoverName:
         #Variável com a estrutura de dados
         musicData = f"{musicNameEntry.get()};{musicAuthorEntry.get()};{tempCoverName};{tempAudioName}\n"
@@ -344,6 +346,19 @@ def confirmMusic(musicNameEntry, musicAuthorEntry, errorAddMusicLabel):
         with open(musicPath, "a", encoding="utf-8") as file:
             file.writelines(musicData) # escreve os dados com a estrutura anteriormente definida
             file.close
+        
+        #Apagar conteúdo
+        musicNameEntry.delete(0,"end")
+        musicAuthorEntry.delete(0,"end")
+        musicCoverImg.configure(image=None)
+        musicAudioPathLabel.configure(text="")
+        errorAddMusicLabel.configure(text="Music added with success!")
+
+        tempCoverName = None
+        tempAudioName = None
+
+        return
+
     else:
         errorAddMusicLabel.configure(text="Fill all fields!")
         return
@@ -447,7 +462,7 @@ def addMusic():
 
 
     #Botão para salvar a os dados
-    confirmBtn = customtkinter.CTkButton(musicFrame, width=300, height=100, text="Confirm", command=lambda:confirmMusic(musicNameEntry, musicAuthorEntry, errorAddMusicLabel))
+    confirmBtn = customtkinter.CTkButton(musicFrame, width=300, height=100, text="Confirm", command=lambda:confirmMusic(musicNameEntry, musicAuthorEntry,musicCoverImg,musicAudioPathLabel, errorAddMusicLabel))
     confirmBtn.pack(expand=True)
 
     #Label para mostrar erros
