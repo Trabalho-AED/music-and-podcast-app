@@ -107,8 +107,8 @@ musicAudioPath = f".{pathFormat}audios{pathFormat}music{pathFormat}" # Caminho p
 
 
 ###########################################################
-tempCoverName = "" # Para salvar o nome da imagem da música
-tempAudioName = "" # Para salvar o nome do aúdio da música
+tempCoverName = None # Para salvar o nome da imagem da música
+tempAudioName = None # Para salvar o nome do aúdio da música
 ###########################################################
 
 # Inicializar app
@@ -333,6 +333,21 @@ def login_render(oldFrame):
     resultLabel = customtkinter.CTkLabel(frameLogin, text="")
     resultLabel.pack(padx=20, pady=20)
 
+def confirmMusic(musicNameEntry, musicAuthorEntry, errorAddMusicLabel):
+    """Guarda os dados da música a adicionar"""
+    
+    if musicNameEntry.get() and musicAuthorEntry.get() and tempAudioName and tempCoverName:
+        #Variável com a estrutura de dados
+        musicData = f"{musicNameEntry.get()};{musicAuthorEntry.get()};{tempCoverName};{tempAudioName}\n"
+
+        #Abre o caminho da música no formato "append" para adicionar a linha sem apagar o conteúdo existente
+        with open(musicPath, "a", encoding="utf-8") as file:
+            file.writelines(musicData) # escreve os dados com a estrutura anteriormente definida
+            file.close
+    else:
+        errorAddMusicLabel.configure(text="Fill all fields!")
+        return
+
 def selectFile(musicCoverImg, musicAudioPathLabel):
     """Seleciona um ficheiro"""
 
@@ -361,17 +376,8 @@ def selectFile(musicCoverImg, musicAudioPathLabel):
         musicCoverImg.configure(image=coverImage) # Muda a imagem da label para a imagem escolhida
 
         print(coverArtPath+tempCoverName) # Print para confirmação
-
-def confirmMusic(musicNameEntry, musicAuthorEntry):
-    """Guarda os dados da música a adicionar"""
     
-    #Variável com a estrutura de dados
-    musicData = f"{musicNameEntry.get()};{musicAuthorEntry.get()};{tempCoverName};{tempAudioName}\n"
-
-    #Abre o caminho da música no formato "append" para adicionar a linha sem apagar o conteúdo existente
-    with open(musicPath, "a", encoding="utf-8") as file:
-        file.writelines(musicData) # escreve os dados com a estrutura anteriormente definida
-        file.close
+    return
 
 def addMusic():
     """Abre um frame para adicionar músicas"""
@@ -441,8 +447,12 @@ def addMusic():
 
 
     #Botão para salvar a os dados
-    confirmBtn = customtkinter.CTkButton(musicFrame, width=300, height=100, text="Confirm", command=lambda:confirmMusic(musicNameEntry, musicAuthorEntry))
+    confirmBtn = customtkinter.CTkButton(musicFrame, width=300, height=100, text="Confirm", command=lambda:confirmMusic(musicNameEntry, musicAuthorEntry, errorAddMusicLabel))
     confirmBtn.pack(expand=True)
+
+    #Label para mostrar erros
+    errorAddMusicLabel = customtkinter.CTkLabel(musicFrame, text="")
+    errorAddMusicLabel.pack(expand=True)
 
 
 def mainwindow_render(oldFrame):
