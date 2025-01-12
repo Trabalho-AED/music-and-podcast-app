@@ -107,6 +107,7 @@ musicAudioPath = f".{pathFormat}audios{pathFormat}music{pathFormat}" # Caminho p
 
 
 ###########################################################
+isAdmin = False
 tempCoverName = None # Para salvar o nome da imagem da música
 tempAudioName = None # Para salvar o nome do aúdio da música
 ###########################################################
@@ -179,11 +180,14 @@ def check_admin(username):
     """Verifica se o utilizador é admin.
     Retorna um booleano"""
 
+    global isAdmin
+
     lines = read_file(adminListfile) # Abrir os dados do ficheiro admin
 
     #Para cada linha de dados
     for line in lines:
         if line.strip() == username:
+            isAdmin = True
             return True # Se o utilizador na linha for igual ao username
         
     return False # Se o utilizador não estiver na lista de admin
@@ -479,8 +483,13 @@ def mainwindow_render(oldFrame):
     menuFrame = customtkinter.CTkFrame(app, width=246, height=916, fg_color="#0E0D11",corner_radius=0)  
     menuFrame.place(relx=0, rely=0,anchor="nw")
 
-    addBtn = customtkinter.CTkButton(app, width=300, height=100, fg_color="blue", corner_radius=20, text="Add Music", command=addMusic)
-    addBtn.place(x=800, y=500)
+    #Frame de cima com a função de procurar e, para admin, entrar no dashboard
+    upperSearchFrame = customtkinter.CTkFrame(app, width=appWidth, height=90, fg_color="#0E0D11",corner_radius=0)  
+    upperSearchFrame.place(x=246, y=0)
+
+    if isAdmin:
+        addBtn = customtkinter.CTkButton(upperSearchFrame, width=100, height=10, fg_color="transparent", text="Add Music", command=addMusic)
+        addBtn.place(x=100, y=45)
 
     #Frame barra inferior com os comandos da música
     playFrame = customtkinter.CTkFrame(app, width=1920, height=131, fg_color="#0A090C",corner_radius=0) 
