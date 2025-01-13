@@ -27,6 +27,7 @@ pathFormat = path_format()
 
 
 imagePath = f".{pathFormat}images{pathFormat}icons{pathFormat}" # Caminho para o diretório onde são armazenadas as imagens
+artPath = f".{pathFormat}images{pathFormat}cover_art{pathFormat}" # Caminho para o diretório onde são armazenadas as imagens das musicas
 accountsPath = f".{pathFormat}db{pathFormat}user_accounts.csv" # Caminho para o ficheiro onde são armazenadas as contas
 adminListfile = f".{pathFormat}db{pathFormat}admin_list.csv" # Caminho para o ficheiro onde são armazenadas as contas que são admin
 
@@ -222,7 +223,7 @@ def login_render(oldFrame):
         oldFrame.pack_forget() # Apagar o estilo do frame anterior
 
     #Frame
-    frameLogin = customtkinter.CTkFrame(app, width=600, height=500)
+    frameLogin = customtkinter.CTkFrame(app, width=100, height=500)
     frameLogin.pack(expand=True)
 
     # Labels e campos de entrada
@@ -244,7 +245,7 @@ def login_render(oldFrame):
 
     # Botão de criar conta
     createaccButton = customtkinter.CTkButton(frameLogin, text="Criar Conta", command=lambda:register_render(frameLogin))
-    createaccButton.pack(padx=20, pady=5)
+    createaccButton.pack(padx=20, pady=5,side="bottom")
 
     # Label para exibir resultados ou mensagens de erro
     resultLabel = customtkinter.CTkLabel(frameLogin, text="")
@@ -304,11 +305,11 @@ def mainwindow_render(oldFrame):
     ############################################### UpperMenuFrame ###############################################
 
     #Botão com Icon e texto de user
-    btnUser = customtkinter.CTkButton(upperMenuFrame, image=userIcon, width=39, height=39, fg_color="transparent", text="User Name")
+    btnUser = customtkinter.CTkButton(upperMenuFrame,command=user_menu, image=userIcon, width=39, height=39, fg_color="transparent", text="User Name")
     btnUser.place(x=0, y=0)
 
     #Botão com Icon e texto de home
-    btnHome = customtkinter.CTkButton(upperMenuFrame, image= homeIcon , width = 39, height = 39, fg_color="transparent", text="Home Page")
+    btnHome = customtkinter.CTkButton(upperMenuFrame,command=main_menu, image= homeIcon , width = 39, height = 39, fg_color="transparent", text="Home Page")
     btnHome.place(x=0, y=90)
 
     #---------------------------------------------------------------------------------------------------------------------
@@ -322,7 +323,7 @@ def mainwindow_render(oldFrame):
     btnMusic.place(x=0, y=30)
 
     #Botão com Icon e texto de podcast
-    btnPodcast = customtkinter.CTkButton(collectionMenuFrame, image=artistIcon, width=39, height=39, fg_color="transparent", text="Podcast")
+    btnPodcast = customtkinter.CTkButton(collectionMenuFrame,command=play_podcast, image=artistIcon, width=39, height=39, fg_color="transparent", text="Podcast")
     btnPodcast.place(x=0, y=84)
 
     #Botão com Icon e texto de Favoritos
@@ -455,51 +456,232 @@ def mute_volume():
         volume.SetMute(1, None)  # Ativa o mute
         is_muted = True  # Atualiza o estado para mutado
 
-def play_music():
+def user_menu():
 
+    #Frame User Menu
+    userFrame = customtkinter.CTkFrame(app, width=1674, height=890, fg_color="green",corner_radius=0)  
+    userFrame.place(x=247,y=0)
+
+    #Frame options Menu
+    optionsFrame = customtkinter.CTkFrame(userFrame, width=800, height=700, corner_radius=10,fg_color="#242424")
+    optionsFrame.place(x=400,y=150)
+
+    #Frame Change Image
+    changeImageFrame = customtkinter.CTkFrame(optionsFrame, width=750, height=200, corner_radius=10,fg_color="#242424")
+    changeImageFrame.place(x=25,y=57)
+
+    #Frame Change Name
+    changeNameFrame = customtkinter.CTkFrame(optionsFrame, width=750, height=130, corner_radius=10,fg_color="#242424")
+    changeNameFrame.place(x=25,y=270)
+
+    #Frame Change Username
+    changeUserNameFrame = customtkinter.CTkFrame(optionsFrame, width=750, height=130, corner_radius=10,fg_color="#242424")
+    changeUserNameFrame.place(x=25,y=410)
+
+    #Frame Change Password
+    changePassFrame = customtkinter.CTkFrame(optionsFrame, width=750, height=130, corner_radius=10,fg_color="#242424")
+    changePassFrame.place(x=25,y=550)
+
+    #Titulo
+    title = customtkinter.CTkLabel(userFrame, text="User Page", font=("Arial", 30),text_color="white")
+    title.place(x=715,y=90)
+
+    # Butao mudar imagem
+    btnChgImage = customtkinter.CTkButton(changeImageFrame, width=250, height=70,text="Change Image", command=lambda:selectFile(userImg, ""))
+    btnChgImage.place(x=450, y=60)
+
+    # Butao mudar nome
+    btnChgName = customtkinter.CTkButton(changeNameFrame, width=250, height=70,text="Change Name")
+    btnChgName.place(x=450, y=30)
+
+    # Butao mudar Username
+    btnChgUsername = customtkinter.CTkButton(changeUserNameFrame, width=250, height=70,text="Change Username")
+    btnChgUsername.place(x=450, y=30)
+
+    # Butao mudar Password
+    btnChgPass = customtkinter.CTkButton(changePassFrame, width=250, height=70,text="Log Out", color="Red")
+    btnChgPass.place(x=450, y=30)
+
+    # butao Log Out 
+    btnLogout = customtkinter.CTkButton(userFrame, width=250, height=70,text="Change Password",text_color="White",color="Red")
+    btnLogout.place(x=450, y=30)
+
+    # Label Imagem do User
+    userImg = customtkinter.CTkLabel(changeImageFrame, text="")
+    userImg.place(x=105,y=53)
+
+    # Label Nome
+    labelName = customtkinter.CTkLabel(changeNameFrame, text="User Name", font=("Arial", 30),text_color="white")
+    labelName.place(x=105,y=53)
+    
+    # Label Username
+    labelUsername = customtkinter.CTkLabel(changeUserNameFrame, text="username", font=("Arial", 30),text_color="white")
+    labelUsername.place(x=105,y=53)
+
+    # Label Password
+    labelPass = customtkinter.CTkLabel(changePassFrame, text="Password", font=("Arial", 30),text_color="white")
+    labelPass.place(x=105,y=53)
+
+
+
+    
+
+
+def main_menu():
+    #Frame Main Menu
+    mainMenuFrame = customtkinter.CTkFrame(app, width=1674, height=890, fg_color="#242424",corner_radius=0)  
+    mainMenuFrame.place(x=247,y=0)
+
+
+    #Search Bar na MusicFrame
+    search_entry = customtkinter.CTkEntry(
+    mainMenuFrame,
+    width=600,
+    height=60,
+    placeholder_text="Search...",
+    justify="center",
+    font=("Arial", 18),
+    corner_radius=10,  
+    border_width=0,
+    fg_color="#333333",  
+    text_color="#ffffff",  
+    placeholder_text_color="#888888",
+    )
+
+    search_entry.place(x=837, y=70, anchor="center")
+
+    #Frame menu trending Music
+    trendingFrame = customtkinter.CTkFrame(mainMenuFrame, width=1400, height=200, fg_color="blue",corner_radius=0)  #0E0D11
+    trendingFrame.place(x=150,y=150)
+
+    #Frame menu trending Podcasts
+    trendingPodcastsFrame = customtkinter.CTkFrame(mainMenuFrame, width=1400, height=200, fg_color="blue",corner_radius=0)  #0E0D11
+    trendingPodcastsFrame.place(x=150,y=400)
+
+    #Frame menu Your Activity
+    yourActivityFrame = customtkinter.CTkFrame(mainMenuFrame, width=1400, height=200, fg_color="blue",corner_radius=0)  
+    yourActivityFrame.place(x=150,y=650)
+
+    #Frame menu Our Reccomendations
+    ourReccomendationsFrame = customtkinter.CTkFrame(mainMenuFrame, width=1400, height=200, fg_color="blue",corner_radius=0)  
+    ourReccomendationsFrame.place(x=150,y=900)
+
+
+
+
+def play_music():
     #Frame menu musicas
-    musicFrame = customtkinter.CTkFrame(app, width=246, height=890, fg_color="#0E0D11",corner_radius=0)  
-    musicFrame.place(x=0,y=0)
+    musicFrame = customtkinter.CTkFrame(app, width=1674, height=890, fg_color="#242424",corner_radius=0)  
+    musicFrame.place(x=247,y=0)
+
+    #Frame menu trending Music
+    trendingFrame = customtkinter.CTkFrame(musicFrame, width=1400, height=200, fg_color="blue",corner_radius=0)  #0E0D11
+    trendingFrame.place(x=150,y=150)
+
+    #Frame menu Your Activity
+    yourActivityFrame = customtkinter.CTkFrame(musicFrame, width=1400, height=200, fg_color="blue",corner_radius=0)  
+    yourActivityFrame.place(x=150,y=400)
+
+    #Frame menu All Music
+    allmusicFrame = customtkinter.CTkFrame(musicFrame, width=1400, height=200, fg_color="blue",corner_radius=0)  
+    allmusicFrame.place(x=150,y=650)
+
+    #Search Bar na MusicFrame
+    search_entry = customtkinter.CTkEntry(
+    musicFrame,
+    width=600,
+    height=60,
+    placeholder_text="Search...",
+    justify="center",
+    font=("Arial", 18),
+    corner_radius=10,  
+    border_width=0,
+    fg_color="#333333",  
+    text_color="#ffffff",  
+    placeholder_text_color="#888888",
+    )
+
+    search_entry.place(x=837, y=70, anchor="center")
+
+def play_podcast():
+
+    #Frame menu podcast
+    podcastFrame = customtkinter.CTkFrame(app, width=1674, height=890, fg_color="#242424",corner_radius=0)  
+    podcastFrame.place(x=247,y=0)
+
+    #Frame menu trending Music
+    trendingFrame = customtkinter.CTkFrame(podcastFrame, width=1400, height=200, fg_color="blue",corner_radius=0)  #0E0D11
+    trendingFrame.place(x=150,y=150)
+
+    #Frame menu Your Activity
+    yourActivityFrame = customtkinter.CTkFrame(podcastFrame, width=1400, height=200, fg_color="blue",corner_radius=0)  
+    yourActivityFrame.place(x=150,y=400)
+
+    #Frame menu All Music
+    allmusicFrame = customtkinter.CTkFrame(podcastFrame, width=1400, height=200, fg_color="blue",corner_radius=0)  
+    allmusicFrame.place(x=150,y=650)
+
+    #Search Bar na MusicFrame
+    search_entry = customtkinter.CTkEntry(
+    podcastFrame,
+    width=600,
+    height=60,
+    placeholder_text="Search...",
+    justify="center",
+    font=("Arial", 18),
+    corner_radius=10,  
+    border_width=0,
+    fg_color="#333333",  
+    text_color="#ffffff",  
+    placeholder_text_color="#888888",
+    )
+
+    search_entry.place(x=837, y=70, anchor="center")
+
+
+    
+
+    #search_entry.bind("<Return>", on_search)  # Executa função ao pressionar Enter
 
 ##################################IMAGENS PARA OS BUTTONS DAS MUSICAS#############################################################
     ####################################### MUSICFRAME ###############################################
 
-    musicArt1 = customtkinter.CTkImage(Image.open(f"{imagePath}jubel_arte.png"), size=(39, 39))
+    musicArt1 = customtkinter.CTkImage(Image.open(f"{artPath}jubel_arte.png"), size=(39, 39))
 
-    musicArt2 = customtkinter.CTkImage(Image.open(f"{imagePath}acid_arte.png"), size=(39, 39))
+    musicArt2 = customtkinter.CTkImage(Image.open(f"{artPath}acid_arte.png"), size=(39, 39))
 
-    musicArt3 = customtkinter.CTkImage(Image.open(f"{imagePath}amor_de_ganga.png"), size=(39, 39))
+    musicArt3 = customtkinter.CTkImage(Image.open(f"{artPath}amor_de_ganga.png"), size=(39, 39))
 
-    musicArt4 = customtkinter.CTkImage(Image.open(f"{imagePath}dont_worry_arte.png"), size=(39, 39))
+    musicArt4 = customtkinter.CTkImage(Image.open(f"{artPath}dont_worry_arte.png"), size=(39, 39))
 
-    musicArt5 = customtkinter.CTkImage(Image.open(f"{imagePath}fui_mlk.png"), size=(39, 39))
+    musicArt5 = customtkinter.CTkImage(Image.open(f"{artPath}fui_mlk.png"), size=(39, 39))
 
-    musicArt6 = customtkinter.CTkImage(Image.open(f"{imagePath}madragora_arte.png"), size=(39, 39))
+    musicArt6 = customtkinter.CTkImage(Image.open(f"{artPath}madragora_arte.png"), size=(39, 39))
 
-    musicArt7 = customtkinter.CTkImage(Image.open(f"{imagePath}heute_match_arte.png"), size=(39, 39))
+    musicArt7 = customtkinter.CTkImage(Image.open(f"{artPath}heute_match_arte.png"), size=(39, 39))
 
-    musicArt8 = customtkinter.CTkImage(Image.open(f"{imagePath}hardwell_music_arte.png"), size=(39, 39))
+    musicArt8 = customtkinter.CTkImage(Image.open(f"{artPath}hardwell_music_arte.png"), size=(39, 39))
 
-    musicArt9 = customtkinter.CTkImage(Image.open(f"{imagePath}sem_chao_arte.png"), size=(39, 39))
+    musicArt9 = customtkinter.CTkImage(Image.open(f"{artPath}sem_chao_arte.png"), size=(39, 39))
 
-    musicArt10 = customtkinter.CTkImage(Image.open(f"{imagePath}sexbomb_arte.png"), size=(39, 39))
+    musicArt10 = customtkinter.CTkImage(Image.open(f"{artPath}sexbomb_arte.png"), size=(39, 39))
 
 ############################## APLICAÇAO DAS IMAGENS NOS BUTTONS E LAYERS PARA CADA BUTTON######################
     ############################################### MUSICFRAME ###############################################
     
-    btnArt1 = customtkinter.CTkButton(musicFrame, image=musicArt1, width=39, height=39, fg_color="transparent")
-    btnArt1.place(x=0, y=0)
+    btnArt1 = customtkinter.CTkButton(trendingFrame, image=musicArt1, width=39, height=39, fg_color="transparent")
+    btnArt1.place(x=120, y=0)
 
-    btnArt2 = customtkinter.CTkButton(musicFrame, image=musicArt2, width=39, height=39, fg_color="transparent")
+    btnArt2 = customtkinter.CTkButton(trendingFrame, image=musicArt2, width=39, height=39, fg_color="transparent")
     btnArt2.place(x=0, y=0)
 
-    btnArt3 = customtkinter.CTkButton(musicFrame, image=musicArt3, width=39, height=39, fg_color="transparent")
+    btnArt3 = customtkinter.CTkButton(trendingFrame, image=musicArt3, width=39, height=39, fg_color="transparent")
     btnArt3.place(x=0, y=0)
 
-    btnArt4 = customtkinter.CTkButton(musicFrame, image=musicArt4, width=39, height=39, fg_color="transparent")
+    btnArt4 = customtkinter.CTkButton(trendingFrame, image=musicArt4, width=39, height=39, fg_color="transparent")
     btnArt4.place(x=0, y=0)
 
-    btnArt5 = customtkinter.CTkButton(musicFrame, image=musicArt5, width=39, height=39, fg_color="transparent")
+    btnArt5 = customtkinter.CTkButton(trendingFrame, image=musicArt5, width=39, height=39, fg_color="transparent")
     btnArt5.place(x=0, y=0)
 
     btnArt6 = customtkinter.CTkButton(musicFrame, image=musicArt6, width=39, height=39, fg_color="transparent")
