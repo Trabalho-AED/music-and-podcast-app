@@ -120,8 +120,8 @@ app = customtkinter.CTk()
 app.title("Music App")
 
 # Define a dimensão da app
-appWidth = 1920
-appHeight = 1009
+appWidth = 1500
+appHeight = 800
 
 # App não resizable em x
 app.resizable(width=None)
@@ -529,7 +529,23 @@ def mainwindow_render(oldFrame):
 
     #Frame de cima com a função de procurar e, para admin, entrar no dashboard
     upperSearchFrame = customtkinter.CTkFrame(app, width=appWidth, height=90, fg_color="#0E0D11",corner_radius=0)  
-    upperSearchFrame.place(x=246, y=0)
+    upperSearchFrame.place(relx=1,rely=0,anchor="nw")
+
+    #Search Bar na Upper Search Frame
+    search_entry = customtkinter.CTkEntry(
+    upperSearchFrame,
+    width=300,
+    height=30,
+    placeholder_text="Search...",
+    justify="center",
+    font=("Arial", 14),
+    corner_radius=10,  
+    border_width=0,
+    fg_color="#333333",  
+    text_color="#ffffff",  
+    placeholder_text_color="#888888",
+    )
+    search_entry.place(x=400, y=35, anchor="center")
 
     if isAdmin:
         addBtn = customtkinter.CTkButton(upperSearchFrame, width=100, height=10, fg_color="transparent", text="Add Music", command=addMusic)
@@ -577,11 +593,11 @@ def mainwindow_render(oldFrame):
     ############################################### UpperMenuFrame ###############################################
 
     #Botão com Icon e texto de user
-    btnUser = customtkinter.CTkButton(upperMenuFrame, image=userIcon, width=31, height=31, fg_color="transparent", text="User Name")
+    btnUser = customtkinter.CTkButton(upperMenuFrame, image=userIcon, width=31, height=31, fg_color="transparent", text="User Name",command=user_menu)
     btnUser.place(x=0, y=0)
 
     #Botão com Icon e texto de home
-    btnHome = customtkinter.CTkButton(upperMenuFrame, image= homeIcon , width = 31, height = 31, fg_color="transparent", text="Home Page")
+    btnHome = customtkinter.CTkButton(upperMenuFrame, image= homeIcon , width = 31, height = 31, fg_color="transparent", text="Home Page", command=main_menu)
     btnHome.place(x=0, y=65)
 
     #---------------------------------------------------------------------------------------------------------------------
@@ -660,7 +676,7 @@ def mainwindow_render(oldFrame):
     musicActionFrame.grid(row=0, column=1, sticky="nsew", padx=50, pady=5)  # Alinhado e espaçado
 
     # Frame slider de áudio
-    audioSliderFrame = customtkinter.CTkFrame(musicContentFrame, fg_color="#0A090C",width=120, height=20)
+    audioSliderFrame = customtkinter.CTkFrame(musicContentFrame, fg_color="#0A090C",width=170, height=20)
     audioSliderFrame.grid(row=0, column=2, sticky="nsew", padx=50, pady=5)  # Alinhado e espaçado
 
 
@@ -717,39 +733,95 @@ def mainwindow_render(oldFrame):
     volumeSlider = customtkinter.CTkSlider(audioSliderFrame,width=100, from_=0, to=100, number_of_steps=100)
     volumeSlider.set(50)
     volumeSlider.place(x=40, y=8)
-"""
-def adjust_volume(val):
 
 
-    # Converter o valor do slider para o intervalo real de volume
-    volume_level = float(val) / 100.0  
-    devices = AudioUtilities.GetSpeakers()
-    interface = devices.Activate( IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
-    volume = interface.QueryInterface(IAudioEndpointVolume)
+def user_menu():
 
-    # Ajusta o volume no dispositivo
-    volume.SetMasterVolumeLevelScalar(volume_level, None)
+    #Frame User Menu
+    userFrame = customtkinter.CTkFrame(app, width=1674, height=890, fg_color="green",corner_radius=0)  
+    userFrame.place(x=247,y=0)
 
-is_muted = False
-def mute_volume():
+    #Frame options Menu
+    optionsFrame = customtkinter.CTkFrame(userFrame, width=800, height=700, corner_radius=10,fg_color="#242424")
+    optionsFrame.place(x=400,y=150)
 
-    global is_muted  # Para alterar a variável global de estado
+    #Frame Change Image
+    changeImageFrame = customtkinter.CTkFrame(optionsFrame, width=750, height=200, corner_radius=10,fg_color="#242424")
+    changeImageFrame.place(x=25,y=57)
 
-    # Obter o dispositivo padrão de áudio
-    devices = AudioUtilities.GetSpeakers()
-    interface = devices.Activate(IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
+    #Frame Change Name
+    changeNameFrame = customtkinter.CTkFrame(optionsFrame, width=750, height=130, corner_radius=10,fg_color="#242424")
+    changeNameFrame.place(x=25,y=270)
 
-    # Obter a interface de controle de volume
-    volume = interface.QueryInterface(IAudioEndpointVolume)
+    #Frame Change Username
+    changeUserNameFrame = customtkinter.CTkFrame(optionsFrame, width=750, height=130, corner_radius=10,fg_color="#242424")
+    changeUserNameFrame.place(x=25,y=410)
 
-    # Verificar o estado atual e alternar
-    if is_muted:
-        volume.SetMute(0, None)  # Desativa o mute
-        is_muted = False  # Atualiza o estado para desmutado
-    else:
-        volume.SetMute(1, None)  # Ativa o mute
-        is_muted = True  # Atualiza o estado para mutado
-"""
+    #Frame Change Password
+    changePassFrame = customtkinter.CTkFrame(optionsFrame, width=750, height=130, corner_radius=10,fg_color="#242424")
+    changePassFrame.place(x=25,y=550)
+
+    #Titulo
+    title = customtkinter.CTkLabel(userFrame, text="User Page", font=("Arial", 30),text_color="white")
+    title.place(x=715,y=90)
+
+    # Butao mudar imagem
+    btnChgImage = customtkinter.CTkButton(changeImageFrame, width=250, height=70,text="Change Image")
+    btnChgImage.place(x=450, y=60)
+
+    # Butao mudar nome
+    btnChgName = customtkinter.CTkButton(changeNameFrame, width=250, height=70,text="Change Name")
+    btnChgName.place(x=450, y=30)
+
+    # Butao mudar Username
+    btnChgUsername = customtkinter.CTkButton(changeUserNameFrame, width=250, height=70,text="Change Username")
+    btnChgUsername.place(x=450, y=30)
+
+    # Butao mudar Password
+    btnChgPass = customtkinter.CTkButton(changePassFrame, width=250, height=70,text="Change Password")
+    btnChgPass.place(x=450, y=30)
+
+    # Label Imagem do User
+    userImg = customtkinter.CTkLabel(changeImageFrame, text="")
+    userImg.place(x=105,y=53)
+
+    # Label Nome
+    labelName = customtkinter.CTkLabel(changeNameFrame, text="User Name", font=("Arial", 30),text_color="white")
+    labelName.place(x=105,y=53)
+    
+    # Label Username
+    labelUsername = customtkinter.CTkLabel(changeUserNameFrame, text="username", font=("Arial", 30),text_color="white")
+    labelUsername.place(x=105,y=53)
+
+    # Label Password
+    labelPass = customtkinter.CTkLabel(changePassFrame, text="Password", font=("Arial", 30),text_color="white")
+    labelPass.place(x=105,y=53)
+
+
+
+    
+
+
+def main_menu():
+    #Frame Main Menu
+    mainMenuFrame = customtkinter.CTkFrame(app, width=1674, height=890, fg_color="#242424",corner_radius=0)  
+    mainMenuFrame.place(x=247,y=0)
+
+    #Frame menu trending Music
+    trendingFrame = customtkinter.CTkFrame(mainMenuFrame, width=1400, height=200, fg_color="blue",corner_radius=0)  #0E0D11
+    trendingFrame.place(x=150,y=150)
+
+    #Frame menu trending Podcasts
+    trendingPodcastsFrame = customtkinter.CTkFrame(mainMenuFrame, width=1400, height=200, fg_color="blue",corner_radius=0)  #0E0D11
+    trendingPodcastsFrame.place(x=150,y=400)
+
+    #Frame menu Your Activity
+    yourActivityFrame = customtkinter.CTkFrame(mainMenuFrame, width=1400, height=200, fg_color="blue",corner_radius=0)  
+    yourActivityFrame.place(x=150,y=650)
+
+    #Frame menu Our Reccomendations
+    ourReccomendationsFrame = customtkinter.CTkFrame(mainMenuFrame, width=1400, height=200, fg_color="blue",corner_radius=0)  
+    ourReccomendationsFrame.place(x=150,y=900)
 ##########################################################
 
 login_render("")
