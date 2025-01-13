@@ -531,7 +531,7 @@ def mainwindow_render(oldFrame):
     upperSearchFrame = customtkinter.CTkFrame(app, width=appWidth, height=90, fg_color="#0E0D11",corner_radius=0)  
     upperSearchFrame.place(relx=1,rely=0,anchor="nw")
 
-    #Search Bar na Upper Search Frame
+    """#Search Bar na Upper Search Frame
     search_entry = customtkinter.CTkEntry(
     upperSearchFrame,
     width=300,
@@ -545,7 +545,7 @@ def mainwindow_render(oldFrame):
     text_color="#ffffff",  
     placeholder_text_color="#888888",
     )
-    search_entry.place(x=400, y=35, anchor="center")
+    search_entry.place(x=400, y=35, anchor="center")"""
 
     if isAdmin:
         addBtn = customtkinter.CTkButton(upperSearchFrame, width=100, height=10, fg_color="transparent", text="Add Music", command=addMusic)
@@ -738,7 +738,13 @@ def mainwindow_render(oldFrame):
 def user_menu():
 
     #Frame User Menu
-    userFrame = customtkinter.CTkFrame(app, width=1674, height=890, fg_color="green",corner_radius=0)  
+    userFrame = customtkinter.CTkScrollableFrame(app,
+	orientation="vertical",
+	width=appWidth-290,
+	height=600,
+	fg_color="red",
+	corner_radius = 0
+	)
     userFrame.place(x=247,y=0)
 
     #Frame options Menu
