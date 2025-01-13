@@ -108,6 +108,7 @@ musicAudioPath = f".{pathFormat}audios{pathFormat}music{pathFormat}" # Caminho p
 
 
 ###########################################################
+currentFrame = None # Guarda o frame que o utilizador se encontra
 isAdmin = False # Booleano que diz se o utilizador é ou não admin
 tempCoverName = None # Para salvar o nome da imagem da música
 tempAudioName = None # Para salvar o nome do aúdio da música
@@ -124,7 +125,7 @@ appWidth = 1500
 appHeight = 800
 
 # App não resizable em x
-app.resizable(width=None)
+app.resizable(width=False, height=False)
 
 # Obtém a dimensão do ecrã
 screenWidth = app.winfo_screenwidth()
@@ -239,12 +240,20 @@ def check_format(value, typeVal):
     #Se o campo não estiver preenchido estiver vazio, retornar
     if value == "":
         return
-
+    
+    #Caso seja nome
+    if typeVal=="name":
+        if value.count(";") > 0:
+            return "Name cannot have "";"" character" # Texto a apresentar
+        else:
+            return None
     #Caso seja username
-    if typeVal=="user":
+    elif typeVal=="user":
         #Caso o username não tenha entre 8 e 16 caracteres
         if len(value)<8 or len(value)>16:
             return "Username must be between 8 and 16 characters long." # Texto a apresentar
+        elif value.count(";") > 0:
+            return "Username cannot have "";"" character" # Texto a apresentar
         else:
             return None 
     #Caso seja password
@@ -257,6 +266,8 @@ def check_format(value, typeVal):
             return "Password doesn't meet the requirements.\nMust have at least one uppercase character." # Texto a apresentar
         elif not re.findall(fullPasswordRegex, value):
             return "Password doesn't meet the requirements.\nMust be between 8 and 16 characters long." # Texto a apresentar
+        elif value.count(";") > 0:
+            return "Password cannot have "";"" character" # Texto a apresentar
         else:
             return None
         
@@ -267,11 +278,15 @@ def register_action(usernameEntry, passwordEntry,nameEntry, resultLabel):
     username = usernameEntry.get() # Recebe o valor que está na entry do username
     password = passwordEntry.get() # Recebe o valor que está na entry da password
 
+    nameFormat = check_format(name, "name") # Verifica se o nome está dentro dos parâmentos
     userFormat = check_format(username, "user") # Verifica se o username está dentro dos parâmentos
     passwordFormat = check_format(password, "password") # Verifica se a password está dentro dos parâmentos
 
     if username == "" or password == "" or name == "": 
         resultLabel.configure(text="Fill all fields.") # Texto a apresentar
+        return
+    elif nameFormat:
+        resultLabel.configure(text=userFormat)
         return
     elif userFormat:
         resultLabel.configure(text=userFormat)
@@ -305,7 +320,7 @@ def register_render(oldFrame):
 
     print("Register") # Mensagem de confirmação na consola
 
-    oldFrame.pack_forget() # Apagar o estilo do frame anterior
+    oldFrame.destroy() # Apagar o estilo do frame anterior
 
     #Frame
     frameRegister = customtkinter.CTkFrame(app, width=600, height=500)
@@ -521,18 +536,20 @@ def addMusic():
 def mainwindow_render(oldFrame):
     """Rendriza a frame da janela principal"""
 
+    global currentFrame # Variável global do frame em uso
+
     oldFrame.destroy() # Apagar o estilo do frame anterior
 
     #Frame menu lateral
     menuFrame = customtkinter.CTkFrame(app, width=246, height=916, fg_color="#0E0D11",corner_radius=0)  
     menuFrame.place(relx=0, rely=0,anchor="nw")
-
+    
     #Frame de cima com a função de procurar e, para admin, entrar no dashboard
-    upperSearchFrame = customtkinter.CTkFrame(app, width=appWidth, height=90, fg_color="#0E0D11",corner_radius=0)  
+    upperSearchFrame = customtkinter.CTkFrame(app, width=appWidth, height=90, fg_color="#020202",corner_radius=0)  
     upperSearchFrame.place(x=246,y=0)
 
     #Frame para o conteúdo principal
-    mainContentFrame = customtkinter.CTkFrame(app, width=600, height=appHeight-(90+131), fg_color="red",corner_radius=0)  
+    mainContentFrame = customtkinter.CTkFrame(app, width=appWidth-246, height=appHeight-221, fg_color="red",corner_radius=0)  
     mainContentFrame.place(x=246,y=90)
 
     #Search Bar na Upper Search Frame
@@ -549,11 +566,12 @@ def mainwindow_render(oldFrame):
     text_color="#ffffff",  
     placeholder_text_color="#888888",
     )
-    search_entry.place(x=400, y=35, anchor="center")
+    search_entry.place(x=531, y=39, anchor="center")
 
+    #Se o utilizador for admin, mostrar botão
     if isAdmin:
         addBtn = customtkinter.CTkButton(upperSearchFrame, width=100, height=10, fg_color="transparent", text="Add Music", command=addMusic)
-        addBtn.place(x=100, y=45)
+        addBtn.place(x=100, y=30)
 
     #Frame barra inferior com os comandos da música
     playFrame = customtkinter.CTkFrame(app, width=1920, height=131, fg_color="#0A090C",corner_radius=0) 
@@ -597,11 +615,11 @@ def mainwindow_render(oldFrame):
     ############################################### UpperMenuFrame ###############################################
 
     #Botão com Icon e texto de user
-    btnUser = customtkinter.CTkButton(upperMenuFrame, image=userIcon, width=31, height=31, fg_color="transparent", text="User Name",command=lambda:user_menu(mainContentFrame))
+    btnUser = customtkinter.CTkButton(upperMenuFrame, image=userIcon, width=31, height=31, fg_color="transparent", text="User Name",command=lambda:user_page(mainContentFrame, currentFrame))
     btnUser.place(x=0, y=0)
 
     #Botão com Icon e texto de home
-    btnHome = customtkinter.CTkButton(upperMenuFrame, image= homeIcon , width = 31, height = 31, fg_color="transparent", text="Home Page", command=lambda:main_menu(mainContentFrame))
+    btnHome = customtkinter.CTkButton(upperMenuFrame, image= homeIcon , width = 31, height = 31, fg_color="transparent", text="Home Page", command=lambda:home_page(mainContentFrame, currentFrame))
     btnHome.place(x=0, y=65)
 
     #---------------------------------------------------------------------------------------------------------------------
@@ -738,95 +756,113 @@ def mainwindow_render(oldFrame):
     volumeSlider.set(50)
     volumeSlider.place(x=40, y=8)
 
+    home_page(mainContentFrame, currentFrame) # Mostra a homepage por defeito
 
-def user_menu(mainContentFrame):
+
+def user_page(mainContentFrame, oldFrame):
+    """Mostra o frame da página de utilizador"""
+
+    global currentFrame # Variável global para frame a ser usado
+
+    oldFrame.destroy() # Apagar o estilo do frame anterior
 
     #Frame User Menu
-    userFrame = customtkinter.CTkScrollableFrame(mainContentFrame,
-	orientation="vertical",
-	width=400,
-	height=1000,
-	fg_color="blue",
-	corner_radius = 0
-	)
+    userFrame = customtkinter.CTkFrame(mainContentFrame, width=1674, height=890, fg_color="green",corner_radius=0)  
     userFrame.place(x=0,y=0)
 
+    currentFrame = userFrame # O frame a ser usado passa a ser o userFrame
+
     #Frame options Menu
-    optionsFrame = customtkinter.CTkFrame(userFrame, width=800, height=700, corner_radius=10,fg_color="#242424")
-    optionsFrame.place(x=400,y=150)
+    optionsFrame = customtkinter.CTkFrame(userFrame, width=542, height=430, corner_radius=50,fg_color="#242424")
+    optionsFrame.place(x=362,y=140)
 
     #Frame Change Image
-    changeImageFrame = customtkinter.CTkFrame(optionsFrame, width=750, height=200, corner_radius=10,fg_color="#242424")
-    changeImageFrame.place(x=25,y=57)
+    changeImageFrame = customtkinter.CTkFrame(optionsFrame, width=542, height=158, corner_radius=10,fg_color="#242424")
+    changeImageFrame.place(x=0,y=0)
 
     #Frame Change Name
-    changeNameFrame = customtkinter.CTkFrame(optionsFrame, width=750, height=130, corner_radius=10,fg_color="#242424")
-    changeNameFrame.place(x=25,y=270)
+    changeNameFrame = customtkinter.CTkFrame(optionsFrame, width=542, height=158, corner_radius=10,fg_color="#242424")
+    changeNameFrame.place(x=0,y=158)
 
     #Frame Change Username
-    changeUserNameFrame = customtkinter.CTkFrame(optionsFrame, width=750, height=130, corner_radius=10,fg_color="#242424")
-    changeUserNameFrame.place(x=25,y=410)
+    changeUserNameFrame = customtkinter.CTkFrame(optionsFrame, width=542, height=158, corner_radius=10,fg_color="#242424")
+    changeUserNameFrame.place(x=0,y=224)
 
     #Frame Change Password
-    changePassFrame = customtkinter.CTkFrame(optionsFrame, width=750, height=130, corner_radius=10,fg_color="#242424")
-    changePassFrame.place(x=25,y=550)
+    changePassFrame = customtkinter.CTkFrame(optionsFrame, width=542, height=158, corner_radius=10,fg_color="#242424")
+    changePassFrame.place(x=0,y=290)
 
     #Titulo
     title = customtkinter.CTkLabel(userFrame, text="User Page", font=("Arial", 30),text_color="white")
-    title.place(x=715,y=90)
+    title.place(x=553,y=70)
 
     # Butao mudar imagem
-    btnChgImage = customtkinter.CTkButton(changeImageFrame, width=250, height=70,text="Change Image")
-    btnChgImage.place(x=450, y=60)
+    btnChgImage = customtkinter.CTkButton(changeImageFrame, width=150, height=30,text="Change Image")
+    btnChgImage.place(x=300, y=30)
 
     # Butao mudar nome
-    btnChgName = customtkinter.CTkButton(changeNameFrame, width=250, height=70,text="Change Name")
-    btnChgName.place(x=450, y=30)
+    btnChgName = customtkinter.CTkButton(changeNameFrame, width=150, height=30,text="Change Name")
+    btnChgName.place(x=300, y=30)
 
     # Butao mudar Username
-    btnChgUsername = customtkinter.CTkButton(changeUserNameFrame, width=250, height=70,text="Change Username")
-    btnChgUsername.place(x=450, y=30)
+    btnChgUsername = customtkinter.CTkButton(changeUserNameFrame, width=150, height=30,text="Change Username")
+    btnChgUsername.place(x=300, y=30)
 
     # Butao mudar Password
-    btnChgPass = customtkinter.CTkButton(changePassFrame, width=250, height=70,text="Change Password")
-    btnChgPass.place(x=450, y=30)
+    btnChgPass = customtkinter.CTkButton(changePassFrame, width=150, height=30,text="Change Password")
+    btnChgPass.place(x=300, y=30)
 
     # Label Imagem do User
     userImg = customtkinter.CTkLabel(changeImageFrame, text="")
-    userImg.place(x=105,y=53)
+    userImg.place(x=105,y=35)
 
     # Label Nome
-    labelName = customtkinter.CTkLabel(changeNameFrame, text="User Name", font=("Arial", 30),text_color="white")
-    labelName.place(x=105,y=53)
+    labelName = customtkinter.CTkLabel(changeNameFrame, text="User Name", font=("Arial", 20),text_color="white")
+    labelName.place(x=105,y=35)
     
     # Label Username
-    labelUsername = customtkinter.CTkLabel(changeUserNameFrame, text="username", font=("Arial", 30),text_color="white")
-    labelUsername.place(x=105,y=53)
+    labelUsername = customtkinter.CTkLabel(changeUserNameFrame, text="username", font=("Arial", 20),text_color="white")
+    labelUsername.place(x=105,y=35)
 
     # Label Password
-    labelPass = customtkinter.CTkLabel(changePassFrame, text="Password", font=("Arial", 30),text_color="white")
-    labelPass.place(x=105,y=53)
+    labelPass = customtkinter.CTkLabel(changePassFrame, text="Password", font=("Arial", 20),text_color="white")
+    labelPass.place(x=105,y=35)
 
-def main_menu(mainContentFrame):
-    #Frame Main Menu
-    mainMenuFrame = customtkinter.CTkFrame(app, width=1674, height=890, fg_color="#242424",corner_radius=0)  
-    mainMenuFrame.place(x=247,y=0)
+def home_page(mainContentFrame, oldFrame):
+    """Mostra a homepage"""
 
-    #Frame menu trending Music
-    trendingFrame = customtkinter.CTkFrame(mainMenuFrame, width=1400, height=200, fg_color="blue",corner_radius=0)  #0E0D11
-    trendingFrame.place(x=150,y=150)
+    global currentFrame # Variável global para frame a ser usado
+
+    if oldFrame != None:
+        oldFrame.destroy() # Apagar o estilo do frame anterior
+    #Frame Home Page
+    homepageFrame = customtkinter.CTkScrollableFrame(mainContentFrame,
+	orientation="vertical",
+	width=1238,
+	height=appHeight-(90+131),
+	fg_color="black",
+	corner_radius = 0
+	)
+    homepageFrame.place(x=0,y=0)
+
+    currentFrame = homepageFrame # O frame a ser usado passa a ser o userFrame
+
+    # Frame menu trending Music
+    trendingFrame = customtkinter.CTkFrame(homepageFrame, width=500, height=200, fg_color="blue", corner_radius=0)
+    trendingFrame.grid(row=0, column=0, padx=150, pady=150)
 
     #Frame menu trending Podcasts
-    trendingPodcastsFrame = customtkinter.CTkFrame(mainMenuFrame, width=1400, height=200, fg_color="blue",corner_radius=0)  #0E0D11
-    trendingPodcastsFrame.place(x=150,y=400)
+    trendingPodcastsFrame = customtkinter.CTkFrame(homepageFrame, width=1400, height=200, fg_color="blue",corner_radius=0)  #0E0D11
+    trendingPodcastsFrame.grid(row=1, column=0, padx=150, pady=150)
 
     #Frame menu Your Activity
-    yourActivityFrame = customtkinter.CTkFrame(mainMenuFrame, width=1400, height=200, fg_color="blue",corner_radius=0)  
-    yourActivityFrame.place(x=150,y=650)
+    yourActivityFrame = customtkinter.CTkFrame(homepageFrame, width=1400, height=200, fg_color="blue",corner_radius=0)  
+    yourActivityFrame.grid(row=2, column=0, padx=150, pady=150)
 
     #Frame menu Our Reccomendations
-    ourReccomendationsFrame = customtkinter.CTkFrame(mainMenuFrame, width=1400, height=200, fg_color="blue",corner_radius=0)  
-    ourReccomendationsFrame.place(x=150,y=900)
+    ourReccomendationsFrame = customtkinter.CTkFrame(homepageFrame, width=1400, height=200, fg_color="blue",corner_radius=0)  
+    ourReccomendationsFrame.grid(row=3, column=0, padx=150, pady=150)
+
 ##########################################################
 
 login_render("")
