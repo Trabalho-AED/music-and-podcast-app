@@ -1,7 +1,8 @@
 import customtkinter
 from PIL import Image
 from tkinter import filedialog
-import shutil #Copy images
+import shutil #Copy images shutil.copy()
+import re #Regex for expression check(username and password)
 import os
 #from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
 #from comtypes import CLSCTX_ALL
@@ -107,7 +108,7 @@ musicAudioPath = f".{pathFormat}audios{pathFormat}music{pathFormat}" # Caminho p
 
 
 ###########################################################
-isAdmin = False
+isAdmin = False # Booleano que diz se o utilizador é ou não admin
 tempCoverName = None # Para salvar o nome da imagem da música
 tempAudioName = None # Para salvar o nome do aúdio da música
 ###########################################################
@@ -227,6 +228,38 @@ def login_action(usernameEntry, passwordEntry, resultLabel,loginFrame):
         print(username, password, adminflag) # Confirmação
         mainwindow_render(loginFrame) # Passa para a janela principal
 
+def check_format(value, typeVal):
+    """Verifica se o username e password estão no formato pedido"""
+
+    fullPasswordRegex = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,16}$" # Expressão regular que verifica que a password cumpre todos os pârametros
+    onlyLowerNumberRegex = r"(.*[a-z].*)$" # Expressão regular que verifica que a password tem letras minúsculas
+    onlyUpperNumberRegex = r"(.*[A-Z].*)$" # Expressão regular que verifica que a password tem letras maiúsculas
+    onlyNumberRegex = r"(.*[0-9].*)$" # Expressão regular que verifica que a password tem números
+
+    #Se o campo não estiver preenchido estiver vazio, retornar
+    if value == "":
+        return
+
+    #Caso seja username
+    if typeVal=="user":
+        #Caso o username não tenha entre 8 e 16 caracteres
+        if len(value)<8 or len(value)>16:
+            return "Username must be between 8 and 16 characters long." # Texto a apresentar
+        else:
+            return None 
+    #Caso seja password
+    else:
+        if not re.findall(onlyNumberRegex, value):
+            return "Password doesn't meet the requirements.\nMust have at least one number." # Texto a apresentar
+        elif not re.findall(onlyLowerNumberRegex, value):
+            return "Password doesn't meet the requirements.\nMust have at least one lowercase character." # Texto a apresentar
+        elif not re.findall(onlyUpperNumberRegex, value):
+            return "Password doesn't meet the requirements.\nMust have at least one uppercase character." # Texto a apresentar
+        elif not re.findall(fullPasswordRegex, value):
+            return "Password doesn't meet the requirements.\nMust be between 8 and 16 characters long." # Texto a apresentar
+        else:
+            return None
+        
 def register_action(usernameEntry, passwordEntry,nameEntry, resultLabel):
     """Gere o algoritmo de registo"""
 
@@ -234,10 +267,19 @@ def register_action(usernameEntry, passwordEntry,nameEntry, resultLabel):
     username = usernameEntry.get() # Recebe o valor que está na entry do username
     password = passwordEntry.get() # Recebe o valor que está na entry da password
 
-    # Se algum campo estiver vazio
-    if username == "" or password == "":
-        resultLabel.configure(text="Preencha todos os campos.") # Texto a apresentar
+    userFormat = check_format(username, "user") # Verifica se o username está dentro dos parâmentos
+    passwordFormat = check_format(password, "password") # Verifica se a password está dentro dos parâmentos
+
+    if username == "" or password == "" or name == "": 
+        resultLabel.configure(text="Fill all fields.") # Texto a apresentar
         return
+    elif userFormat:
+        resultLabel.configure(text=userFormat)
+        return
+    elif passwordFormat:
+        resultLabel.configure(text=passwordFormat)
+        return
+    
     print(f"Username: {username}, Password: {password}")  # Substituir por lógica real de autenticação
 
     isUser = user_check(username) # Booleano - Verifica se o utilizador já existe
@@ -249,6 +291,8 @@ def register_action(usernameEntry, passwordEntry,nameEntry, resultLabel):
     else:
         create_account(username, password, name) # Criar a conta
         resultLabel.configure(text=f"Bem vindo {name}, Conta criada com com sucesso!") # Texto a apresentar
+    
+    return
 
 ##########################################################
 
