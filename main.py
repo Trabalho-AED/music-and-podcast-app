@@ -487,7 +487,7 @@ def user_menu():
     title.place(x=715,y=90)
 
     # Butao mudar imagem
-    btnChgImage = customtkinter.CTkButton(changeImageFrame, width=250, height=70,text="Change Image", command=lambda:selectFile(userImg, ""))
+    btnChgImage = customtkinter.CTkButton(changeImageFrame, width=250, height=70,text="Change Image")
     btnChgImage.place(x=450, y=60)
 
     # Butao mudar nome
@@ -499,12 +499,8 @@ def user_menu():
     btnChgUsername.place(x=450, y=30)
 
     # Butao mudar Password
-    btnChgPass = customtkinter.CTkButton(changePassFrame, width=250, height=70,text="Log Out", color="Red")
+    btnChgPass = customtkinter.CTkButton(changePassFrame, width=250, height=70,text="Change Password")
     btnChgPass.place(x=450, y=30)
-
-    # butao Log Out 
-    btnLogout = customtkinter.CTkButton(userFrame, width=250, height=70,text="Change Password",text_color="White",color="Red")
-    btnLogout.place(x=450, y=30)
 
     # Label Imagem do User
     userImg = customtkinter.CTkLabel(changeImageFrame, text="")
