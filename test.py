@@ -1,5 +1,8 @@
 import customtkinter
 from PIL import Image
+from tkinter import filedialog
+import shutil #Copy images shutil.copy()
+import re #Regex for expression check(username and password)
 import os
 #from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
 #from comtypes import CLSCTX_ALL
@@ -9,7 +12,7 @@ from tkinter import ttk
 customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light" Alterar entre tema escuro e claro
 #customtkinter.set_default_color_theme(".\\theme\\rime.json") # Tema de cores
 
-###############[VERIFICAR SISTEMA OPERATIVO]##################
+################################[VERIFICAR SISTEMA OPERATIVO]######################################
 def path_format():
     """Retorna o formato de declarar caminhos, dependendo do Sistema Operativo"""
 
@@ -23,12 +26,92 @@ def path_format():
     return pathFormat # Retorna o formato
 
 pathFormat = path_format()
-##################################################################
+######################################################################################################
 
+
+#################################[CRIAR PASTAS]#######################################################
+def create_main_folders(folderPath):
+    #Cria as pastas principais
+
+    #Caso não exista
+    if not os.path.exists(f".{pathFormat}{folderPath}{pathFormat}"):
+        os.mkdir(f".{pathFormat}{folderPath}{pathFormat}")
+    #Caso exista
+    else:
+        print(f"Folder already exists: {folderPath}")
+
+def create_sub_folders(folderPath):
+    """Cria as subpastas"""
+
+    #Caso não exista
+    if not os.path.exists(f".{pathFormat}{folderPath}{pathFormat}"):
+        os.mkdir(f".{pathFormat}{folderPath}{pathFormat}")
+    #Caso exista
+    else:
+        print(f"Sub Folder already exists: {folderPath}")
+
+mainFolders = ["audios", "images", "db"] # Lista com as pastas principais
+subFolders = [f"images{pathFormat}cover_art", f"images{pathFormat}icons", f"audios{pathFormat}music"] # Lista com as pastas secundárias
+
+#Criar Pastas
+for folder in mainFolders:
+    create_main_folders(folder) 
+
+#Criar Subpastas
+for folder in subFolders:
+    create_sub_folders(folder)
+##########################################################################################################
+
+
+###############################[CRIAR FICHEIROS]##########################################################
+def create_main_files(filePath):
+    """Cria o ficheiro caso ele não exista."""
+
+    #Caso não exista
+    if not os.path.exists(filePath):
+        # Abre o ficheiro no modo write, criando-o caso não exista.
+        with open(filePath, "w", encoding="utf-8") as file:
+            #Adiciona o username admin por defeito à lista de admins
+            if filePath == f".{pathFormat}db{pathFormat}admin_list.csv":
+                file.writelines("admin")
+                file.close()
+            #Adiciona o user admin com o username admin e password admin por defeito à lista de utilizadores por defeito
+            elif filePath == f".{pathFormat}db{pathFormat}user_accounts.csv":
+                file.writelines("admin;admin;Admin")
+                file.close()
+            else:
+                pass  # O ficheiro será criado vazio.
+        print(f"File created: {filePath}")
+    #Caso já exista
+    else:
+        print(f"File already exists: {filePath}")
+
+#Lista com os ficheiros da base de dados
+mainFiles = [f".{pathFormat}db{pathFormat}user_accounts.csv",f".{pathFormat}db{pathFormat}music_list.csv",f".{pathFormat}db{pathFormat}admin_list.csv"]
+
+#Criar ficheiros
+for file in mainFiles:
+    create_main_files(file)
+############################################################################################################
+
+
+##########################################[CAMINHOS]############################################################
 
 imagePath = f".{pathFormat}images{pathFormat}icons{pathFormat}" # Caminho para o diretório onde são armazenadas as imagens
 accountsPath = f".{pathFormat}db{pathFormat}user_accounts.csv" # Caminho para o ficheiro onde são armazenadas as contas
-adminListfile = f".{pathFormat}db{pathFormat}admin_list.csv" # Caminho para o ficheiro onde são armazenadas as contas que são admin
+musicPath = f".{pathFormat}db{pathFormat}music_list.csv" # Caminho para o ficheiro onde são armazenadas as contas
+adminListfile = f".{pathFormat}db{pathFormat}admin_list.csv" # Caminho para o ficheiro onde são armazenadas as músicas
+coverArtPath = f".{pathFormat}images{pathFormat}cover_art{pathFormat}" # Caminho para o diretório onde são armazenadas as imagens das músicas
+musicAudioPath = f".{pathFormat}audios{pathFormat}music{pathFormat}" # Caminho para o diretório onde são armazenadas as músicas
+
+#################################################################################################################
+
+
+###########################################################
+isAdmin = False # Booleano que diz se o utilizador é ou não admin
+tempCoverName = None # Para salvar o nome da imagem da música
+tempAudioName = None # Para salvar o nome do aúdio da música
+###########################################################
 
 # Inicializar app
 app = customtkinter.CTk()
@@ -40,6 +123,9 @@ app.title("Music App")
 appWidth = 1920
 appHeight = 1009
 
+# App não resizable em x
+app.resizable(width=None)
+
 # Obtém a dimensão do ecrã
 screenWidth = app.winfo_screenwidth()
 screenHeight = app.winfo_screenheight()
@@ -50,7 +136,6 @@ y = (screenHeight / 2) - (appHeight / 2)
 
 # Define o tamanho da app e começa no centro da tela
 app.geometry(f"{appWidth}x{appHeight}+{int(x)}+{int(y)}")
-
 
 
 ##################[ALGORITMOS DA APP]################################
@@ -96,11 +181,14 @@ def check_admin(username):
     """Verifica se o utilizador é admin.
     Retorna um booleano"""
 
+    global isAdmin
+
     lines = read_file(adminListfile) # Abrir os dados do ficheiro admin
 
     #Para cada linha de dados
     for line in lines:
         if line.strip() == username:
+            isAdmin = True
             return True # Se o utilizador na linha for igual ao username
         
     return False # Se o utilizador não estiver na lista de admin
@@ -140,6 +228,38 @@ def login_action(usernameEntry, passwordEntry, resultLabel,loginFrame):
         print(username, password, adminflag) # Confirmação
         mainwindow_render(loginFrame) # Passa para a janela principal
 
+def check_format(value, typeVal):
+    """Verifica se o username e password estão no formato pedido"""
+
+    fullPasswordRegex = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,16}$" # Expressão regular que verifica que a password cumpre todos os pârametros
+    onlyLowerNumberRegex = r"(.*[a-z].*)$" # Expressão regular que verifica que a password tem letras minúsculas
+    onlyUpperNumberRegex = r"(.*[A-Z].*)$" # Expressão regular que verifica que a password tem letras maiúsculas
+    onlyNumberRegex = r"(.*[0-9].*)$" # Expressão regular que verifica que a password tem números
+
+    #Se o campo não estiver preenchido estiver vazio, retornar
+    if value == "":
+        return
+
+    #Caso seja username
+    if typeVal=="user":
+        #Caso o username não tenha entre 8 e 16 caracteres
+        if len(value)<8 or len(value)>16:
+            return "Username must be between 8 and 16 characters long." # Texto a apresentar
+        else:
+            return None 
+    #Caso seja password
+    else:
+        if not re.findall(onlyNumberRegex, value):
+            return "Password doesn't meet the requirements.\nMust have at least one number." # Texto a apresentar
+        elif not re.findall(onlyLowerNumberRegex, value):
+            return "Password doesn't meet the requirements.\nMust have at least one lowercase character." # Texto a apresentar
+        elif not re.findall(onlyUpperNumberRegex, value):
+            return "Password doesn't meet the requirements.\nMust have at least one uppercase character." # Texto a apresentar
+        elif not re.findall(fullPasswordRegex, value):
+            return "Password doesn't meet the requirements.\nMust be between 8 and 16 characters long." # Texto a apresentar
+        else:
+            return None
+        
 def register_action(usernameEntry, passwordEntry,nameEntry, resultLabel):
     """Gere o algoritmo de registo"""
 
@@ -147,10 +267,19 @@ def register_action(usernameEntry, passwordEntry,nameEntry, resultLabel):
     username = usernameEntry.get() # Recebe o valor que está na entry do username
     password = passwordEntry.get() # Recebe o valor que está na entry da password
 
-    # Se algum campo estiver vazio
-    if username == "" or password == "":
-        resultLabel.configure(text="Preencha todos os campos.") # Texto a apresentar
+    userFormat = check_format(username, "user") # Verifica se o username está dentro dos parâmentos
+    passwordFormat = check_format(password, "password") # Verifica se a password está dentro dos parâmentos
+
+    if username == "" or password == "" or name == "": 
+        resultLabel.configure(text="Fill all fields.") # Texto a apresentar
         return
+    elif userFormat:
+        resultLabel.configure(text=userFormat)
+        return
+    elif passwordFormat:
+        resultLabel.configure(text=passwordFormat)
+        return
+    
     print(f"Username: {username}, Password: {password}")  # Substituir por lógica real de autenticação
 
     isUser = user_check(username) # Booleano - Verifica se o utilizador já existe
@@ -162,6 +291,8 @@ def register_action(usernameEntry, passwordEntry,nameEntry, resultLabel):
     else:
         create_account(username, password, name) # Criar a conta
         resultLabel.configure(text=f"Bem vindo {name}, Conta criada com com sucesso!") # Texto a apresentar
+    
+    return
 
 ##########################################################
 
@@ -250,6 +381,142 @@ def login_render(oldFrame):
     resultLabel = customtkinter.CTkLabel(frameLogin, text="")
     resultLabel.pack(padx=20, pady=20)
 
+def confirmMusic(musicNameEntry, musicAuthorEntry,musicCoverImg,musicAudioPathLabel, errorAddMusicLabel):
+    """Guarda os dados da música a adicionar"""
+    
+    global tempCoverName, tempAudioName  # Indicar as variáveis globais
+
+    if musicNameEntry.get() and musicAuthorEntry.get() and tempAudioName and tempCoverName:
+        #Variável com a estrutura de dados
+        musicData = f"{musicNameEntry.get()};{musicAuthorEntry.get()};{tempCoverName};{tempAudioName}\n"
+
+        #Abre o caminho da música no formato "append" para adicionar a linha sem apagar o conteúdo existente
+        with open(musicPath, "a", encoding="utf-8") as file:
+            file.writelines(musicData) # escreve os dados com a estrutura anteriormente definida
+            file.close
+        
+        #Apagar conteúdo
+        musicNameEntry.delete(0,"end")
+        musicAuthorEntry.delete(0,"end")
+        musicCoverImg.configure(image=None)
+        musicAudioPathLabel.configure(text="")
+        errorAddMusicLabel.configure(text="Music added with success!")
+
+        tempCoverName = None
+        tempAudioName = None
+
+        return
+
+    else:
+        errorAddMusicLabel.configure(text="Fill all fields!")
+        return
+
+def selectFile(musicCoverImg, musicAudioPathLabel):
+    """Seleciona um ficheiro"""
+
+    global tempCoverName, tempAudioName  # Indicar as variáveis globais
+
+    if musicCoverImg == "" and musicAudioPathLabel != "":
+        filePath = filedialog.askopenfilename(title="Select File", initialdir=".", filetypes=(("mp3 files", "*.mp3"), ("wav files", ".wav"))) # Escolher ficheiro, 
+
+        shutil.copy(filePath, musicAudioPath) # Copia o aúdio escolhido para a pasta do aúdio da app
+
+        tempAudioName = os.path.basename(filePath) # Guarda o nome do ficheiro de aúdio numa variável temporária
+
+        musicAudioPathLabel.configure(text=f"{musicAudioPath+tempAudioName}") # Muda o texto da label para apresentar o aúdio
+
+        print(musicAudioPath+tempAudioName) # Print para confirmação
+    
+    else:
+        filePath = filedialog.askopenfilename(title="Select File", initialdir=".", filetypes=(("png files", "*.png"), ("jpg files", "*.jpg"))) #Escolher ficheiro, png ou jpg
+
+        shutil.copy(filePath, coverArtPath) # Copia a imagem escolhido para a pasta de cover art da app
+
+        coverImage = customtkinter.CTkImage(Image.open(filePath), size=(150,150)) # Abre a imagem escolhida
+
+        tempCoverName = os.path.basename(filePath) # Guarda o nome do ficheiro da imagem numa variável temporária
+
+        musicCoverImg.configure(image=coverImage) # Muda a imagem da label para a imagem escolhida
+
+        print(coverArtPath+tempCoverName) # Print para confirmação
+    
+    return
+
+def addMusic():
+    """Abre um frame para adicionar músicas"""
+
+    #Frame para adicionar música
+    musicFrame = customtkinter.CTkFrame(app, width=appWidth-246, height=916)
+    musicFrame.place(relx=1,rely=0, anchor="ne") #Abre o frame no canto superior direito
+    
+    #----------------------------[Nome da Música]--------------------------------#
+
+    #Label para mostar o texto "Music Name:"
+    musicNameLabel = customtkinter.CTkLabel(musicFrame, text="Music Name:")
+    musicNameLabel.pack(expand=True)
+
+    #Entry para o nome da música
+    musicNameEntry = customtkinter.CTkEntry(musicFrame)
+    musicNameEntry.pack(expand=True)
+
+    #----------------------------------------------------------------------------#
+
+
+    #----------------------------[Autor da Música]-------------------------------#
+    
+    #Label para mostrar o texto "Author:"
+    musicAuthorLabel = customtkinter.CTkLabel(musicFrame, text="Author:")
+    musicAuthorLabel.pack(expand=True)
+
+    #Entry para o nome do autor
+    musicAuthorEntry = customtkinter.CTkEntry(musicFrame)
+    musicAuthorEntry.pack(expand=True)
+
+    #----------------------------------------------------------------------------#
+
+
+    #----------------------------[Imagem da Música]------------------------------#
+    
+    #Label para mostrar o texto "Cover Art:"
+    musicCoverLabel = customtkinter.CTkLabel(musicFrame, text="Cover Art:")
+    musicCoverLabel.pack(expand=True)
+
+    #Label para mostrar a imagem escolhida
+    musicCoverImg = customtkinter.CTkLabel(musicFrame, text="")
+    musicCoverImg.pack(expand=True)
+
+    #Botão para escolher a imagem da música
+    musicCoverBtn = customtkinter.CTkButton(musicFrame, width=300, height=100, text="Add cover art", command=lambda:selectFile(musicCoverImg, ""))
+    musicCoverBtn.pack(expand=True)
+
+    #--------------------------------------------------------------------------#
+
+
+    #----------------------------[Aúdio da Música]-----------------------------#
+    
+    #Label para mostrar a o texto "Audio:"
+    musicAudioLabel = customtkinter.CTkLabel(musicFrame, text="Audio:")
+    musicAudioLabel.pack(expand=True)
+
+    #Label para mostrar o aúdio a ser adicionado
+    musicAudioPathLabel = customtkinter.CTkLabel(musicFrame, text="")
+    musicAudioPathLabel.pack(expand=True)
+
+    #Botão para escolher o aúdio
+    musicAudioBtn = customtkinter.CTkButton(musicFrame, width=300, height=100, text="Add audio", command=lambda:selectFile("", musicAudioPathLabel))
+    musicAudioBtn.pack(expand=True)
+
+    #--------------------------------------------------------------------------#
+
+
+    #Botão para salvar a os dados
+    confirmBtn = customtkinter.CTkButton(musicFrame, width=300, height=100, text="Confirm", command=lambda:confirmMusic(musicNameEntry, musicAuthorEntry,musicCoverImg,musicAudioPathLabel, errorAddMusicLabel))
+    confirmBtn.pack(expand=True)
+
+    #Label para mostrar erros
+    errorAddMusicLabel = customtkinter.CTkLabel(musicFrame, text="")
+    errorAddMusicLabel.pack(expand=True)
+
 
 def mainwindow_render(oldFrame):
     """Rendriza a frame da janela principal"""
@@ -258,11 +525,19 @@ def mainwindow_render(oldFrame):
 
     #Frame menu lateral
     menuFrame = customtkinter.CTkFrame(app, width=246, height=916, fg_color="#0E0D11",corner_radius=0)  
-    menuFrame.place(x=0,y=0)
+    menuFrame.place(relx=0, rely=0,anchor="nw")
+
+    #Frame de cima com a função de procurar e, para admin, entrar no dashboard
+    upperSearchFrame = customtkinter.CTkFrame(app, width=appWidth, height=90, fg_color="#0E0D11",corner_radius=0)  
+    upperSearchFrame.place(x=246, y=0)
+
+    if isAdmin:
+        addBtn = customtkinter.CTkButton(upperSearchFrame, width=100, height=10, fg_color="transparent", text="Add Music", command=addMusic)
+        addBtn.place(x=100, y=45)
 
     #Frame barra inferior com os comandos da música
     playFrame = customtkinter.CTkFrame(app, width=1920, height=131, fg_color="#0A090C",corner_radius=0) 
-    playFrame.place(x=0,y=879)
+    playFrame.place(relx=0, rely=1, anchor="sw")
 
     #Frame separador user e home
     upperMenuFrame = customtkinter.CTkFrame(menuFrame, width=162, height=110, fg_color="transparent") 
@@ -367,20 +642,27 @@ def mainwindow_render(oldFrame):
     ############################## APLICAÇAO DAS IMAGENS NOS BUTTONS E LAYERS PARA CADA BUTTON######################
     ############################################### FRAMES BARRA MUSICA ###############################################
     #Frame com conteúdo
-    musicContentFrame = customtkinter.CTkFrame(playFrame, width=1720, height=70, fg_color="#0A090C")
+    # Frame com conteúdo
+    musicContentFrame = customtkinter.CTkFrame(playFrame, width=2000, height=70, fg_color="#0A090C")
     musicContentFrame.place(x=107, y=43)
 
-    #Frame para mostrar música e info na barra inferior
-    showMusicFrame = customtkinter.CTkFrame(musicContentFrame, width=170, height=53, fg_color="#0A090C")
-    showMusicFrame.place(x=0, y=0)
+    # Configurar o layout em grid com proporções
+    musicContentFrame.columnconfigure(0, weight=1)  # Coluna para `showMusicFrame`
+    musicContentFrame.columnconfigure(1, weight=1)  # Coluna para `musicActionFrame`
+    musicContentFrame.columnconfigure(2, weight=1)  # Coluna para `audioSliderFrame`
 
-    #Frame dos botões para controlar música
-    musicActionFrame = customtkinter.CTkFrame(musicContentFrame, width=626, height=100, fg_color="#0A090C")
-    musicActionFrame.place(x=547, y=0)
-    
-    #Frame slider de aúdio
-    audioSliderFrame = customtkinter.CTkFrame(musicContentFrame, width=150, height=30, fg_color="#0A090C")
-    audioSliderFrame.place(x=1570, y=16.5)
+    # Frame para mostrar música e info na barra inferior
+    showMusicFrame = customtkinter.CTkFrame(musicContentFrame, fg_color="#0A090C")
+    showMusicFrame.grid(row=0, column=0, sticky="nsew", padx=50, pady=5)  # Alinhado e espaçado
+
+    # Frame dos botões para controlar música
+    musicActionFrame = customtkinter.CTkFrame(musicContentFrame, fg_color="#0A090C",width=626, height=58)
+    musicActionFrame.grid(row=0, column=1, sticky="nsew", padx=50, pady=5)  # Alinhado e espaçado
+
+    # Frame slider de áudio
+    audioSliderFrame = customtkinter.CTkFrame(musicContentFrame, fg_color="#0A090C",width=120, height=20)
+    audioSliderFrame.grid(row=0, column=2, sticky="nsew", padx=50, pady=5)  # Alinhado e espaçado
+
 
     #-------------------------------------------------------------------------------------------------------
 
@@ -428,7 +710,7 @@ def mainwindow_render(oldFrame):
 
     #Botão com Icone do áudio
     btnAudio = customtkinter.CTkButton(audioSliderFrame, image=audioIcon, width=20, height=20, fg_color="transparent", text="",
-    command=mute_volume)
+    command="")
     btnAudio.place(x=0, y=0)
 
     #Slider de audio
