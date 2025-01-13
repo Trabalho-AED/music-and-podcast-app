@@ -529,9 +529,13 @@ def mainwindow_render(oldFrame):
 
     #Frame de cima com a função de procurar e, para admin, entrar no dashboard
     upperSearchFrame = customtkinter.CTkFrame(app, width=appWidth, height=90, fg_color="#0E0D11",corner_radius=0)  
-    upperSearchFrame.place(relx=1,rely=0,anchor="nw")
+    upperSearchFrame.place(x=246,y=0)
 
-    """#Search Bar na Upper Search Frame
+    #Frame para o conteúdo principal
+    mainContentFrame = customtkinter.CTkFrame(app, width=600, height=appHeight-(90+131), fg_color="red",corner_radius=0)  
+    mainContentFrame.place(x=246,y=90)
+
+    #Search Bar na Upper Search Frame
     search_entry = customtkinter.CTkEntry(
     upperSearchFrame,
     width=300,
@@ -545,7 +549,7 @@ def mainwindow_render(oldFrame):
     text_color="#ffffff",  
     placeholder_text_color="#888888",
     )
-    search_entry.place(x=400, y=35, anchor="center")"""
+    search_entry.place(x=400, y=35, anchor="center")
 
     if isAdmin:
         addBtn = customtkinter.CTkButton(upperSearchFrame, width=100, height=10, fg_color="transparent", text="Add Music", command=addMusic)
@@ -593,11 +597,11 @@ def mainwindow_render(oldFrame):
     ############################################### UpperMenuFrame ###############################################
 
     #Botão com Icon e texto de user
-    btnUser = customtkinter.CTkButton(upperMenuFrame, image=userIcon, width=31, height=31, fg_color="transparent", text="User Name",command=user_menu)
+    btnUser = customtkinter.CTkButton(upperMenuFrame, image=userIcon, width=31, height=31, fg_color="transparent", text="User Name",command=lambda:user_menu(mainContentFrame))
     btnUser.place(x=0, y=0)
 
     #Botão com Icon e texto de home
-    btnHome = customtkinter.CTkButton(upperMenuFrame, image= homeIcon , width = 31, height = 31, fg_color="transparent", text="Home Page", command=main_menu)
+    btnHome = customtkinter.CTkButton(upperMenuFrame, image= homeIcon , width = 31, height = 31, fg_color="transparent", text="Home Page", command=lambda:main_menu(mainContentFrame))
     btnHome.place(x=0, y=65)
 
     #---------------------------------------------------------------------------------------------------------------------
@@ -735,17 +739,17 @@ def mainwindow_render(oldFrame):
     volumeSlider.place(x=40, y=8)
 
 
-def user_menu():
+def user_menu(mainContentFrame):
 
     #Frame User Menu
-    userFrame = customtkinter.CTkScrollableFrame(app,
+    userFrame = customtkinter.CTkScrollableFrame(mainContentFrame,
 	orientation="vertical",
-	width=appWidth-290,
-	height=600,
-	fg_color="red",
+	width=400,
+	height=1000,
+	fg_color="blue",
 	corner_radius = 0
 	)
-    userFrame.place(x=247,y=0)
+    userFrame.place(x=0,y=0)
 
     #Frame options Menu
     optionsFrame = customtkinter.CTkFrame(userFrame, width=800, height=700, corner_radius=10,fg_color="#242424")
@@ -803,12 +807,7 @@ def user_menu():
     labelPass = customtkinter.CTkLabel(changePassFrame, text="Password", font=("Arial", 30),text_color="white")
     labelPass.place(x=105,y=53)
 
-
-
-    
-
-
-def main_menu():
+def main_menu(mainContentFrame):
     #Frame Main Menu
     mainMenuFrame = customtkinter.CTkFrame(app, width=1674, height=890, fg_color="#242424",corner_radius=0)  
     mainMenuFrame.place(x=247,y=0)
