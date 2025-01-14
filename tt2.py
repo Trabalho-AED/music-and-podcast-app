@@ -1,13 +1,16 @@
 import customtkinter
 from PIL import Image
 from tkinter import filedialog
-import shutil #Copy images shutil.copy()
+import shutil #Copy images shutil.copy() https://docs.python.org/3/library/shutil.html
 import re #Regex for expression check(username and password)
 import os
 #from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
 #from comtypes import CLSCTX_ALL
 import tkinter as tk
+from io import StringIO
 from tkinter import ttk
+#from tkVideoPlayer import TkinterVideo   #https://pypi.org/project/tkvideoplayer/ 
+import webbrowser                        # https://docs.python.org/3/library/webbrowser.html 
 
 customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light" Alterar entre tema escuro e claro
 #customtkinter.set_default_color_theme(".\\theme\\rime.json") # Tema de cores
@@ -125,7 +128,7 @@ appWidth = 1500
 appHeight = 800
 
 # App não resizable em x
-app.resizable(width=False, height=False)
+#app.resizable(width=False, height=False)
 
 # Obtém a dimensão do ecrã
 screenWidth = app.winfo_screenwidth()
@@ -615,11 +618,11 @@ def mainwindow_render(oldFrame):
     ############################################### UpperMenuFrame ###############################################
 
     #Botão com Icon e texto de user
-    btnUser = customtkinter.CTkButton(upperMenuFrame, image=userIcon, width=31, height=31, fg_color="transparent", text="User Name",command=lambda:user_page(mainContentFrame, currentFrame))
+    btnUser = customtkinter.CTkButton(upperMenuFrame, image=userIcon, width=31, height=31, fg_color="transparent", text="User Name",command=lambda:userpage_render(mainContentFrame, currentFrame))
     btnUser.place(x=0, y=0)
 
     #Botão com Icon e texto de home
-    btnHome = customtkinter.CTkButton(upperMenuFrame, image= homeIcon , width = 31, height = 31, fg_color="transparent", text="Home Page", command=lambda:home_page(mainContentFrame, currentFrame))
+    btnHome = customtkinter.CTkButton(upperMenuFrame, image= homeIcon , width = 31, height = 31, fg_color="transparent", text="Home Page", command=lambda:homepage_render(mainContentFrame, currentFrame))
     btnHome.place(x=0, y=65)
 
     #---------------------------------------------------------------------------------------------------------------------
@@ -756,10 +759,10 @@ def mainwindow_render(oldFrame):
     volumeSlider.set(50)
     volumeSlider.place(x=40, y=8)
 
-    home_page(mainContentFrame, currentFrame) # Mostra a homepage por defeito
+    homepage_render(mainContentFrame, currentFrame) # Mostra a homepage por defeito
 
 
-def user_page(mainContentFrame, oldFrame):
+def userpage_render(mainContentFrame, oldFrame):
     """Mostra o frame da página de utilizador"""
 
     global currentFrame # Variável global para frame a ser usado
@@ -805,7 +808,8 @@ def user_page(mainContentFrame, oldFrame):
     btnChgName.place(x=300, y=30)
 
     # Butao mudar Username
-    btnChgUsername = customtkinter.CTkButton(changeUserNameFrame, width=150, height=30,text="Change Username")
+    podcastURL = "https://www.youtube.com/watch?v=CYs06HRO6tw"
+    btnChgUsername = customtkinter.CTkButton(changeUserNameFrame, width=150, height=30,text="Change Username", command=lambda:podcast_video_render(podcastURL))
     btnChgUsername.place(x=300, y=30)
 
     # Butao mudar Password
@@ -828,7 +832,7 @@ def user_page(mainContentFrame, oldFrame):
     labelPass = customtkinter.CTkLabel(changePassFrame, text="Password", font=("Arial", 20),text_color="white")
     labelPass.place(x=105,y=35)
 
-def home_page(mainContentFrame, oldFrame):
+def homepage_render(mainContentFrame, oldFrame):
     """Mostra a homepage"""
 
     global currentFrame # Variável global para frame a ser usado
@@ -863,6 +867,12 @@ def home_page(mainContentFrame, oldFrame):
     ourReccomendationsFrame = customtkinter.CTkFrame(homepageFrame, width=1400, height=200, fg_color="blue",corner_radius=0)  
     ourReccomendationsFrame.grid(row=3, column=0, padx=150, pady=150)
 
+def podcast_video_render(videoURL):
+    """
+    Abre o browser definido por defeito com um url
+    """
+    webbrowser.open(videoURL, new = 0, autoraise=True)
+    
 ##########################################################
 
 login_render("")
