@@ -90,7 +90,7 @@ def create_main_files(filePath):
         print(f"File already exists: {filePath}")
 
 #Lista com os ficheiros da base de dados
-mainFiles = [f".{pathFormat}db{pathFormat}user_accounts.csv",f".{pathFormat}db{pathFormat}music_list.csv",f".{pathFormat}db{pathFormat}admin_list.csv"]
+mainFiles = [f".{pathFormat}db{pathFormat}user_accounts.csv",f".{pathFormat}db{pathFormat}podcast_list.csv",f".{pathFormat}db{pathFormat}music_list.csv",f".{pathFormat}db{pathFormat}admin_list.csv"]
 
 #Criar ficheiros
 for file in mainFiles:
@@ -102,8 +102,9 @@ for file in mainFiles:
 
 imagePath = f".{pathFormat}images{pathFormat}icons{pathFormat}" # Caminho para o diretório onde são armazenadas as imagens
 accountsPath = f".{pathFormat}db{pathFormat}user_accounts.csv" # Caminho para o ficheiro onde são armazenadas as contas
-musicPath = f".{pathFormat}db{pathFormat}music_list.csv" # Caminho para o ficheiro onde são armazenadas as contas
-adminListfile = f".{pathFormat}db{pathFormat}admin_list.csv" # Caminho para o ficheiro onde são armazenadas as músicas
+musicPath = f".{pathFormat}db{pathFormat}music_list.csv" # Caminho para o ficheiro onde são armazenadas as músicas
+podcastPath = f".{pathFormat}db{pathFormat}podcast_list.csv" # Caminho para o ficheiro onde são armazenadas os podcasts
+adminListfile = f".{pathFormat}db{pathFormat}admin_list.csv" # Caminho para o ficheiro onde são armazenadas as contas admin
 coverArtPath = f".{pathFormat}images{pathFormat}cover_art{pathFormat}" # Caminho para o diretório onde são armazenadas as imagens das músicas
 musicAudioPath = f".{pathFormat}audios{pathFormat}music{pathFormat}" # Caminho para o diretório onde são armazenadas as músicas
 
@@ -399,7 +400,7 @@ def login_render(oldFrame):
     resultLabel = customtkinter.CTkLabel(frameLogin, text="")
     resultLabel.pack(padx=20, pady=20)
 
-def confirmMusic(musicNameEntry, musicAuthorEntry,musicCoverImg,musicAudioPathLabel, errorAddMusicLabel):
+def confirm_music(musicNameEntry, musicAuthorEntry,musicCoverImg,musicAudioPathLabel, erroradd_musicLabel):
     """Guarda os dados da música a adicionar"""
     
     global tempCoverName, tempAudioName  # Indicar as variáveis globais
@@ -418,7 +419,7 @@ def confirmMusic(musicNameEntry, musicAuthorEntry,musicCoverImg,musicAudioPathLa
         musicAuthorEntry.delete(0,"end")
         musicCoverImg.configure(image=None)
         musicAudioPathLabel.configure(text="")
-        errorAddMusicLabel.configure(text="Music added with success!")
+        erroradd_musicLabel.configure(text="Music added with success!")
 
         tempCoverName = None
         tempAudioName = None
@@ -426,10 +427,10 @@ def confirmMusic(musicNameEntry, musicAuthorEntry,musicCoverImg,musicAudioPathLa
         return
 
     else:
-        errorAddMusicLabel.configure(text="Fill all fields!")
+        erroradd_musicLabel.configure(text="Fill all fields!")
         return
 
-def selectFile(musicCoverImg, musicAudioPathLabel):
+def select_file(musicCoverImg, musicAudioPathLabel):
     """Seleciona um ficheiro"""
 
     global tempCoverName, tempAudioName  # Indicar as variáveis globais
@@ -460,7 +461,7 @@ def selectFile(musicCoverImg, musicAudioPathLabel):
     
     return
 
-def addMusic():
+def add_music():
     """Abre um frame para adicionar músicas"""
 
     #Frame para adicionar música
@@ -504,7 +505,7 @@ def addMusic():
     musicCoverImg.pack(expand=True)
 
     #Botão para escolher a imagem da música
-    musicCoverBtn = customtkinter.CTkButton(musicFrame, width=300, height=100, text="Add cover art", command=lambda:selectFile(musicCoverImg, ""))
+    musicCoverBtn = customtkinter.CTkButton(musicFrame, width=300, height=100, text="Add cover art", command=lambda:select_file(musicCoverImg, ""))
     musicCoverBtn.pack(expand=True)
 
     #--------------------------------------------------------------------------#
@@ -521,19 +522,19 @@ def addMusic():
     musicAudioPathLabel.pack(expand=True)
 
     #Botão para escolher o aúdio
-    musicAudioBtn = customtkinter.CTkButton(musicFrame, width=300, height=100, text="Add audio", command=lambda:selectFile("", musicAudioPathLabel))
+    musicAudioBtn = customtkinter.CTkButton(musicFrame, width=300, height=100, text="Add audio", command=lambda:select_file("", musicAudioPathLabel))
     musicAudioBtn.pack(expand=True)
 
     #--------------------------------------------------------------------------#
 
 
     #Botão para salvar a os dados
-    confirmBtn = customtkinter.CTkButton(musicFrame, width=300, height=100, text="Confirm", command=lambda:confirmMusic(musicNameEntry, musicAuthorEntry,musicCoverImg,musicAudioPathLabel, errorAddMusicLabel))
+    confirmBtn = customtkinter.CTkButton(musicFrame, width=300, height=100, text="Confirm", command=lambda:confirm_music(musicNameEntry, musicAuthorEntry,musicCoverImg,musicAudioPathLabel, erroradd_musicLabel))
     confirmBtn.pack(expand=True)
 
     #Label para mostrar erros
-    errorAddMusicLabel = customtkinter.CTkLabel(musicFrame, text="")
-    errorAddMusicLabel.pack(expand=True)
+    erroradd_musicLabel = customtkinter.CTkLabel(musicFrame, text="")
+    erroradd_musicLabel.pack(expand=True)
 
 
 def mainwindow_render(oldFrame):
@@ -573,7 +574,7 @@ def mainwindow_render(oldFrame):
 
     #Se o utilizador for admin, mostrar botão
     if isAdmin:
-        addBtn = customtkinter.CTkButton(upperSearchFrame, width=100, height=10, fg_color="transparent", text="Add Music", command=addMusic)
+        addBtn = customtkinter.CTkButton(upperSearchFrame, width=100, height=10, fg_color="transparent", text="Add Music", command=add_music)
         addBtn.place(x=100, y=30)
 
     #Frame barra inferior com os comandos da música
@@ -808,8 +809,7 @@ def userpage_render(mainContentFrame, oldFrame):
     btnChgName.place(x=300, y=30)
 
     # Butao mudar Username
-    podcastURL = "https://www.youtube.com/watch?v=CYs06HRO6tw"
-    btnChgUsername = customtkinter.CTkButton(changeUserNameFrame, width=150, height=30,text="Change Username", command=lambda:podcast_video_render(podcastURL))
+    btnChgUsername = customtkinter.CTkButton(changeUserNameFrame, width=150, height=30,text="Change Username")
     btnChgUsername.place(x=300, y=30)
 
     # Butao mudar Password
@@ -831,6 +831,13 @@ def userpage_render(mainContentFrame, oldFrame):
     # Label Password
     labelPass = customtkinter.CTkLabel(changePassFrame, text="Password", font=("Arial", 20),text_color="white")
     labelPass.place(x=105,y=35)
+
+def read_content(contentType):
+    if contentType == "podcast":
+        with open(podcastPath, "r", encoding="utf-8") as file:
+            podcastList = file.readlines()
+        return podcastList
+
 
 def homepage_render(mainContentFrame, oldFrame):
     """Mostra a homepage"""
@@ -855,6 +862,14 @@ def homepage_render(mainContentFrame, oldFrame):
     trendingFrame = customtkinter.CTkFrame(homepageFrame, width=500, height=200, fg_color="blue", corner_radius=0)
     trendingFrame.grid(row=0, column=0, padx=150, pady=150)
 
+    podcastList = read_content("podcast")
+
+    for i in range(len(podcastList)):
+        podcastURL = podcastList[i].strip("\n")
+        podcastButton = customtkinter.CTkButton(homepageFrame, width=200, height=100, command=lambda:podcast_video_render(podcastURL))
+        podcastButton.grid(row=i, column=0, padx=90,pady=90)
+
+    """
     #Frame menu trending Podcasts
     trendingPodcastsFrame = customtkinter.CTkFrame(homepageFrame, width=1400, height=200, fg_color="blue",corner_radius=0)  #0E0D11
     trendingPodcastsFrame.grid(row=1, column=0, padx=150, pady=150)
@@ -865,7 +880,7 @@ def homepage_render(mainContentFrame, oldFrame):
 
     #Frame menu Our Reccomendations
     ourReccomendationsFrame = customtkinter.CTkFrame(homepageFrame, width=1400, height=200, fg_color="blue",corner_radius=0)  
-    ourReccomendationsFrame.grid(row=3, column=0, padx=150, pady=150)
+    ourReccomendationsFrame.grid(row=3, column=0, padx=150, pady=150)"""
 
 def podcast_video_render(videoURL):
     """
