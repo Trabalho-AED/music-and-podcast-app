@@ -837,6 +837,10 @@ def read_content(contentType):
         with open(podcastPath, "r", encoding="utf-8") as file:
             podcastList = file.readlines()
         return podcastList
+    elif contentType == "music":
+        with open(musicPath, "r", encoding="utf-8") as file:
+            musicList = file.readlines()
+        return musicList
 
 
 def homepage_render(mainContentFrame, oldFrame):
@@ -859,15 +863,52 @@ def homepage_render(mainContentFrame, oldFrame):
     currentFrame = homepageFrame # O frame a ser usado passa a ser o userFrame
 
     # Frame menu trending Music
-    trendingFrame = customtkinter.CTkFrame(homepageFrame, width=500, height=200, fg_color="blue", corner_radius=0)
-    trendingFrame.grid(row=0, column=0, padx=150, pady=150)
+    trendingFrame = customtkinter.CTkFrame(homepageFrame, width=1400, height=300, fg_color="blue", corner_radius=0)
+    trendingFrame.grid(row=1, column=0, padx=20, pady=20, sticky="nsew")
 
+    # Cria um scrollable frame dentro do frame principal
+    trendingScrollFrame = customtkinter.CTkScrollableFrame(
+        trendingFrame,
+        orientation="horizontal",
+        width=1350,
+        height=250,
+        fg_color="blue"
+    )
+    trendingScrollFrame.place(x=0, y=20)
+    
+    trendingLabel = customtkinter.CTkLabel(trendingFrame,text="Trending")
+    trendingLabel.place(x=0,y=0)
+
+    # Abrir lista de músicas disponiveis
+    musicList = read_content("music")
+
+    # Criar botões num ciclo for, na horizontal
+    for i in range(len(musicList)):
+        musicURL = musicList[i].strip("\n")
+        button = customtkinter.CTkButton(
+            trendingScrollFrame,
+            width=200,
+            height=200,
+            text=f"Music {i+1}",
+            fg_color="red",
+            command=lambda url=musicURL: podcast_video_render(url) 
+        )
+        button.grid(row=1, column=i, padx=10, pady=10)
+
+    # Abrir lista de podcasts disponiveis
     podcastList = read_content("podcast")
 
+    # Criar botões num ciclo for, na horizontal
     for i in range(len(podcastList)):
         podcastURL = podcastList[i].strip("\n")
-        podcastButton = customtkinter.CTkButton(homepageFrame, width=200, height=100, command=lambda:podcast_video_render(podcastURL))
-        podcastButton.grid(row=i, column=0, padx=90,pady=90)
+        podcastButton = customtkinter.CTkButton(
+            trendingScrollFrame,  # Colocar num frame scrollable
+            width=200, 
+            height=200,
+            text=f"Podcast {i+1}",
+            command=lambda url=podcastURL: podcast_video_render(url)  
+        )
+        podcastButton.grid(row=1, column=i, padx=10, pady=10)
 
     """
     #Frame menu trending Podcasts
