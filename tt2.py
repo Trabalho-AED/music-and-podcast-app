@@ -4,12 +4,12 @@ from tkinter import filedialog
 import shutil #Copy images shutil.copy() https://docs.python.org/3/library/shutil.html
 import re #Regex for expression check(username and password)
 import os
+from pygame import mixer #https://www.pygame.org/docs/ref/mixer.html
 #from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
 #from comtypes import CLSCTX_ALL
 import tkinter as tk
 from io import StringIO
-from tkinter import ttk
-#from tkVideoPlayer import TkinterVideo   #https://pypi.org/project/tkvideoplayer/ 
+from tkinter import ttk#from tkVideoPlayer import TkinterVideo   #https://pypi.org/project/tkvideoplayer/ 
 import webbrowser                        # https://docs.python.org/3/library/webbrowser.html 
 
 customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light" Alterar entre tema escuro e claro
@@ -839,7 +839,13 @@ def read_content(contentType):
         return podcastList
     elif contentType == "music":
         with open(musicPath, "r", encoding="utf-8") as file:
-            musicList = file.readlines()
+            lines = file.readlines()
+
+        musicList = []
+        for line in lines:
+            fields = line.strip().split(";")
+            musicList.append(fields)  # Each entry is a list: [name, author, cover, link]
+
         return musicList
 
 
@@ -861,10 +867,10 @@ def homepage_render(mainContentFrame, oldFrame):
     homepageFrame.place(x=0,y=0)
 
     currentFrame = homepageFrame # O frame a ser usado passa a ser o userFrame
-
+    
     # Frame menu trending Music
     trendingFrame = customtkinter.CTkFrame(homepageFrame, width=1400, height=300, fg_color="blue", corner_radius=0)
-    trendingFrame.grid(row=1, column=0, padx=20, pady=20, sticky="nsew")
+    trendingFrame.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
 
     # Cria um scrollable frame dentro do frame principal
     trendingScrollFrame = customtkinter.CTkScrollableFrame(
@@ -880,35 +886,48 @@ def homepage_render(mainContentFrame, oldFrame):
     trendingLabel.place(x=0,y=0)
 
     # Abrir lista de músicas disponiveis
-    musicList = read_content("music")
+    musicName, musicAuthor, musicCover, musicLink = read_content("music")
 
     # Criar botões num ciclo for, na horizontal
+    musicList = read_content("music")  # receber dados da lista (lista com sublistas)
+
     for i in range(len(musicList)):
-        musicURL = musicList[i].strip("\n")
+        musicName = musicList[i][0]
+        musicAuthor = musicList[i][1]
+        musicCover = coverArtPath + musicList[i][2]
+        musicURL = musicList[i][3]
+
+        coverArt = customtkinter.CTkImage(Image.open(musicCover), size=(150, 150))
+
         button = customtkinter.CTkButton(
             trendingScrollFrame,
-            width=200,
-            height=200,
-            text=f"Music {i+1}",
+            width=150,
+            height=150,
+            text=f"{musicName}\n{musicAuthor}",
+            image=coverArt,
             fg_color="red",
-            command=lambda url=musicURL: podcast_video_render(url) 
+            compound="top",
+            command=lambda url=musicURL: podcast_video_render(url)
         )
-        button.grid(row=1, column=i, padx=10, pady=10)
+
+        button.grid(row=0, column=i, padx=10, pady=10)
 
     # Abrir lista de podcasts disponiveis
     podcastList = read_content("podcast")
+    
+    """ trendingList = musicList+podcastList
 
     # Criar botões num ciclo for, na horizontal
-    for i in range(len(podcastList)):
-        podcastURL = podcastList[i].strip("\n")
+    for i in range(len(trendingList)):
+        trendingURL = trendingList[i].strip("\n")
         podcastButton = customtkinter.CTkButton(
             trendingScrollFrame,  # Colocar num frame scrollable
             width=200, 
             height=200,
             text=f"Podcast {i+1}",
-            command=lambda url=podcastURL: podcast_video_render(url)  
+            command=lambda url=trendingURL: podcast_video_render(url)  
         )
-        podcastButton.grid(row=1, column=i, padx=10, pady=10)
+        podcastButton.grid(row=1, column=i, padx=10, pady=10) """
 
     """
     #Frame menu trending Podcasts
