@@ -119,7 +119,7 @@ tempAudioName = None # Para salvar o nome do aúdio da música
 ###########################################################
 
 # Inicializar app
-app = customtkinter.CTk()
+app = customtkinter.CTk(fg_color= "#000000")
 
 # Titulo da app
 app.title("Music App")
@@ -327,35 +327,44 @@ def register_render(oldFrame):
     oldFrame.destroy() # Apagar o estilo do frame anterior
 
     #Frame
-    frameRegister = customtkinter.CTkFrame(app, width=600, height=500)
+    frameRegister = customtkinter.CTkFrame(app, width=800, height=500, fg_color= "#0D0D0D")
+    frameRegister.pack_propagate(False)
     frameRegister.pack(expand=True)
 
+    # Labels Register
+    RegisterLabel = customtkinter.CTkLabel(frameRegister, text="Register",font=("Roboto", 28))
+    RegisterLabel.pack(padx=0, pady=60)
+
     # Labels e campos de entrada
-    nameLabel = customtkinter.CTkLabel(frameRegister, text="Nome:")
-    nameLabel.pack(padx=20, pady=5)
+    nameLabel = customtkinter.CTkLabel(frameRegister, text="Nome:", font=("Roboto", 18))
+    nameLabel.place(x=230, y=120,anchor='w')
 
-    nameEntry = customtkinter.CTkEntry(frameRegister, placeholder_text="Nome...")
-    nameEntry.pack(padx=20, pady=10)
+    nameEntry = customtkinter.CTkEntry(frameRegister, placeholder_text="Nome...",width=310)
+    nameEntry.place(x=230,y=150, anchor='w')
 
-    usernameLabel = customtkinter.CTkLabel(frameRegister, text="Username:")
-    usernameLabel.pack(padx=20, pady=5)
+    usernameLabel = customtkinter.CTkLabel(frameRegister, text="Username:",font=("Roboto", 18))
+    usernameLabel.place(x=230, y=210, anchor='w')
 
-    usernameEntry = customtkinter.CTkEntry(frameRegister, placeholder_text="Username...")
-    usernameEntry.pack(padx=20, pady=10)
+    usernameEntry = customtkinter.CTkEntry(frameRegister, placeholder_text="Username...",width=330)
+    usernameEntry.place(x=230, y=240, anchor='w')
 
-    passwordLabel = customtkinter.CTkLabel(frameRegister, text="Password:")
-    passwordLabel.pack(padx=20, pady=5)
+    passwordLabel = customtkinter.CTkLabel(frameRegister, text="Password:", font=("Roboto", 18))
+    passwordLabel.place(x=230, y=280)
 
-    passwordEntry = customtkinter.CTkEntry(frameRegister, placeholder_text="Password...", show="*")
-    passwordEntry.pack(padx=20, pady=10)
+    passwordEntry = customtkinter.CTkEntry(frameRegister, placeholder_text="Password...", show="*",width=310)
+    passwordEntry.place(x=230, y=310)
 
     # Botão de login
-    loginButton = customtkinter.CTkButton(frameRegister, text="Login", command=lambda:login_render(frameRegister))
-    loginButton.pack(padx=20, pady=5)
+    loginButton = customtkinter.CTkButton(frameRegister,width=60, text="Login", command=lambda:login_render(frameRegister))
+    loginButton.place(x=420, y=415)
+
+    #label Existent User
+    existentUserLabel = customtkinter.CTkLabel(frameRegister, text="Existing User? Login!",font=("Roboto", 12))
+    existentUserLabel.place(x=290, y=415)
 
     # Botão de criar conta
-    loginButton = customtkinter.CTkButton(frameRegister, text="Criar Conta", command=lambda:register_action(usernameEntry, passwordEntry,nameEntry, resultLabel))
-    loginButton.pack(padx=20, pady=5)
+    CreateButton = customtkinter.CTkButton(frameRegister,height=40,width=200,text="Create User", command=lambda:register_action(usernameEntry, passwordEntry,nameEntry, resultLabel))
+    CreateButton.place(x=290, y=360)
 
     # Label para exibir resultados ou mensagens de erro
     resultLabel = customtkinter.CTkLabel(frameRegister, text="")
@@ -372,33 +381,42 @@ def login_render(oldFrame):
         oldFrame.pack_forget() # Apagar o estilo do frame anterior
 
     #Frame
-    frameLogin = customtkinter.CTkFrame(app, width=600, height=500)
-    frameLogin.pack(expand=True)
+    frameLogin = customtkinter.CTkFrame(app, width=800, height=500, fg_color= "#0D0D0D")
+    frameLogin.pack_propagate(False)
+    frameLogin.pack(expand=True )
+
+    # Labels Login
+    LoginLabel = customtkinter.CTkLabel(frameLogin, text="Login",font=("Roboto", 28))
+    LoginLabel.pack(padx=0, pady=60)
 
     # Labels e campos de entrada
-    usernameLabel = customtkinter.CTkLabel(frameLogin, text="Username:")
-    usernameLabel.pack(padx=20, pady=5)
+    usernameLabel = customtkinter.CTkLabel(frameLogin, text="Username:", font=("Roboto", 18))
+    usernameLabel.place(x=230, y=150,anchor='w')
 
-    usernameEntry = customtkinter.CTkEntry(frameLogin, placeholder_text="Username...")
-    usernameEntry.pack(padx=20, pady=10)
+    usernameEntry = customtkinter.CTkEntry(frameLogin, placeholder_text="Username...", width=310)
+    usernameEntry.place(x=230,y=180, anchor='w')
 
-    passwordLabel = customtkinter.CTkLabel(frameLogin, text="Password:")
-    passwordLabel.pack(padx=20, pady=5)
+    passwordLabel = customtkinter.CTkLabel(frameLogin, text="Password:",font=("Roboto", 18))
+    passwordLabel.place(x=230, y=240, anchor='w')
 
-    passwordEntry = customtkinter.CTkEntry(frameLogin, placeholder_text="Password...", show="*")
-    passwordEntry.pack(padx=20, pady=10)
+    passwordEntry = customtkinter.CTkEntry(frameLogin, placeholder_text="Password...", show="*", width=330)
+    passwordEntry.place(x=230, y=270, anchor='w')
 
     # Botão de login
-    loginButton = customtkinter.CTkButton(frameLogin, text="Login", command=lambda:login_action(usernameEntry, passwordEntry, resultLabel, frameLogin))
-    loginButton.pack(padx=20, pady=5)
+    loginButton = customtkinter.CTkButton(frameLogin,height=40,width=200,text="Login",font=("Roboto", 18), command=lambda:login_action(usernameEntry, passwordEntry, resultLabel, frameLogin))
+    loginButton.place(x=300, y=330, anchor='w')
 
     # Botão de criar conta
-    createaccButton = customtkinter.CTkButton(frameLogin, text="Criar Conta", command=lambda:register_render(frameLogin))
-    createaccButton.pack(padx=20, pady=5)
+    createaccButton = customtkinter.CTkButton(frameLogin,width=50,text="Create User", command=lambda:register_render(frameLogin))
+    createaccButton.place(x=440, y=380, anchor='w')
+
+    # Label New User
+    NewUserLabel = customtkinter.CTkLabel(frameLogin, text="New User? Create an account!",font=("Roboto", 12))
+    NewUserLabel.place(x=265,y=368)
 
     # Label para exibir resultados ou mensagens de erro
     resultLabel = customtkinter.CTkLabel(frameLogin, text="")
-    resultLabel.pack(padx=20, pady=20)
+    resultLabel.place(x=280,y=430)
 
 def confirm_music(musicNameEntry, musicAuthorEntry,musicCoverImg,musicAudioPathLabel, erroradd_musicLabel):
     """Guarda os dados da música a adicionar"""
