@@ -90,7 +90,7 @@ def create_main_files(filePath):
         print(f"File already exists: {filePath}")
 
 #Lista com os ficheiros da base de dados
-mainFiles = [f".{pathFormat}db{pathFormat}user_accounts.csv",f".{pathFormat}db{pathFormat}podcast_list.csv",f".{pathFormat}db{pathFormat}music_list.csv",f".{pathFormat}db{pathFormat}admin_list.csv"]
+mainFiles = [f".{pathFormat}db{pathFormat}category_list.csv",f".{pathFormat}db{pathFormat}user_accounts.csv",f".{pathFormat}db{pathFormat}podcast_list.csv",f".{pathFormat}db{pathFormat}music_list.csv",f".{pathFormat}db{pathFormat}admin_list.csv"]
 
 #Criar ficheiros
 for file in mainFiles:
@@ -107,7 +107,7 @@ podcastPath = f".{pathFormat}db{pathFormat}podcast_list.csv" # Caminho para o fi
 adminListfile = f".{pathFormat}db{pathFormat}admin_list.csv" # Caminho para o ficheiro onde são armazenadas as contas admin
 coverArtPath = f".{pathFormat}images{pathFormat}cover_art{pathFormat}" # Caminho para o diretório onde são armazenadas as imagens das músicas
 musicAudioPath = f".{pathFormat}audios{pathFormat}music{pathFormat}" # Caminho para o diretório onde são armazenadas as músicas
-
+categoriesPath = f".{pathFormat}db{pathFormat}category_list.csv" # Caminho para o ficheiro onde são armazenadas as categorias
 #################################################################################################################
 
 
@@ -116,6 +116,9 @@ currentFrame = None # Guarda o frame que o utilizador se encontra
 isAdmin = False # Booleano que diz se o utilizador é ou não admin
 tempCoverName = None # Para salvar o nome da imagem da música
 tempAudioName = None # Para salvar o nome do aúdio da música
+nameFull = None  # Para salvar o nome do utilizador
+currentLevel = 50 # Para Salvar o volume antes de mute
+isMuted = True
 ###########################################################
 
 # Inicializar app
@@ -206,6 +209,7 @@ def create_account(username, password, name):
         file.write(accountAdd) # Escreve os dados no ficheiro
 
 def login_action(usernameEntry, passwordEntry, resultLabel,loginFrame):
+    global nameFull
     """Gere o algoritmo de login"""
     username = usernameEntry.get() # Recebe o valor que está na entry do username
     password = passwordEntry.get() # Recebe o valor que está na entry da password
@@ -218,7 +222,7 @@ def login_action(usernameEntry, passwordEntry, resultLabel,loginFrame):
     print(f"Username: {username}, Password: {password}")  # Mensagem de confirmação na consola
 
     username, password, name = get_accounts(username, password) # Verifica se a combinação utilizador/password existe
-
+    
     isAdmin = check_admin(username) # Booleano - Verifica se o utilizador é admin
     if isAdmin: # Se for admin, atribui a flag admin ao utilizador
         adminflag = "Admin"
@@ -231,6 +235,7 @@ def login_action(usernameEntry, passwordEntry, resultLabel,loginFrame):
     else: # Se a combinação utilizador password estiver correta 
         resultLabel.configure(text=f"Bem vindo {name}, Login realizado com sucesso!\nTipo de Utilizador: {adminflag}") # Texto a apresentar
         print(username, password, adminflag) # Confirmação
+        nameFull = name
         mainwindow_render(loginFrame) # Passa para a janela principal
 
 def check_format(value, typeVal):
@@ -345,7 +350,7 @@ def register_render(oldFrame):
     usernameLabel = customtkinter.CTkLabel(frameRegister, text="Username:",font=("Roboto", 18))
     usernameLabel.place(x=230, y=210, anchor='w')
 
-    usernameEntry = customtkinter.CTkEntry(frameRegister, placeholder_text="Username...",width=330)
+    usernameEntry = customtkinter.CTkEntry(frameRegister, placeholder_text="Username...",width=310)
     usernameEntry.place(x=230, y=240, anchor='w')
 
     passwordLabel = customtkinter.CTkLabel(frameRegister, text="Password:", font=("Roboto", 18))
@@ -399,7 +404,7 @@ def login_render(oldFrame):
     passwordLabel = customtkinter.CTkLabel(frameLogin, text="Password:",font=("Roboto", 18))
     passwordLabel.place(x=230, y=240, anchor='w')
 
-    passwordEntry = customtkinter.CTkEntry(frameLogin, placeholder_text="Password...", show="*", width=330)
+    passwordEntry = customtkinter.CTkEntry(frameLogin, placeholder_text="Password...", show="*", width=310)
     passwordEntry.place(x=230, y=270, anchor='w')
 
     # Botão de login
@@ -558,7 +563,7 @@ def add_music():
 def mainwindow_render(oldFrame):
     """Rendriza a frame da janela principal"""
 
-    global currentFrame # Variável global do frame em uso
+    global currentFrame,nameFull, musicName, artistName, musicLenSlider, volumeSlider, musicCover # Variável global do frame em uso
 
     oldFrame.destroy() # Apagar o estilo do frame anterior
 
@@ -592,8 +597,10 @@ def mainwindow_render(oldFrame):
 
     #Se o utilizador for admin, mostrar botão
     if isAdmin:
-        addBtn = customtkinter.CTkButton(upperSearchFrame, width=100, height=10, fg_color="transparent", text="Add Music", command=add_music)
-        addBtn.place(x=100, y=30)
+        #addBtn = customtkinter.CTkButton(upperSearchFrame, width=100, height=10, fg_color="transparent", text="Add Music", command=add_music)
+        #addBtn.place(x=100, y=30)
+        adminDashBtn = customtkinter.CTkButton(upperSearchFrame, width=100, height=10, fg_color="transparent", text="Admin dashboard", command=lambda:adminpage_render(mainContentFrame, currentFrame))
+        adminDashBtn.place(x=100, y=30)
 
     #Frame barra inferior com os comandos da música
     playFrame = customtkinter.CTkFrame(app, width=1920, height=131, fg_color="#0A090C",corner_radius=0) 
@@ -637,7 +644,7 @@ def mainwindow_render(oldFrame):
     ############################################### UpperMenuFrame ###############################################
 
     #Botão com Icon e texto de user
-    btnUser = customtkinter.CTkButton(upperMenuFrame, image=userIcon, width=31, height=31, fg_color="transparent", text="User Name",command=lambda:userpage_render(mainContentFrame, currentFrame))
+    btnUser = customtkinter.CTkButton(upperMenuFrame, image=userIcon, width=31, height=31, fg_color="transparent", text=f"{nameFull}",command=lambda:userpage_render(mainContentFrame, currentFrame))
     btnUser.place(x=0, y=0)
 
     #Botão com Icon e texto de home
@@ -712,7 +719,7 @@ def mainwindow_render(oldFrame):
     musicContentFrame.columnconfigure(2, weight=1)  # Coluna para `audioSliderFrame`
 
     # Frame para mostrar música e info na barra inferior
-    showMusicFrame = customtkinter.CTkFrame(musicContentFrame, fg_color="#0A090C")
+    showMusicFrame = customtkinter.CTkFrame(musicContentFrame, fg_color="#0A090C", width=210)
     showMusicFrame.grid(row=0, column=0, sticky="nsew", padx=50, pady=5)  # Alinhado e espaçado
 
     # Frame dos botões para controlar música
@@ -729,11 +736,11 @@ def mainwindow_render(oldFrame):
     #-------------------------------------[FRAME INFO]-------------------------------------------------------------
 
     #Frame para mostrar info: Nome da música e artista
-    musicInfoFrame = customtkinter.CTkFrame(showMusicFrame, width=90, height=50, fg_color="#0A090C")
+    musicInfoFrame = customtkinter.CTkFrame(showMusicFrame, width=300, height=50, fg_color="#0A090C")
     musicInfoFrame.place(x=72, y=7)
 
     #Capa da Música (substituir por imagem)
-    musicCover = customtkinter.CTkButton(showMusicFrame, width=53, height=53, text="", fg_color="Red")
+    musicCover = customtkinter.CTkButton(showMusicFrame, width=53, height=53, text="",image="", fg_color="Red")
     musicCover.place(x=0,y=0)
 
     #Nome da música
@@ -770,7 +777,7 @@ def mainwindow_render(oldFrame):
 
     #Botão com Icone do áudio
     btnAudio = customtkinter.CTkButton(audioSliderFrame, image=audioIcon, width=20, height=20, fg_color="transparent", text="",
-    command="")
+    command=toggle_mute)
     btnAudio.place(x=0, y=0)
 
     #Slider de audio
@@ -778,8 +785,22 @@ def mainwindow_render(oldFrame):
     volumeSlider.set(50)
     volumeSlider.place(x=40, y=8)
 
+    # Associar o controlo de volume ao slider
+    volumeSlider.bind("<B1-Motion>", adjust_volume)  # <B1-Motion>: Movimento com o botão do mouse pressionado
+    volumeSlider.bind("<ButtonRelease-1>", adjust_volume)  # Para garantir ajuste no final
+
     homepage_render(mainContentFrame, currentFrame) # Mostra a homepage por defeito
 
+def toggle_mute():
+    global currentLevel
+    
+    if volumeSlider.get() == 0:
+        volumeSlider.set(currentLevel)
+    else:
+        currentLevel = volumeSlider.get()
+        volumeSlider.set(0)
+
+    adjust_volume()
 
 def userpage_render(mainContentFrame, oldFrame):
     """Mostra o frame da página de utilizador"""
@@ -866,6 +887,68 @@ def read_content(contentType):
 
         return musicList
 
+def update_music_info(musicNameNew, musicAuthorNew,coverArtNew):
+    """Atualiza as informações da música na interface."""
+    musicName.configure(text=musicNameNew)
+    artistName.configure(text=musicAuthorNew)
+    musicCover.configure(image=coverArtNew,fg_color="transparent")
+
+def update_slider():
+    """Atualiza o slider de progresso da música."""
+    if mixer.music.get_busy():
+        current_time = mixer.music.get_pos() // 1000  # Em segundos
+        musicLenSlider.set(current_time)
+    app.after(200, update_slider)  # Atualiza a cada 200ms
+
+def adjust_volume(event=None):
+    """Ajusta o volume da música baseado no slider."""
+    volume = volumeSlider.get() / 100  # Converte para intervalo de 0 a 1
+    mixer.music.set_volume(volume)
+
+def play_music(music,musicName,musicAuthor,coverArt):
+    """Toca a música e atualiza a interface."""
+    mixer.init()
+    mixer.music.load(musicAudioPath + music)
+    mixer.music.play(loops=0)  # Toca apenas uma vez
+
+    # Atualiza informações na interface
+    update_music_info(musicName, musicAuthor, coverArt)
+
+    # Configura o slider de progresso
+    musicLenSlider.configure(to=get_music_length(music))
+    update_slider()
+
+def get_music_length(music):
+    """Obtém a duração da música em segundos."""
+    from mutagen.mp3 import MP3
+    audio = MP3(musicAudioPath + music)
+    return int(audio.info.length)
+
+def adminpage_render(mainContentFrame, oldFrame):
+    """Mostra a homepage"""
+
+    global currentFrame # Variável global para frame a ser usado
+
+    if oldFrame != None:
+        oldFrame.destroy() # Apagar o estilo do frame anterior
+    #Frame Home Page
+    homepageFrame = customtkinter.CTkScrollableFrame(mainContentFrame,
+	orientation="vertical",
+	width=1238,
+	height=appHeight-(90+131),
+	fg_color="black",
+	corner_radius = 0
+	)
+    homepageFrame.place(x=0,y=0)
+
+    currentFrame = homepageFrame # O frame a ser usado passa a ser o userFrame
+    
+    trendingLabel = customtkinter.CTkLabel(homepageFrame,text="EMON3Y",font=("Roboto", 40))
+    trendingLabel.grid(row = 0, column=0, padx=150, pady=30)
+
+    addBtn = customtkinter.CTkButton(homepageFrame, width=100, height=10, fg_color="transparent", text="Add Music", command=add_music)
+    addBtn.grid(row = 1, column=0, padx=150, pady=30)
+
 
 def homepage_render(mainContentFrame, oldFrame):
     """Mostra a homepage"""
@@ -900,11 +983,8 @@ def homepage_render(mainContentFrame, oldFrame):
     )
     trendingScrollFrame.place(x=0, y=20)
     
-    trendingLabel = customtkinter.CTkLabel(trendingFrame,text="Trending")
-    trendingLabel.place(x=0,y=0)
-
-    # Abrir lista de músicas disponiveis
-    musicName, musicAuthor, musicCover, musicLink = read_content("music")
+    trendingLabel = customtkinter.CTkLabel(trendingFrame,text="Trending",font=("Roboto", 25))
+    trendingLabel.place(x=20,y=10)
 
     # Criar botões num ciclo for, na horizontal
     musicList = read_content("music")  # receber dados da lista (lista com sublistas)
@@ -916,6 +996,7 @@ def homepage_render(mainContentFrame, oldFrame):
         musicURL = musicList[i][3]
 
         coverArt = customtkinter.CTkImage(Image.open(musicCover), size=(150, 150))
+        coverArt2 = customtkinter.CTkImage(Image.open(musicCover), size=(50, 50))
 
         button = customtkinter.CTkButton(
             trendingScrollFrame,
@@ -925,10 +1006,12 @@ def homepage_render(mainContentFrame, oldFrame):
             image=coverArt,
             fg_color="red",
             compound="top",
-            command=lambda url=musicURL: podcast_video_render(url)
+            command=lambda url=musicURL, name=musicName, author=musicAuthor, art=coverArt2: play_music(url, name, author, art)
         )
 
-        button.grid(row=0, column=i, padx=10, pady=10)
+        button.grid(row=0, column=i, padx=10, pady=40)
+
+    
 
     # Abrir lista de podcasts disponiveis
     podcastList = read_content("podcast")
