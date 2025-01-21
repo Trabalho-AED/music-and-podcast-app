@@ -118,7 +118,7 @@ tempCoverName = None # Para salvar o nome da imagem da música
 tempAudioName = None # Para salvar o nome do aúdio da música
 nameFull = None  # Para salvar o nome do utilizador
 currentLevel = 50 # Para Salvar o volume antes de mute
-isMuted = True
+isPaused = True # Para salvar estado da música
 ###########################################################
 
 # Inicializar app
@@ -563,7 +563,7 @@ def add_music():
 def mainwindow_render(oldFrame):
     """Rendriza a frame da janela principal"""
 
-    global currentFrame,nameFull, musicName, artistName, musicLenSlider, volumeSlider, musicCover # Variável global do frame em uso
+    global currentFrame,nameFull, musicName, artistName, musicLenSlider, volumeSlider, musicCover, playIcon, pauseIcon, btnPlay # Variável global do frame em uso
 
     oldFrame.destroy() # Apagar o estilo do frame anterior
 
@@ -697,6 +697,9 @@ def mainwindow_render(oldFrame):
     # Icon de play
     playIcon = customtkinter.CTkImage(Image.open(f"{imagePath}play_icon.png"), size=(34, 34))
 
+    # Icon de pausa
+    pauseIcon = customtkinter.CTkImage(Image.open(f"{imagePath}pause_icon.png"), size=(34, 34))
+
     # Icon de avançar música
     forwardIcon = customtkinter.CTkImage(Image.open(f"{imagePath}forward_icon.png"), size=(20, 20))
 
@@ -762,7 +765,7 @@ def mainwindow_render(oldFrame):
     btnBack.place(x=0, y=7)
 
     #Botão com Icone de play
-    btnPlay = customtkinter.CTkButton(controlBtnFrame, image=playIcon, width=34, height=34, fg_color="transparent", text="")
+    btnPlay = customtkinter.CTkButton(controlBtnFrame, image=playIcon, width=34, height=34, fg_color="transparent", text="", command=toggle_play)
     btnPlay.place(x=40, y=0)
 
     #Botão com Icone de avançar
@@ -790,6 +793,19 @@ def mainwindow_render(oldFrame):
     volumeSlider.bind("<ButtonRelease-1>", adjust_volume)  # Para garantir ajuste no final
 
     homepage_render(mainContentFrame, currentFrame) # Mostra a homepage por defeito
+
+def toggle_play():
+    global isPaused
+
+    if isPaused:
+        mixer.music.unpause()
+        btnPlay.configure(image=playIcon)
+        isPaused = False
+    else:
+        mixer.music.pause()
+        btnPlay.configure(image=pauseIcon)
+        isPaused = True
+
 
 def toggle_mute():
     global currentLevel
