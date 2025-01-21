@@ -799,11 +799,11 @@ def toggle_play():
 
     if isPaused:
         mixer.music.unpause()
-        btnPlay.configure(image=playIcon)
+        btnPlay.configure(image=pauseIcon)
         isPaused = False
     else:
         mixer.music.pause()
-        btnPlay.configure(image=pauseIcon)
+        btnPlay.configure(image=playIcon)
         isPaused = True
 
 
@@ -923,9 +923,14 @@ def adjust_volume(event=None):
 
 def play_music(music,musicName,musicAuthor,coverArt):
     """Toca a música e atualiza a interface."""
+
+    global isPaused
+
     mixer.init()
     mixer.music.load(musicAudioPath + music)
     mixer.music.play(loops=0)  # Toca apenas uma vez
+    btnPlay.configure(image=pauseIcon)
+    isPaused = False
 
     # Atualiza informações na interface
     update_music_info(musicName, musicAuthor, coverArt)
@@ -1012,7 +1017,7 @@ def homepage_render(mainContentFrame, oldFrame):
         musicURL = musicList[i][3]
 
         coverArt = customtkinter.CTkImage(Image.open(musicCover), size=(150, 150))
-        coverArt2 = customtkinter.CTkImage(Image.open(musicCover), size=(50, 50))
+        coverArt2 = customtkinter.CTkImage(Image.open(musicCover), size=(52, 52))
 
         button = customtkinter.CTkButton(
             trendingScrollFrame,
