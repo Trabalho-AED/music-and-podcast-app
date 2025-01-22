@@ -1016,14 +1016,14 @@ def homepage_render(mainContentFrame, oldFrame):
     currentFrame = homepageFrame # O frame a ser usado passa a ser o userFrame
     
     # Frame menu trending Music
-    trendingFrame = customtkinter.CTkFrame(homepageFrame, width=1400, height=300, fg_color="transparent", corner_radius=0)
+    trendingFrame = customtkinter.CTkFrame(homepageFrame, width=1300, height=300, fg_color="transparent", corner_radius=0)
     trendingFrame.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
 
     # Cria um scrollable frame dentro do frame principal
     trendingScrollFrame = customtkinter.CTkScrollableFrame(
         trendingFrame,
         orientation="horizontal",
-        width=1350,
+        width=1200,
         height=250,
         fg_color="transparent"
     )
@@ -1033,14 +1033,14 @@ def homepage_render(mainContentFrame, oldFrame):
     trendingLabel.place(x=20,y=10)
 
     # Frame menu trending Podcasts
-    trendingPodcastsFrame = customtkinter.CTkFrame(homepageFrame, width=1400, height=300, fg_color="transparent", corner_radius=0)
+    trendingPodcastsFrame = customtkinter.CTkFrame(homepageFrame, width=1300, height=300, fg_color="transparent", corner_radius=0)
     trendingPodcastsFrame.grid(row=1, column=0, padx=20, pady=20, sticky="nsew")
 
     # Cria um scrollable frame dentro do frame principal
     trendingPodcastsScrollFrame = customtkinter.CTkScrollableFrame(
         trendingPodcastsFrame,
         orientation="horizontal",
-        width=1350,
+        width=1200,
         height=250,
         fg_color="transparent"
     )
@@ -1100,14 +1100,14 @@ def musicpage_render(mainContentFrame, oldFrame):
     currentFrame = MusicpageFrame # O frame a ser usado passa a ser o userFrame
 
     # Frame menu Musicas
-    MusicFrame = customtkinter.CTkFrame(MusicpageFrame, width=1400, height=300, fg_color="transparent", corner_radius=0)
+    MusicFrame = customtkinter.CTkFrame(MusicpageFrame, width=1300, height=300, fg_color="transparent", corner_radius=0)
     MusicFrame.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
 
     # Cria um scrollable frame dentro do frame principal
     MusicScrollFrame = customtkinter.CTkScrollableFrame(
         MusicFrame,
         orientation="horizontal",
-        width=1350,
+        width=1200,
         height=250,
         fg_color="transparent"
     )
@@ -1117,14 +1117,14 @@ def musicpage_render(mainContentFrame, oldFrame):
     MusicLabel.place(x=20,y=10)
 
     # Frame menu Your Activity
-    MusicYourActivityFrame = customtkinter.CTkFrame(MusicpageFrame, width=1400, height=300, fg_color="transparent", corner_radius=0)
+    MusicYourActivityFrame = customtkinter.CTkFrame(MusicpageFrame, width=1300, height=300, fg_color="transparent", corner_radius=0)
     MusicYourActivityFrame.grid(row=1, column=0, padx=20, pady=20, sticky="nsew")
 
     # Cria um scrollable frame dentro do frame principal
     MusicScrollFrame = customtkinter.CTkScrollableFrame(
         MusicYourActivityFrame,
         orientation="horizontal",
-        width=1350,
+        width=1200,
         height=250,
         fg_color="transparent"
     )
@@ -1135,14 +1135,14 @@ def musicpage_render(mainContentFrame, oldFrame):
     MusicLabel.place(x=20,y=10)
 
     # Frame menu Discover
-    MusicDiscoverFrame = customtkinter.CTkFrame(MusicpageFrame, width=1400, height=300, fg_color="transparent", corner_radius=0)
+    MusicDiscoverFrame = customtkinter.CTkFrame(MusicpageFrame, width=1300, height=300, fg_color="transparent", corner_radius=0)
     MusicDiscoverFrame.grid(row=2, column=0, padx=20, pady=20, sticky="nsew")
 
     # Cria um scrollable frame dentro do frame principal
     MusicScrollFrame = customtkinter.CTkScrollableFrame(
         MusicDiscoverFrame,
         orientation="horizontal",
-        width=1350,
+        width=1200,
         height=250,
         fg_color="transparent"
     )
