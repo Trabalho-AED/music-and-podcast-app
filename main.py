@@ -12,7 +12,6 @@ from io import StringIO
 from tkinter import ttk#from tkVideoPlayer import TkinterVideo   #https://pypi.org/project/tkvideoplayer/ 
 import webbrowser                        # https://docs.python.org/3/library/webbrowser.html 
 import time #Sleep
-from file_management import *
 
 customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light" Alterar entre tema escuro e claro
 
