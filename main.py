@@ -12,105 +12,13 @@ from io import StringIO
 from tkinter import ttk#from tkVideoPlayer import TkinterVideo   #https://pypi.org/project/tkvideoplayer/ 
 import webbrowser                        # https://docs.python.org/3/library/webbrowser.html 
 import time #Sleep
+from file_management import *
+from users import *
+from music_management import *
 
 customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light" Alterar entre tema escuro e claro
 
-################################[VERIFICAR SISTEMA OPERATIVO]######################################
-def path_format():
-    """Retorna o formato de declarar caminhos, dependendo do Sistema Operativo"""
-
-    #Se os SO for windows
-    if os.name=="nt":
-        pathFormat = "\\"
-    #Se for outro SO
-    else:
-        pathFormat = "/"
-
-    return pathFormat # Retorna o formato
-
 pathFormat = path_format()
-######################################################################################################
-
-
-#################################[CRIAR PASTAS]#######################################################
-def create_main_folders(folderPath):
-    #Cria as pastas principais
-
-    #Caso não exista
-    if not os.path.exists(f".{pathFormat}{folderPath}{pathFormat}"):
-        os.mkdir(f".{pathFormat}{folderPath}{pathFormat}")
-    #Caso exista
-    else:
-        print(f"Folder already exists: {folderPath}")
-
-def create_sub_folders(folderPath):
-    """Cria as subpastas"""
-
-    #Caso não exista
-    if not os.path.exists(f".{pathFormat}{folderPath}{pathFormat}"):
-        os.mkdir(f".{pathFormat}{folderPath}{pathFormat}")
-    #Caso exista
-    else:
-        print(f"Sub Folder already exists: {folderPath}")
-
-mainFolders = ["audios", "images", "db"] # Lista com as pastas principais
-subFolders = [f"images{pathFormat}cover_art", f"images{pathFormat}icons", f"audios{pathFormat}music", f"db{pathFormat}users" ] # Lista com as pastas secundárias
-
-#Criar Pastas
-for folder in mainFolders:
-    create_main_folders(folder) 
-
-#Criar Subpastas
-for folder in subFolders:
-    create_sub_folders(folder)
-##########################################################################################################
-
-
-###############################[CRIAR FICHEIROS]##########################################################
-def create_main_files(filePath):
-    """Cria o ficheiro caso ele não exista."""
-
-    #Caso não exista
-    if not os.path.exists(filePath):
-        # Abre o ficheiro no modo write, criando-o caso não exista.
-        with open(filePath, "w", encoding="utf-8") as file:
-            #Adiciona o username admin por defeito à lista de admins
-            if filePath == f".{pathFormat}db{pathFormat}admin_list.csv":
-                file.writelines("admin")
-                file.close()
-            #Adiciona o user admin com o username admin e password admin por defeito à lista de utilizadores por defeito
-            elif filePath == f".{pathFormat}db{pathFormat}user_accounts.csv":
-                file.writelines("admin;admin;Admin")
-                file.close()
-            else:
-                pass  # O ficheiro será criado vazio.
-        print(f"File created: {filePath}")
-    #Caso já exista
-    else:
-        print(f"File already exists: {filePath}")
-
-#Lista com os ficheiros da base de dados
-mainFiles = [f".{pathFormat}db{pathFormat}category_list.csv",f".{pathFormat}db{pathFormat}user_accounts.csv",f".{pathFormat}db{pathFormat}podcast_list.csv",f".{pathFormat}db{pathFormat}music_list.csv",f".{pathFormat}db{pathFormat}admin_list.csv"]
-
-#Criar ficheiros
-for file in mainFiles:
-    create_main_files(file)
-############################################################################################################
-
-
-##########################################[CAMINHOS]############################################################
-
-imagePath = f".{pathFormat}images{pathFormat}icons{pathFormat}" # Caminho para o diretório onde são armazenadas as imagens
-accountsPath = f".{pathFormat}db{pathFormat}user_accounts.csv" # Caminho para o ficheiro onde são armazenadas as contas
-musicPath = f".{pathFormat}db{pathFormat}music_list.csv" # Caminho para o ficheiro onde são armazenadas as músicas
-podcastPath = f".{pathFormat}db{pathFormat}podcast_list.csv" # Caminho para o ficheiro onde são armazenadas os podcasts
-adminListfile = f".{pathFormat}db{pathFormat}admin_list.csv" # Caminho para o ficheiro onde são armazenadas as contas admin
-coverArtPath = f".{pathFormat}images{pathFormat}cover_art{pathFormat}" # Caminho para o diretório onde são armazenadas as imagens das músicas
-musicAudioPath = f".{pathFormat}audios{pathFormat}music{pathFormat}" # Caminho para o diretório onde são armazenadas as músicas
-categoriesPath = f".{pathFormat}db{pathFormat}category_list.csv" # Caminho para o ficheiro onde são armazenadas as categorias
-usersPath = f".{pathFormat}db{pathFormat}users{pathFormat}" # Caminho para o diretório onde são armazenadas os users na db
-#################################################################################################################
-
 
 ###########################################################
 currentFrame = None # Guarda o frame que o utilizador se encontra
@@ -149,71 +57,6 @@ app.geometry(f"{appWidth}x{appHeight}+{int(x)}+{int(y)}")
 
 
 ##################[ALGORITMOS DA APP]################################
-def read_file(path):
-    """Lê um ficheiro com qualquer opção.
-    Retorna o conteúdo do ficheiro"""
-
-    #Abre o ficheiro
-    with open(path, "r", encoding="utf-8") as file:
-        lines = file.readlines() # Lê o ficheiro
-    
-    return lines # Retorna o conteúdo
-
-def get_accounts(username,password):
-    """Verifica se existe o username ou a combinação username - password.
-    Retorna os dados encontrados"""
-
-    lines = read_file(accountsPath) # Recebe o conteúdo do ficheiro
-    
-    #Para cada linha
-    for line in lines:
-        fields = line.strip().split(";")
-        if fields[0] == username and fields[1] == password:
-            return fields[0], fields[1], fields[2] # Se a combinação username e password existir, retorna todos os dados
-    
-    return "not_found", "not_found", "" # Caso a combinação não exista, retorna as strings
-
-def user_check(username):
-    """Verifica se o username já existe.
-    Retorna um booleano"""
-
-    lines = read_file(accountsPath) # Abrir os dados do ficheiro utilizador
-
-    #Para cada linha de dados
-    for line in lines:
-        fields = line.strip().split(";")
-        if fields[0] == username:
-            return True # Se o nome de utilizador(fields na posição 0) for igual ao username
-    
-    return False # Se não for encontrado nenhum username igual
-
-def check_admin(username):
-    """Verifica se o utilizador é admin.
-    Retorna um booleano"""
-
-    global isAdmin
-
-    lines = read_file(adminListfile) # Abrir os dados do ficheiro admin
-
-    #Para cada linha de dados
-    for line in lines:
-        if line.strip() == username:
-            isAdmin = True
-            return True # Se o utilizador na linha for igual ao username
-        
-    return False # Se o utilizador não estiver na lista de admin
-
-def create_account(username, password, name):
-    """Cria uma conta"""
-
-    accountAdd = username+";"+password+";"+name+"\n" # String com o Formato dos dados
-    create_sub_folders(f"db{pathFormat}users{pathFormat}{username}")
-    create_sub_folders(f"db{pathFormat}users{pathFormat}{username}{pathFormat}playlists")
-    create_main_files(f"db{pathFormat}users{pathFormat}{username}{pathFormat}favorites.csv")
-    with open(accountsPath, "a", encoding="utf-8") as file:
-        file.write(accountAdd) # Escreve os dados no ficheiro
-
-    return
 
 def login_action(usernameEntry, passwordEntry, resultLabel,loginFrame):
     """Gere o algoritmo de login"""
@@ -518,25 +361,59 @@ def refresh_playlists(playlistScrollFrame):
         btnPlaylist1 = customtkinter.CTkButton(playlistScrollFrame, image=playlistIcon, width=31, height=31, fg_color="transparent", text=f"{playLists[i]}")
         btnPlaylist1.grid(row=i+1, column=0,sticky="w")
 
-def create_playlist(playListName, playlistCreateFrame, errorLabel):
-    """Cria uma playlist com o nome pedido pelo utilizador"""
-    playlistPath = f"{usersPath}{usernameFinal}{pathFormat}playlists{pathFormat}{playListName}.csv" # Caminho para o diretório onde são armazenadas as playlists
+def get_playlists():
+    """Gets the playlists from files by username and returns them in a list"""
 
-    if playListName == " " or playListName == "":
-        errorLabel.configure(text="O nome da playlist não pode estar vazio")
-        return
-    
-    elif playListName+".csv" in os.listdir(f"{usersPath}{usernameFinal}{pathFormat}playlists"):
-        errorLabel.configure(text="Playlist já existe!")
-        return
+    playlistPath = f"{usersPath}{usernameFinal}{pathFormat}playlists" # Caminho para o diretório onde são armazenadas as playlists
 
-    else:
-        with open(playlistPath, "w", encoding="utf-8") as file:
-            pass
+    playlists = []
+    try:
+        # Para cada ficheiro no diretório
+        for fileName in os.listdir(playlistPath):
+            # Verificar se é ficheiro 
+            if os.path.isfile(os.path.join(playlistPath, fileName)):
+                # Remove a extensão (últimos 4 caracteres)
+                playlists.append(fileName[:-4])
+        return playlists
+    except Exception as e:
+        print(f"Error reading directory: {e}")
+        return []
 
-        refresh_playlists(playlistScrollFrame)
+def update_music_info(musicNameNew, musicAuthorNew,coverArtNew):
+    """Atualiza as informações da música na interface."""
+    musicName.configure(text=musicNameNew)
+    artistName.configure(text=musicAuthorNew)
+    musicCover.configure(image=coverArtNew,fg_color="transparent")
 
-        playlistCreateFrame.destroy()
+def update_slider():
+    """Atualiza o slider de progresso da música."""
+    if mixer.music.get_busy():
+        current_time = mixer.music.get_pos() // 1000  # Em segundos
+        musicLenSlider.set(current_time)
+    app.after(200, update_slider)  # Atualiza a cada 200ms
+
+def adjust_volume(event=None):
+    """Ajusta o volume da música baseado no slider."""
+    volume = volumeSlider.get() / 100  # Converte para intervalo de 0 a 1
+    mixer.music.set_volume(volume)
+
+def play_music(music,musicName,musicAuthor,coverArt):
+    """Toca a música e atualiza a interface."""
+
+    global isPaused
+
+    mixer.init()
+    mixer.music.load(musicAudioPath + music)
+    mixer.music.play(loops=0)  # Toca apenas uma vez
+    btnPlay.configure(image=pauseIcon)
+    isPaused = False
+
+    # Atualiza informações na interface
+    update_music_info(musicName, musicAuthor, coverArt)
+
+    # Configura o slider de progresso
+    musicLenSlider.configure(to=get_music_length(music))
+    update_slider()
 
 def new_playlist():
     """Abre um frame para adicionar playlists"""
@@ -986,81 +863,25 @@ def userpage_render(mainContentFrame, oldFrame):
     labelPass = customtkinter.CTkLabel(changePassFrame, text="Password", font=("Arial", 20),text_color="white")
     labelPass.place(x=105,y=35)
 
-def read_content(contentType):
-    if contentType == "podcast":
-        with open(podcastPath, "r", encoding="utf-8") as file:
-            podcastList = file.readlines()
-        return podcastList
-    elif contentType == "music":
-        with open(musicPath, "r", encoding="utf-8") as file:
-            lines = file.readlines()
+def create_playlist(playListName, playlistCreateFrame, errorLabel):
+    """Cria uma playlist com o nome pedido pelo utilizador"""
+    playlistPath = f"{usersPath}{usernameFinal}{pathFormat}playlists{pathFormat}{playListName}.csv" # Caminho para o diretório onde são armazenadas as playlists
 
-        musicList = []
-        for line in lines:
-            fields = line.strip().split(";")
-            musicList.append(fields)  # Each entry is a list: [name, author, cover, link]
+    if playListName == " " or playListName == "":
+        errorLabel.configure(text="O nome da playlist não pode estar vazio")
+        return
+    
+    elif playListName+".csv" in os.listdir(f"{usersPath}{usernameFinal}{pathFormat}playlists"):
+        errorLabel.configure(text="Playlist já existe!")
+        return
 
-        return musicList
+    else:
+        with open(playlistPath, "w", encoding="utf-8") as file:
+            pass
 
-def get_playlists():
-    """Gets the playlists from files by username and returns them in a list"""
+        refresh_playlists(playlistScrollFrame)
 
-    playlistPath = f"{usersPath}{usernameFinal}{pathFormat}playlists" # Caminho para o diretório onde são armazenadas as playlists
-
-    playlists = []
-    try:
-        # Para cada ficheiro no diretório
-        for fileName in os.listdir(playlistPath):
-            # Verificar se é ficheiro 
-            if os.path.isfile(os.path.join(playlistPath, fileName)):
-                # Remove a extensão (últimos 4 caracteres)
-                playlists.append(fileName[:-4])
-        return playlists
-    except Exception as e:
-        print(f"Error reading directory: {e}")
-        return []
-
-def update_music_info(musicNameNew, musicAuthorNew,coverArtNew):
-    """Atualiza as informações da música na interface."""
-    musicName.configure(text=musicNameNew)
-    artistName.configure(text=musicAuthorNew)
-    musicCover.configure(image=coverArtNew,fg_color="transparent")
-
-def update_slider():
-    """Atualiza o slider de progresso da música."""
-    if mixer.music.get_busy():
-        current_time = mixer.music.get_pos() // 1000  # Em segundos
-        musicLenSlider.set(current_time)
-    app.after(200, update_slider)  # Atualiza a cada 200ms
-
-def adjust_volume(event=None):
-    """Ajusta o volume da música baseado no slider."""
-    volume = volumeSlider.get() / 100  # Converte para intervalo de 0 a 1
-    mixer.music.set_volume(volume)
-
-def play_music(music,musicName,musicAuthor,coverArt):
-    """Toca a música e atualiza a interface."""
-
-    global isPaused
-
-    mixer.init()
-    mixer.music.load(musicAudioPath + music)
-    mixer.music.play(loops=0)  # Toca apenas uma vez
-    btnPlay.configure(image=pauseIcon)
-    isPaused = False
-
-    # Atualiza informações na interface
-    update_music_info(musicName, musicAuthor, coverArt)
-
-    # Configura o slider de progresso
-    musicLenSlider.configure(to=get_music_length(music))
-    update_slider()
-
-def get_music_length(music):
-    """Obtém a duração da música em segundos."""
-    from mutagen.mp3 import MP3
-    audio = MP3(musicAudioPath + music)
-    return int(audio.info.length)
+        playlistCreateFrame.destroy()
 
 def adminpage_render(mainContentFrame, oldFrame):
     """Mostra a homepage"""
