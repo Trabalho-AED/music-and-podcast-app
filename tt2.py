@@ -926,7 +926,7 @@ def userpage_render(mainContentFrame, oldFrame):
     oldFrame.destroy() # Apagar o estilo do frame anterior
 
     #Frame User Menu
-    userFrame = customtkinter.CTkFrame(mainContentFrame, width=1674, height=890, fg_color="green",corner_radius=0)  
+    userFrame = customtkinter.CTkFrame(mainContentFrame, width=1674, height=890, fg_color="#242424",corner_radius=0)  
     userFrame.place(x=0,y=0)
 
     currentFrame = userFrame # O frame a ser usado passa a ser o userFrame
@@ -1070,6 +1070,7 @@ def adminpage_render(mainContentFrame, oldFrame):
 
     if oldFrame != None:
         oldFrame.destroy() # Apagar o estilo do frame anterior
+
     #Frame Home Page
     homepageFrame = customtkinter.CTkScrollableFrame(mainContentFrame,
 	orientation="vertical",
@@ -1082,11 +1083,55 @@ def adminpage_render(mainContentFrame, oldFrame):
 
     currentFrame = homepageFrame # O frame a ser usado passa a ser o userFrame
     
-    trendingLabel = customtkinter.CTkLabel(homepageFrame,text="EMON3Y",font=("Roboto", 40))
-    trendingLabel.grid(row = 0, column=0, padx=150, pady=30)
+   # Configure the grid to center the elements
+    homepageFrame.grid_rowconfigure(0, weight=1)
+    homepageFrame.grid_rowconfigure(1, weight=1)
+    homepageFrame.grid_rowconfigure(2, weight=1)
+    homepageFrame.grid_rowconfigure(3, weight=1)
+    homepageFrame.grid_rowconfigure(4, weight=1)
+    homepageFrame.grid_rowconfigure(5, weight=1)
+    homepageFrame.grid_rowconfigure(6, weight=1)
+    homepageFrame.grid_columnconfigure(0, weight=1)
+    homepageFrame.grid_columnconfigure(1, weight=1)
+    homepageFrame.grid_columnconfigure(2, weight=1)
+    homepageFrame.grid_columnconfigure(3, weight=1)
 
-    addBtn = customtkinter.CTkButton(homepageFrame, width=100, height=10, fg_color="transparent", text="Add Music", command=add_music)
-    addBtn.grid(row = 1, column=0, padx=150, pady=30)
+
+    #Label para mostrar o texto "Admin Dashboard"
+    trendingLabel = customtkinter.CTkLabel(homepageFrame, text="Admin Dashboard", font=("Roboto", 40))
+    trendingLabel.grid(row=1, column=1, columnspan=2, padx=20, pady=20, sticky="nsew")
+
+    # Botão para adicionar música
+    addBtn = customtkinter.CTkButton(homepageFrame, width=200, height=50, text="Add Music")
+    addBtn.grid(row=2, column=1, padx=20, pady=10, sticky="e")
+
+    # Botão para adicionar podcast
+    addPodcastBtn = customtkinter.CTkButton(homepageFrame, width=200, height=50, text="Add Podcast")
+    addPodcastBtn.grid(row=2, column=2, padx=20, pady=10, sticky="w")
+
+    #Label para mostrar Music"
+    labelMusics = customtkinter.CTkLabel(homepageFrame, text="Music", font=("Roboto", 25))
+    labelMusics.grid(row=3, column=1, padx=20, pady=10, sticky="e")
+
+    #Label para mostrar Podcasts"
+    labelPodcasts = customtkinter.CTkLabel(homepageFrame, text="Podcasts", font=("Roboto", 25))
+    labelPodcasts.grid(row=4, column=1, padx=20, pady=10, sticky="e")
+
+    #Botão para gerir músicas
+    ManageMusicsbtn = customtkinter.CTkButton(homepageFrame, width=200, height=50, text="Manage Musics")
+    ManageMusicsbtn.grid(row=3, column=2, padx=20, pady=10, sticky="w")
+
+    #Botão para gerir podcasts
+    ManagePodcastsbtn = customtkinter.CTkButton(homepageFrame, width=200, height=50, text="Manage Podcasts")
+    ManagePodcastsbtn.grid(row=4, column=2, padx=20, pady=10, sticky="w")
+
+    #Label para mostrar Users"  
+    labelManageUsers = customtkinter.CTkLabel(homepageFrame, text="Users", font=("Roboto", 25))
+    labelManageUsers.grid(row=5, column=1, padx=20, pady=10, sticky="e")
+
+    #Botão para gerir utilizadores
+    ManageUsersbtn = customtkinter.CTkButton(homepageFrame, width=200, height=50, text="Manage Users")
+    ManageUsersbtn.grid(row=5, column=2, padx=20, pady=10, sticky="w")
 
 
 def homepage_render(mainContentFrame, oldFrame):
