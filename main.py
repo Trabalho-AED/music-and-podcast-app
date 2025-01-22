@@ -1079,7 +1079,44 @@ def homepage_render(mainContentFrame, oldFrame):
     # Abrir lista de podcasts disponiveis
     podcastList = read_content("podcast")
 
+def musicpage_render(mainContentFrame, oldFrame):
+    """Mostra a homepage"""
 
+    global currentFrame # Variável global para frame a ser usado
+
+    if oldFrame != None:
+        oldFrame.destroy() # Apagar o estilo do frame anterior
+    
+    #Frame Music Page
+
+    MusicpageFrame = customtkinter.CTkScrollableFrame(mainContentFrame,
+	orientation="vertical",
+	width=1238,
+	height=appHeight-(90+131),
+	fg_color="black",
+	corner_radius = 0
+	)
+    MusicpageFrame.place(x=0,y=0)
+
+    currentFrame = MusicpageFrame # O frame a ser usado passa a ser o userFrame
+
+    # Frame menu Musicas
+
+    MusicFrame = customtkinter.CTkFrame(MusicpageFrame, width=1400, height=300, fg_color="transparent", corner_radius=0)
+    MusicFrame.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
+
+    # Cria um scrollable frame dentro do frame principal
+    MusicScrollFrame = customtkinter.CTkScrollableFrame(
+        MusicFrame,
+        orientation="horizontal",
+        width=1350,
+        height=250,
+        fg_color="transparent"
+    )
+    MusicScrollFrame.place(x=0, y=20)
+
+    MusicLabel = customtkinter.CTkLabel(MusicFrame,text="Music",font=("Roboto", 25))
+    MusicLabel.place(x=20,y=10)
 
 def read_content(contentType):
     if contentType == "podcast":
