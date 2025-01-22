@@ -1088,7 +1088,6 @@ def musicpage_render(mainContentFrame, oldFrame):
         oldFrame.destroy() # Apagar o estilo do frame anterior
     
     #Frame Music Page
-
     MusicpageFrame = customtkinter.CTkScrollableFrame(mainContentFrame,
 	orientation="vertical",
 	width=1238,
@@ -1101,7 +1100,6 @@ def musicpage_render(mainContentFrame, oldFrame):
     currentFrame = MusicpageFrame # O frame a ser usado passa a ser o userFrame
 
     # Frame menu Musicas
-
     MusicFrame = customtkinter.CTkFrame(MusicpageFrame, width=1400, height=300, fg_color="transparent", corner_radius=0)
     MusicFrame.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
 
@@ -1117,6 +1115,44 @@ def musicpage_render(mainContentFrame, oldFrame):
 
     MusicLabel = customtkinter.CTkLabel(MusicFrame,text="Music",font=("Roboto", 25))
     MusicLabel.place(x=20,y=10)
+
+    # Frame menu Your Activity
+    MusicYourActivityFrame = customtkinter.CTkFrame(MusicpageFrame, width=1400, height=300, fg_color="transparent", corner_radius=0)
+    MusicYourActivityFrame.grid(row=1, column=0, padx=20, pady=20, sticky="nsew")
+
+    # Cria um scrollable frame dentro do frame principal
+    MusicScrollFrame = customtkinter.CTkScrollableFrame(
+        MusicYourActivityFrame,
+        orientation="horizontal",
+        width=1350,
+        height=250,
+        fg_color="transparent"
+    )
+    MusicScrollFrame.place(x=0, y=20)
+
+    #Label para mostrar "Your Activity"
+    MusicLabel = customtkinter.CTkLabel(MusicYourActivityFrame,text="Your Activity",font=("Roboto", 25))
+    MusicLabel.place(x=20,y=10)
+
+    # Frame menu Discover
+    MusicDiscoverFrame = customtkinter.CTkFrame(MusicpageFrame, width=1400, height=300, fg_color="transparent", corner_radius=0)
+    MusicDiscoverFrame.grid(row=2, column=0, padx=20, pady=20, sticky="nsew")
+
+    # Cria um scrollable frame dentro do frame principal
+    MusicScrollFrame = customtkinter.CTkScrollableFrame(
+        MusicDiscoverFrame,
+        orientation="horizontal",
+        width=1350,
+        height=250,
+        fg_color="transparent"
+    )
+    MusicScrollFrame.place(x=0, y=20)
+
+    #Label para mostrar "Your Activity"
+    MusicLabel = customtkinter.CTkLabel(MusicDiscoverFrame,text="Discover",font=("Roboto", 25))
+    MusicLabel.place(x=20,y=10)
+
+    
 
 def read_content(contentType):
     if contentType == "podcast":
