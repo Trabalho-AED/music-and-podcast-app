@@ -402,7 +402,7 @@ def refresh_playlists(playlistScrollFrame):
         orientation="vertical",
         width=150,
         height=150,
-        fg_color="blue"
+        fg_color="transparent"
     )
     playlistScrollFrame.place(x=0, y=30)
 
@@ -688,7 +688,7 @@ def mainwindow_render(oldFrame):
     labelCollection.place(x=0, y=0) # Inicio do frame
 
     #Botão com Icon e texto de musica
-    btnMusic = customtkinter.CTkButton(collectionMenuFrame, image=musicIcon, width=31, height=31, fg_color="transparent", text="Music")
+    btnMusic = customtkinter.CTkButton(collectionMenuFrame, image=musicIcon, width=31, height=31, fg_color="transparent", text="Music",command=lambda:musicpage_render(mainContentFrame, currentFrame))
     btnMusic.place(x=0, y=30)
 
     #Botão com Icon e texto de podcast
@@ -713,7 +713,7 @@ def mainwindow_render(oldFrame):
         orientation="vertical",
         width=150,
         height=150,
-        fg_color="blue"
+        fg_color="transparent"
     )
     playlistScrollFrame.place(x=0, y=30)
 
@@ -1016,7 +1016,7 @@ def homepage_render(mainContentFrame, oldFrame):
     currentFrame = homepageFrame # O frame a ser usado passa a ser o userFrame
     
     # Frame menu trending Music
-    trendingFrame = customtkinter.CTkFrame(homepageFrame, width=1400, height=300, fg_color="blue", corner_radius=0)
+    trendingFrame = customtkinter.CTkFrame(homepageFrame, width=1400, height=300, fg_color="transparent", corner_radius=0)
     trendingFrame.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
 
     # Cria um scrollable frame dentro do frame principal
@@ -1025,12 +1025,29 @@ def homepage_render(mainContentFrame, oldFrame):
         orientation="horizontal",
         width=1350,
         height=250,
-        fg_color="blue"
+        fg_color="transparent"
     )
     trendingScrollFrame.place(x=0, y=20)
     
-    trendingLabel = customtkinter.CTkLabel(trendingFrame,text="Trending",font=("Roboto", 25))
+    trendingLabel = customtkinter.CTkLabel(trendingFrame,text="Trending Music",font=("Roboto", 25))
     trendingLabel.place(x=20,y=10)
+
+    # Frame menu trending Podcasts
+    trendingPodcastsFrame = customtkinter.CTkFrame(homepageFrame, width=1400, height=300, fg_color="transparent", corner_radius=0)
+    trendingPodcastsFrame.grid(row=1, column=0, padx=20, pady=20, sticky="nsew")
+
+    # Cria um scrollable frame dentro do frame principal
+    trendingPodcastsScrollFrame = customtkinter.CTkScrollableFrame(
+        trendingPodcastsFrame,
+        orientation="horizontal",
+        width=1350,
+        height=250,
+        fg_color="transparent"
+    )
+    trendingPodcastsScrollFrame.place(x=0, y=20)
+    
+    trendingPodcastsLabel = customtkinter.CTkLabel(trendingPodcastsFrame,text="Trending Podcasts",font=("Roboto", 25))
+    trendingPodcastsLabel.place(x=20,y=10)
 
     # Criar botões num ciclo for, na horizontal
     musicList = read_content("music")  # receber dados da lista (lista com sublistas)
@@ -1062,6 +1079,8 @@ def homepage_render(mainContentFrame, oldFrame):
     # Abrir lista de podcasts disponiveis
     podcastList = read_content("podcast")
 
+
+
 def read_content(contentType):
     if contentType == "podcast":
         with open(podcastPath, "r", encoding="utf-8") as file:
@@ -1089,7 +1108,6 @@ def toggle_play():
         mixer.music.pause()
         btnPlay.configure(image=playIcon)
         isPaused = True
-
 
 def toggle_mute():
     global currentLevel
