@@ -16,22 +16,6 @@ def path_format():
 pathFormat = path_format()
 ######################################################################################################
 
-def read_content(contentType):
-    if contentType == "podcast":
-        with open(podcastPath, "r", encoding="utf-8") as file:
-            podcastList = file.readlines()
-        return podcastList
-    elif contentType == "music":
-        with open(musicPath, "r", encoding="utf-8") as file:
-            lines = file.readlines()
-
-        musicList = []
-        for line in lines:
-            fields = line.strip().split(";")
-            musicList.append(fields)  # Each entry is a list: [name, author, cover, link]
-
-        return musicList
-
 def read_file(path):
     """Lê um ficheiro com qualquer opção.
     Retorna o conteúdo do ficheiro"""
