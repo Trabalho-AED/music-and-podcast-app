@@ -11,6 +11,7 @@ import tkinter as tk
 from io import StringIO
 from tkinter import ttk#from tkVideoPlayer import TkinterVideo   #https://pypi.org/project/tkvideoplayer/ 
 import webbrowser                        # https://docs.python.org/3/library/webbrowser.html 
+import time #Sleep
 
 customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light" Alterar entre tema escuro e claro
 #customtkinter.set_default_color_theme(".\\theme\\rime.json") # Tema de cores
@@ -54,7 +55,7 @@ def create_sub_folders(folderPath):
         print(f"Sub Folder already exists: {folderPath}")
 
 mainFolders = ["audios", "images", "db"] # Lista com as pastas principais
-subFolders = [f"images{pathFormat}cover_art", f"images{pathFormat}icons", f"audios{pathFormat}music"] # Lista com as pastas secundárias
+subFolders = [f"images{pathFormat}cover_art", f"images{pathFormat}icons", f"audios{pathFormat}music", f"db{pathFormat}users" ] # Lista com as pastas secundárias
 
 #Criar Pastas
 for folder in mainFolders:
@@ -108,6 +109,7 @@ adminListfile = f".{pathFormat}db{pathFormat}admin_list.csv" # Caminho para o fi
 coverArtPath = f".{pathFormat}images{pathFormat}cover_art{pathFormat}" # Caminho para o diretório onde são armazenadas as imagens das músicas
 musicAudioPath = f".{pathFormat}audios{pathFormat}music{pathFormat}" # Caminho para o diretório onde são armazenadas as músicas
 categoriesPath = f".{pathFormat}db{pathFormat}category_list.csv" # Caminho para o ficheiro onde são armazenadas as categorias
+usersPath = f".{pathFormat}db{pathFormat}users{pathFormat}" # Caminho para o diretório onde são armazenadas os users na db
 #################################################################################################################
 
 
@@ -119,6 +121,7 @@ tempAudioName = None # Para salvar o nome do aúdio da música
 nameFull = None  # Para salvar o nome do utilizador
 currentLevel = 50 # Para Salvar o volume antes de mute
 isPaused = True # Para salvar estado da música
+usernameFinal = None # Para salvar o username no login
 ###########################################################
 
 # Inicializar app
@@ -205,12 +208,19 @@ def create_account(username, password, name):
     """Cria uma conta"""
 
     accountAdd = username+";"+password+";"+name+"\n" # String com o Formato dos dados
+    create_sub_folders(f"db{pathFormat}users{pathFormat}{username}")
+    create_sub_folders(f"db{pathFormat}users{pathFormat}{username}{pathFormat}playlists")
+    create_main_files(f"db{pathFormat}users{pathFormat}{username}{pathFormat}favorites.csv")
     with open(accountsPath, "a", encoding="utf-8") as file:
         file.write(accountAdd) # Escreve os dados no ficheiro
 
+    return
+
 def login_action(usernameEntry, passwordEntry, resultLabel,loginFrame):
-    global nameFull
     """Gere o algoritmo de login"""
+
+    global nameFull, usernameFinal
+
     username = usernameEntry.get() # Recebe o valor que está na entry do username
     password = passwordEntry.get() # Recebe o valor que está na entry da password
 
@@ -236,6 +246,7 @@ def login_action(usernameEntry, passwordEntry, resultLabel,loginFrame):
         resultLabel.configure(text=f"Bem vindo {name}, Login realizado com sucesso!\nTipo de Utilizador: {adminflag}") # Texto a apresentar
         print(username, password, adminflag) # Confirmação
         nameFull = name
+        usernameFinal = username
         mainwindow_render(loginFrame) # Passa para a janela principal
 
 def check_format(value, typeVal):
@@ -280,7 +291,7 @@ def check_format(value, typeVal):
         else:
             return None
         
-def register_action(usernameEntry, passwordEntry,nameEntry, resultLabel):
+def register_action(usernameEntry, passwordEntry,nameEntry, resultLabel, frameRegister):
     """Gere o algoritmo de registo"""
 
     name = nameEntry.get() # Recebe o valor que está na entry do nome
@@ -315,8 +326,8 @@ def register_action(usernameEntry, passwordEntry,nameEntry, resultLabel):
     else:
         create_account(username, password, name) # Criar a conta
         resultLabel.configure(text=f"Bem vindo {name}, Conta criada com com sucesso!") # Texto a apresentar
-    
-    return
+        time.sleep(2)
+        login_render(frameRegister)
 
 ##########################################################
 
@@ -368,7 +379,7 @@ def register_render(oldFrame):
     existentUserLabel.place(x=290, y=415)
 
     # Botão de criar conta
-    CreateButton = customtkinter.CTkButton(frameRegister,height=40,width=200,text="Create User", command=lambda:register_action(usernameEntry, passwordEntry,nameEntry, resultLabel))
+    CreateButton = customtkinter.CTkButton(frameRegister,height=40,width=200,text="Create User", command=lambda:register_action(usernameEntry, passwordEntry,nameEntry, resultLabel, frameRegister))
     CreateButton.place(x=290, y=360)
 
     # Label para exibir resultados ou mensagens de erro
@@ -484,6 +495,92 @@ def select_file(musicCoverImg, musicAudioPathLabel):
     
     return
 
+def refresh_playlists(playlistScrollFrame):
+    playLists = get_playlists()
+
+    playlistScrollFrame.destroy()
+
+    # Cria um scrollable frame dentro do frame principal
+    playlistScrollFrame = customtkinter.CTkScrollableFrame(
+        playlistMenuFrame,
+        orientation="vertical",
+        width=150,
+        height=150,
+        fg_color="blue"
+    )
+    playlistScrollFrame.place(x=0, y=30)
+
+    #Botão com Icone de playlist
+    btnaddPlaylist1 = customtkinter.CTkButton(playlistScrollFrame, image=addIcon, width=31, height=31, fg_color="transparent", text="Add Playlist", command=new_playlist)
+    btnaddPlaylist1.grid(row=0, column=0,sticky="w")
+
+    for i in range(len(playLists)):
+        #Botão com Icone de playlist
+        btnPlaylist1 = customtkinter.CTkButton(playlistScrollFrame, image=playlistIcon, width=31, height=31, fg_color="transparent", text=f"{playLists[i]}")
+        btnPlaylist1.grid(row=i+1, column=0,sticky="w")
+
+def create_playlist(playListName, playlistCreateFrame, errorLabel):
+    """Cria uma playlist com o nome pedido pelo utilizador"""
+    playlistPath = f"{usersPath}{usernameFinal}{pathFormat}playlists{pathFormat}{playListName}.csv" # Caminho para o diretório onde são armazenadas as playlists
+
+    if playListName == " " or playListName == "":
+        errorLabel.configure(text="O nome da playlist não pode estar vazio")
+        return
+    
+    elif playListName+".csv" in os.listdir(f"{usersPath}{usernameFinal}{pathFormat}playlists"):
+        errorLabel.configure(text="Playlist já existe!")
+        return
+
+    else:
+        with open(playlistPath, "w", encoding="utf-8") as file:
+            pass
+
+        refresh_playlists(playlistScrollFrame)
+
+        playlistCreateFrame.destroy()
+
+def new_playlist():
+    """Abre um frame para adicionar playlists"""
+
+    # Frame para adicionar playlist
+    playlistCreateFrame = customtkinter.CTkFrame(app, width=appWidth-246, height=916)
+    playlistCreateFrame.place(x=215, y=425)  # Abre o frame no canto superior direito
+
+    # ----------------------------[Nome da Playlist]--------------------------------#
+
+    # Label para mostrar o texto "Nome da Playlist:"
+    playListNameLabel = customtkinter.CTkLabel(playlistCreateFrame, text="Nome da Playlist:")
+    playListNameLabel.pack(expand=True, padx=20)
+
+    # Entry para o nome da música
+    playListNameEntry = customtkinter.CTkEntry(playlistCreateFrame)
+    playListNameEntry.pack(expand=True, padx=20)
+
+    # ----------------------------------------------------------------------------#
+
+    # Botão para salvar os dados
+    confirmBtn = customtkinter.CTkButton(
+        playlistCreateFrame,
+        width=100,
+        height=50,
+        text="Criar",
+        command=lambda: create_playlist(playListNameEntry.get(), playlistCreateFrame, errorLabel)  # Retrieve value when clicked
+    )
+    confirmBtn.pack(expand=True, pady=20)
+
+    # Botão para cancelar
+    cancBtn = customtkinter.CTkButton(
+        playlistCreateFrame,
+        width=100,
+        height=50,
+        text="Cancelar",
+        command=lambda: playlistCreateFrame.destroy()  # Retrieve value when clicked
+    )
+    cancBtn.pack(expand=True, pady=5)
+
+    errorLabel = customtkinter.CTkLabel(playlistCreateFrame, text="")
+    errorLabel.pack(expand=True, pady=5)
+
 def add_music():
     """Abre um frame para adicionar músicas"""
 
@@ -563,7 +660,7 @@ def add_music():
 def mainwindow_render(oldFrame):
     """Rendriza a frame da janela principal"""
 
-    global currentFrame,nameFull, musicName, artistName, musicLenSlider, volumeSlider, musicCover, playIcon, pauseIcon, btnPlay # Variável global do frame em uso
+    global currentFrame,nameFull,addIcon,playlistMenuFrame, musicName, artistName, musicLenSlider, volumeSlider, musicCover, playIcon, pauseIcon, btnPlay, playlistScrollFrame,playlistIcon # Variável global do frame em uso
 
     oldFrame.destroy() # Apagar o estilo do frame anterior
 
@@ -615,7 +712,7 @@ def mainwindow_render(oldFrame):
     collectionMenuFrame.place(x=42,y=191)
 
     #Frame separador playlists
-    playlistMenuFrame = customtkinter.CTkFrame(menuFrame, width=162, height=659, fg_color="transparent")  
+    playlistMenuFrame = customtkinter.CTkFrame(menuFrame, width=170, height=659, fg_color="transparent")  
     playlistMenuFrame.place(x=42,y=395)
 
     ##################################IMAGENS PARA OS BUTTONS#############################################################
@@ -638,6 +735,9 @@ def mainwindow_render(oldFrame):
 
     # Icon playlist
     playlistIcon = customtkinter.CTkImage(Image.open(f"{imagePath}playlist_icon.png"), size=(31, 31))
+
+    # Icon add 
+    addIcon = customtkinter.CTkImage(Image.open(f"{imagePath}add_icon.png"), size=(31, 31))
 
 
     ############################## APLICAÇAO DAS IMAGENS NOS BUTTONS E LAYERS PARA CADA BUTTON######################
@@ -677,17 +777,17 @@ def mainwindow_render(oldFrame):
 
     ####[PLAYLISTS, mudar para criar as playlists mais tarde]####
 
-    #Botão com Icone de playlist
-    btnPlaylist1 = customtkinter.CTkButton(playlistMenuFrame, image=playlistIcon, width=31, height=31, fg_color="transparent", text="Playlist1")
-    btnPlaylist1.place(x=0, y=30)
+    # Cria um scrollable frame dentro do frame principal
+    playlistScrollFrame = customtkinter.CTkScrollableFrame(
+        playlistMenuFrame,
+        orientation="vertical",
+        width=150,
+        height=150,
+        fg_color="blue"
+    )
+    playlistScrollFrame.place(x=0, y=30)
 
-    #Botão com Icone de playlist
-    btnPlaylist2 = customtkinter.CTkButton(playlistMenuFrame, image=playlistIcon, width=31, height=31, fg_color="transparent", text="Playlist2")
-    btnPlaylist2.place(x=0, y=76)
-    
-    #Botão com Icone de playlist
-    btnPlaylist3 = customtkinter.CTkButton(playlistMenuFrame, image=playlistIcon, width=31, height=31, fg_color="transparent", text="Playlist3")
-    btnPlaylist3.place(x=0, y=122)
+    refresh_playlists(playlistScrollFrame)
 
     #---------------------------------------------------------------------------------------------------------------------
 
@@ -902,6 +1002,24 @@ def read_content(contentType):
             musicList.append(fields)  # Each entry is a list: [name, author, cover, link]
 
         return musicList
+
+def get_playlists():
+    """Gets the playlists from files by username and returns them in a list"""
+
+    playlistPath = f"{usersPath}{usernameFinal}{pathFormat}playlists" # Caminho para o diretório onde são armazenadas as playlists
+
+    playlists = []
+    try:
+        # Para cada ficheiro no diretório
+        for fileName in os.listdir(playlistPath):
+            # Verificar se é ficheiro 
+            if os.path.isfile(os.path.join(playlistPath, fileName)):
+                # Remove a extensão (últimos 4 caracteres)
+                playlists.append(fileName[:-4])
+        return playlists
+    except Exception as e:
+        print(f"Error reading directory: {e}")
+        return []
 
 def update_music_info(musicNameNew, musicAuthorNew,coverArtNew):
     """Atualiza as informações da música na interface."""
