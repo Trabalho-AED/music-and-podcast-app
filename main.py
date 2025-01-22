@@ -986,6 +986,11 @@ def userpage_render(mainContentFrame, oldFrame):
     labelPass = customtkinter.CTkLabel(changePassFrame, text="Password", font=("Arial", 20),text_color="white")
     labelPass.place(x=105,y=35)
 
+    # Botão para sair para o Login
+
+    btnLogout = customtkinter.CTkButton(changePassFrame, width=100, height=30,text="Logout",command=lambda:login_render(userFrame),fg_color="Red")
+    btnLogout.place(x=200, y=85)
+
 def read_content(contentType):
     if contentType == "podcast":
         with open(podcastPath, "r", encoding="utf-8") as file:
@@ -1124,7 +1129,7 @@ def adminpage_render(mainContentFrame, oldFrame):
     ManagePodcastsbtn = customtkinter.CTkButton(homepageFrame, width=200, height=50, text="Manage Podcasts")
     ManagePodcastsbtn.grid(row=4, column=2, padx=20, pady=10, sticky="w")
 
-    #Label para mostrar Users"  
+    #Label para mostrar Users
     labelManageUsers = customtkinter.CTkLabel(homepageFrame, text="Users", font=("Roboto", 25))
     labelManageUsers.grid(row=5, column=1, padx=20, pady=10, sticky="e")
 
