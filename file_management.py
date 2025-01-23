@@ -84,7 +84,7 @@ def create_main_files(filePath):
         print(f"File already exists: {filePath}")
 
 #Lista com os ficheiros da base de dados
-mainFiles = [f".{pathFormat}db{pathFormat}category_list.csv",f".{pathFormat}db{pathFormat}user_accounts.csv",f".{pathFormat}db{pathFormat}podcast_list.csv",f".{pathFormat}db{pathFormat}music_list.csv",f".{pathFormat}db{pathFormat}admin_list.csv"]
+mainFiles = [f".{pathFormat}db{pathFormat}categories.csv",f".{pathFormat}db{pathFormat}category_list.csv",f".{pathFormat}db{pathFormat}user_accounts.csv",f".{pathFormat}db{pathFormat}podcast_list.csv",f".{pathFormat}db{pathFormat}music_list.csv",f".{pathFormat}db{pathFormat}admin_list.csv"]
 
 #Criar ficheiros
 for file in mainFiles:
@@ -99,6 +99,7 @@ accountsPath = f".{pathFormat}db{pathFormat}user_accounts.csv" # Caminho para o 
 musicPath = f".{pathFormat}db{pathFormat}music_list.csv" # Caminho para o ficheiro onde são armazenadas as músicas
 podcastPath = f".{pathFormat}db{pathFormat}podcast_list.csv" # Caminho para o ficheiro onde são armazenadas os podcasts
 adminListfile = f".{pathFormat}db{pathFormat}admin_list.csv" # Caminho para o ficheiro onde são armazenadas as contas admin
+categoriesFile = f".{pathFormat}db{pathFormat}categories.csv" # Caminho para o ficheiro onde são armazenadas as categorias
 coverArtPath = f".{pathFormat}images{pathFormat}cover_art{pathFormat}" # Caminho para o diretório onde são armazenadas as imagens das músicas
 musicAudioPath = f".{pathFormat}audios{pathFormat}music{pathFormat}" # Caminho para o diretório onde são armazenadas as músicas
 categoriesPath = f".{pathFormat}db{pathFormat}category_list.csv" # Caminho para o ficheiro onde são armazenadas as categorias
