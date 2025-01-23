@@ -13,8 +13,9 @@ from tkinter import ttk#from tkVideoPlayer import TkinterVideo   #https://pypi.o
 import webbrowser                        # https://docs.python.org/3/library/webbrowser.html 
 import time #Sleep
 from file_management import *
-from users import *
+#from users import *
 from music_management import *
+from admin_management import *
 
 customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light" Alterar entre tema escuro e claro
 
@@ -511,6 +512,101 @@ def new_playlist():
     errorLabel = customtkinter.CTkLabel(playlistCreateFrame, text="")
     errorLabel.pack(expand=True, pady=5)
 
+def edit_music_render():
+    """Abre um frame para adicionar músicas"""
+
+    #Frame para adicionar música
+    editFrame = customtkinter.CTkFrame(app, width=appWidth-246, height=916, border_width=2, border_color="white", fg_color="#0A090C")
+    editFrame.place(x=1200,y=100) #Abre o frame no canto superior direito
+    
+    #----------------------------[Nome da Música]--------------------------------#
+
+    #Label para mostar o texto "Music Name:"
+    musicNameLabel = customtkinter.CTkLabel(editFrame, text="Music Name:")
+    musicNameLabel.grid(row=0,column=0, pady=20)
+
+    #Entry para o nome da música
+    musicNameEntry = customtkinter.CTkEntry(editFrame)
+    musicNameEntry.grid(row=0,column=1)
+
+    #----------------------------------------------------------------------------#
+
+
+    #----------------------------[Autor da Música]-------------------------------#
+    
+    #Label para mostrar o texto "Author:"
+    musicAuthorLabel = customtkinter.CTkLabel(editFrame, text="Author:")
+    musicAuthorLabel.grid(row=1,column=0)
+
+    #Entry para o nome do autor
+    musicAuthorEntry = customtkinter.CTkEntry(editFrame)
+    musicAuthorEntry.grid(row=1,column=1)
+
+    #----------------------------------------------------------------------------#
+
+    #----------------------------[Categoria Música]------------------------------#
+
+    categoriesList = get_categories()
+
+    strCategories = customtkinter.StringVar()
+    strCategories.set(categoriesList[0])
+
+    #Label para mostrar o texto "Author:"
+    categoriesLabel = customtkinter.CTkLabel(editFrame, text="Author:")
+    categoriesLabel.grid(row=2,column=0)
+
+    categoriesCombo = customtkinter.CTkComboBox(editFrame,variable=strCategories,values=categoriesList, width=100, command="")
+    categoriesCombo.grid(row=2, column=1)
+
+    #----------------------------------------------------------------------------#
+
+    #----------------------------[Imagem da Música]------------------------------#
+    
+    #Label para mostrar o texto "Cover Art:"
+    musicCoverLabel = customtkinter.CTkLabel(editFrame, text="Cover Art:")
+    musicCoverLabel.grid(row=3,column=0, columnspan=2)
+
+    #Label para mostrar a imagem escolhida
+    musicCoverImg = customtkinter.CTkLabel(editFrame, text="")
+    musicCoverImg.grid(row=4,column=0, columnspan=2)
+
+    #Botão para escolher a imagem da música
+    musicCoverBtn = customtkinter.CTkButton(editFrame, width=200, height=50, text="Add cover art", command=lambda:select_file(musicCoverImg, ""))
+    musicCoverBtn.grid(row=5,column=0, columnspan=2)
+
+    #--------------------------------------------------------------------------#
+
+
+    #----------------------------[Aúdio da Música]-----------------------------#
+    
+    #Label para mostrar a o texto "Audio:"
+    musicAudioLabel = customtkinter.CTkLabel(editFrame, text="Audio:")
+    musicAudioLabel.grid(row=6,column=0, columnspan=2)
+
+    #Label para mostrar o aúdio a ser adicionado
+    musicAudioPathLabel = customtkinter.CTkLabel(editFrame, text="")
+    musicAudioPathLabel.grid(row=7,column=0, columnspan=2)
+
+    #Botão para escolher o aúdio
+    musicAudioBtn = customtkinter.CTkButton(editFrame, width=200, height=50, text="Add audio", command=lambda:select_file("", musicAudioPathLabel))
+    musicAudioBtn.grid(row=8,column=0, columnspan=2, pady=10)
+
+    #--------------------------------------------------------------------------#
+
+
+    #Botão para salvar a os dados
+    confirmBtn = customtkinter.CTkButton(editFrame, width=160, height=30, text="Confirm", command=lambda:confirm_music(musicNameEntry, musicAuthorEntry,musicCoverImg,musicAudioPathLabel, erroradd_musicLabel, strCategories))
+    confirmBtn.grid(row=9,column=0, columnspan=2)
+
+    #Botão para salvar a os dados
+    cancelBtn = customtkinter.CTkButton(editFrame, width=160, height=30, text="Cancel", command=lambda:editFrame.destroy())
+    cancelBtn.grid(row=10,column=0, columnspan=2)
+
+    #Label para mostrar erros
+    erroradd_musicLabel = customtkinter.CTkLabel(editFrame, text="")
+    erroradd_musicLabel.grid(row=11,column=0, columnspan=2)
+
+
 def add_music():
     """Abre um frame para adicionar músicas"""
 
@@ -973,11 +1069,11 @@ def manageMusic_render(mainContentFrame, oldFrame):
     manageMusicsbtn.grid(row=1, column=1, padx=0, pady=10, sticky="w")
 
     #Botão para gerir músicas
-    editMusicBtn = customtkinter.CTkButton(musicManageFrame, width=200, height=50, text="Editar Música")
+    editMusicBtn = customtkinter.CTkButton(musicManageFrame, width=200, height=50, text="Editar Música", command=edit_music_render)
     editMusicBtn.grid(row=2, column=1, padx=0, pady=10, sticky="w")
 
     #Botão para gerir músicas
-    deleteMusicBtn = customtkinter.CTkButton(musicManageFrame, width=200, height=50, text="Apagar Música")
+    deleteMusicBtn = customtkinter.CTkButton(musicManageFrame, width=200, height=50, text="Apagar Música", command=lambda:delete_music(tree))
     deleteMusicBtn.grid(row=3, column=1, padx=0, pady=10, sticky="w")
 
     # define columns
