@@ -38,7 +38,7 @@ app = customtkinter.CTk(fg_color= "#000000")
 app.title("Music App")
 
 # Define a dimensão da app
-appWidth = 1500
+appWidth = 1520
 appHeight = 800
 
 # App não resizable em x
@@ -330,14 +330,14 @@ def login_render(oldFrame):
     resultLabel = customtkinter.CTkLabel(frameLogin, text="")
     resultLabel.place(x=280,y=430)
 
-def confirm_music(musicNameEntry, musicAuthorEntry,musicCoverImg,musicAudioPathLabel, erroradd_musicLabel):
+def confirm_music(musicNameEntry, musicAuthorEntry,musicCoverImg,musicAudioPathLabel, erroradd_musicLabel,strCategories):
     """Guarda os dados da música a adicionar"""
     
     global tempCoverName, tempAudioName  # Indicar as variáveis globais
 
     if musicNameEntry.get() and musicAuthorEntry.get() and tempAudioName and tempCoverName:
         #Variável com a estrutura de dados
-        musicData = f"{musicNameEntry.get()};{musicAuthorEntry.get()};{tempCoverName};{tempAudioName}\n"
+        musicData = f"{musicNameEntry.get()};{musicAuthorEntry.get()};{strCategories.get()};0;{tempCoverName};{tempAudioName}\n"
 
         #Abre o caminho da música no formato "append" para adicionar a linha sem apagar o conteúdo existente
         with open(musicPath, "a", encoding="utf-8") as file:
@@ -516,7 +516,7 @@ def add_music():
 
     #Frame para adicionar música
     musicFrame = customtkinter.CTkFrame(app, width=appWidth-246, height=916, border_width=2, border_color="white", fg_color="#0A090C")
-    musicFrame.place(x=1200,y=140) #Abre o frame no canto superior direito
+    musicFrame.place(x=1200,y=100) #Abre o frame no canto superior direito
     
     #----------------------------[Nome da Música]--------------------------------#
 
@@ -543,20 +543,35 @@ def add_music():
 
     #----------------------------------------------------------------------------#
 
+    #----------------------------[Categoria Música]------------------------------#
+
+    categoriesList = get_categories()
+
+    strCategories = customtkinter.StringVar()
+    strCategories.set(categoriesList[0])
+
+    #Label para mostrar o texto "Author:"
+    categoriesLabel = customtkinter.CTkLabel(musicFrame, text="Author:")
+    categoriesLabel.grid(row=2,column=0)
+
+    categoriesCombo = customtkinter.CTkComboBox(musicFrame,variable=strCategories,values=categoriesList, width=100, command="")
+    categoriesCombo.grid(row=2, column=1)
+
+    #----------------------------------------------------------------------------#
 
     #----------------------------[Imagem da Música]------------------------------#
     
     #Label para mostrar o texto "Cover Art:"
     musicCoverLabel = customtkinter.CTkLabel(musicFrame, text="Cover Art:")
-    musicCoverLabel.grid(row=2,column=0, columnspan=2)
+    musicCoverLabel.grid(row=3,column=0, columnspan=2)
 
     #Label para mostrar a imagem escolhida
     musicCoverImg = customtkinter.CTkLabel(musicFrame, text="")
-    musicCoverImg.grid(row=3,column=0, columnspan=2)
+    musicCoverImg.grid(row=4,column=0, columnspan=2)
 
     #Botão para escolher a imagem da música
     musicCoverBtn = customtkinter.CTkButton(musicFrame, width=200, height=50, text="Add cover art", command=lambda:select_file(musicCoverImg, ""))
-    musicCoverBtn.grid(row=4,column=0, columnspan=2)
+    musicCoverBtn.grid(row=5,column=0, columnspan=2)
 
     #--------------------------------------------------------------------------#
 
@@ -565,30 +580,30 @@ def add_music():
     
     #Label para mostrar a o texto "Audio:"
     musicAudioLabel = customtkinter.CTkLabel(musicFrame, text="Audio:")
-    musicAudioLabel.grid(row=5,column=0, columnspan=2)
+    musicAudioLabel.grid(row=6,column=0, columnspan=2)
 
     #Label para mostrar o aúdio a ser adicionado
     musicAudioPathLabel = customtkinter.CTkLabel(musicFrame, text="")
-    musicAudioPathLabel.grid(row=6,column=0, columnspan=2)
+    musicAudioPathLabel.grid(row=7,column=0, columnspan=2)
 
     #Botão para escolher o aúdio
     musicAudioBtn = customtkinter.CTkButton(musicFrame, width=200, height=50, text="Add audio", command=lambda:select_file("", musicAudioPathLabel))
-    musicAudioBtn.grid(row=7,column=0, columnspan=2, pady=10)
+    musicAudioBtn.grid(row=8,column=0, columnspan=2, pady=10)
 
     #--------------------------------------------------------------------------#
 
 
     #Botão para salvar a os dados
-    confirmBtn = customtkinter.CTkButton(musicFrame, width=160, height=30, text="Confirm", command=lambda:confirm_music(musicNameEntry, musicAuthorEntry,musicCoverImg,musicAudioPathLabel, erroradd_musicLabel))
-    confirmBtn.grid(row=8,column=0, columnspan=2)
+    confirmBtn = customtkinter.CTkButton(musicFrame, width=160, height=30, text="Confirm", command=lambda:confirm_music(musicNameEntry, musicAuthorEntry,musicCoverImg,musicAudioPathLabel, erroradd_musicLabel, strCategories))
+    confirmBtn.grid(row=9,column=0, columnspan=2)
 
     #Botão para salvar a os dados
     cancelBtn = customtkinter.CTkButton(musicFrame, width=160, height=30, text="Cancel", command=lambda:musicFrame.destroy())
-    cancelBtn.grid(row=9,column=0, columnspan=2)
+    cancelBtn.grid(row=10,column=0, columnspan=2)
 
     #Label para mostrar erros
     erroradd_musicLabel = customtkinter.CTkLabel(musicFrame, text="")
-    erroradd_musicLabel.grid(row=10,column=0, columnspan=2)
+    erroradd_musicLabel.grid(row=11,column=0, columnspan=2)
 
 
 def mainwindow_render(oldFrame):
@@ -607,7 +622,7 @@ def mainwindow_render(oldFrame):
     upperSearchFrame.place(x=246,y=0)
 
     #Frame para o conteúdo principal
-    mainContentFrame = customtkinter.CTkFrame(app, width=appWidth-246, height=appHeight-221, fg_color="red",corner_radius=0)  
+    mainContentFrame = customtkinter.CTkFrame(app, width=appWidth-246, height=appHeight-221, fg_color="#0E0D11",corner_radius=0)  
     mainContentFrame.place(x=246,y=90)
 
     #Search Bar na Upper Search Frame
@@ -966,16 +981,18 @@ def manageMusic_render(mainContentFrame, oldFrame):
     deleteMusicBtn.grid(row=3, column=1, padx=0, pady=10, sticky="w")
 
     # define columns
-    columns = ('first_name', 'last_name', 'email')
+    columns = ('music_name', 'artist_name', 'views')
 
     tree = ttk.Treeview(musicManageFrame, columns=columns, show='headings')
 
     # define headings
-    tree.heading('first_name', text='First Name')
-    tree.heading('last_name', text='Last Name')
-    tree.heading('email', text='Email')
+    tree.heading('music_name', text='Music Name')
+    tree.heading('artist_name', text='Artist')
+    tree.heading('views', text='Views')
 
     tree.grid(row=1,rowspan=3, column=0,padx=70, pady=20,  sticky='nsew')
+
+    refresh_tree(tree)
 
 def adminpage_render(mainContentFrame, oldFrame):
     """Mostra a homepage"""
@@ -1107,8 +1124,10 @@ def homepage_render(mainContentFrame, oldFrame):
     for i in range(len(musicList)):
         musicName = musicList[i][0]
         musicAuthor = musicList[i][1]
-        musicCover = coverArtPath + musicList[i][2]
-        musicURL = musicList[i][3]
+        musicCategory = musicList[i][2]
+        musicViews = musicList[i][3]
+        musicCover = coverArtPath + musicList[i][4]
+        musicURL = musicList[i][5]
 
         coverArt = customtkinter.CTkImage(Image.open(musicCover), size=(150, 150))
         coverArt2 = customtkinter.CTkImage(Image.open(musicCover), size=(52, 52))

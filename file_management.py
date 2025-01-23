@@ -84,14 +84,30 @@ def create_main_files(filePath):
         print(f"File already exists: {filePath}")
 
 #Lista com os ficheiros da base de dados
-mainFiles = [f".{pathFormat}db{pathFormat}categories.csv",f".{pathFormat}db{pathFormat}category_list.csv",f".{pathFormat}db{pathFormat}user_accounts.csv",f".{pathFormat}db{pathFormat}podcast_list.csv",f".{pathFormat}db{pathFormat}music_list.csv",f".{pathFormat}db{pathFormat}admin_list.csv"]
+mainFiles = [f".{pathFormat}db{pathFormat}categories.csv",f".{pathFormat}db{pathFormat}user_accounts.csv",f".{pathFormat}db{pathFormat}podcast_list.csv",f".{pathFormat}db{pathFormat}music_list.csv",f".{pathFormat}db{pathFormat}admin_list.csv"]
 
 #Criar ficheiros
 for file in mainFiles:
     create_main_files(file)
 ############################################################################################################
+def get_categories():
+    categoriesList = []
 
+    with open(categoriesFile, "r", encoding="utf-8") as file:
+        lines = file.readlines()
+    
+    for line in lines:
+        categoriesList.append(line.strip())
 
+    return categoriesList
+
+def refresh_tree(tree):
+    with open(musicPath, "r", encoding="utf-8") as file:
+        lines = file.readlines()
+    
+    for line in lines:
+        fields = line.strip().split(";")
+        tree.insert("","end", values=(fields[0], fields[1], fields[3]))
 ##########################################[CAMINHOS]############################################################
 
 imagePath = f".{pathFormat}images{pathFormat}icons{pathFormat}" # Caminho para o diretório onde são armazenadas as imagens
@@ -102,6 +118,5 @@ adminListfile = f".{pathFormat}db{pathFormat}admin_list.csv" # Caminho para o fi
 categoriesFile = f".{pathFormat}db{pathFormat}categories.csv" # Caminho para o ficheiro onde são armazenadas as categorias
 coverArtPath = f".{pathFormat}images{pathFormat}cover_art{pathFormat}" # Caminho para o diretório onde são armazenadas as imagens das músicas
 musicAudioPath = f".{pathFormat}audios{pathFormat}music{pathFormat}" # Caminho para o diretório onde são armazenadas as músicas
-categoriesPath = f".{pathFormat}db{pathFormat}category_list.csv" # Caminho para o ficheiro onde são armazenadas as categorias
 usersPath = f".{pathFormat}db{pathFormat}users{pathFormat}" # Caminho para o diretório onde são armazenadas os users na db
 #################################################################################################################
