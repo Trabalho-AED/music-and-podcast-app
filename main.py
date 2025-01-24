@@ -10,7 +10,6 @@ from pygame import mixer #https://www.pygame.org/docs/ref/mixer.html
 import tkinter as tk
 from io import StringIO
 from tkinter import ttk#from tkVideoPlayer import TkinterVideo   #https://pypi.org/project/tkvideoplayer/ 
-import webbrowser                        # https://docs.python.org/3/library/webbrowser.html 
 import time #Sleep
 from file_management import *
 #from users import *
@@ -1237,6 +1236,8 @@ def homepage_render(mainContentFrame, oldFrame):
 
     currentFrame = homepageFrame # O frame a ser usado passa a ser o userFrame
     
+    #------------------------------------------------[Música em Alta]----------------------------------------------------------------------#
+
     # Frame menu trending Music
     trendingFrame = customtkinter.CTkFrame(homepageFrame, width=1300, height=300, fg_color="transparent", corner_radius=0)
     trendingFrame.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
@@ -1254,22 +1255,7 @@ def homepage_render(mainContentFrame, oldFrame):
     trendingLabel = customtkinter.CTkLabel(trendingFrame,text="Trending Music",font=("Roboto", 25))
     trendingLabel.place(x=20,y=10)
 
-    # Frame menu trending Podcasts
-    trendingPodcastsFrame = customtkinter.CTkFrame(homepageFrame, width=1300, height=300, fg_color="transparent", corner_radius=0)
-    trendingPodcastsFrame.grid(row=1, column=0, padx=20, pady=20, sticky="nsew")
-
-    # Cria um scrollable frame dentro do frame principal
-    trendingPodcastsScrollFrame = customtkinter.CTkScrollableFrame(
-        trendingPodcastsFrame,
-        orientation="horizontal",
-        width=1200,
-        height=250,
-        fg_color="transparent"
-    )
-    trendingPodcastsScrollFrame.place(x=0, y=20)
     
-    trendingPodcastsLabel = customtkinter.CTkLabel(trendingPodcastsFrame,text="Trending Podcasts",font=("Roboto", 25))
-    trendingPodcastsLabel.place(x=20,y=10)
 
     # Criar botões num ciclo for, na horizontal
     musicList = read_content("music")  # receber dados da lista (lista com sublistas)
@@ -1314,10 +1300,165 @@ def homepage_render(mainContentFrame, oldFrame):
         button.grid(row=0, column=index, padx=10, pady=40)
         index += 1  # Incrementar manualmente o índice
 
+    #---------------------------------------------------------------------------------------------------------------------------------------#
+
+
+    #------------------------------------------------[Podcast em Alta]----------------------------------------------------------------------#
+    # Frame menu trending Podcasts
+    trendingPodcastsFrame = customtkinter.CTkFrame(homepageFrame, width=1300, height=300, fg_color="transparent", corner_radius=0)
+    trendingPodcastsFrame.grid(row=1, column=0, padx=20, pady=20, sticky="nsew")
+
+    # Cria um scrollable frame dentro do frame principal
+    trendingPodcastsScrollFrame = customtkinter.CTkScrollableFrame(
+        trendingPodcastsFrame,
+        orientation="horizontal",
+        width=1200,
+        height=250,
+        fg_color="transparent"
+    )
+    trendingPodcastsScrollFrame.place(x=0, y=20)
     
+    trendingPodcastsLabel = customtkinter.CTkLabel(trendingPodcastsFrame,text="Trending Podcasts",font=("Roboto", 25))
+    trendingPodcastsLabel.place(x=20,y=10)
 
     # Abrir lista de podcasts disponiveis
-    podcastList = read_content("podcast")
+    podcastList = read_content("podcast") # receber dados da lista (lista com sublistas)
+
+    # Converter as visualizações para inteiro e ordenar manualmente
+    for podcast in podcastList:
+        podcast[2] = int(podcast[2])  # Converter o campo de visualizações (índice 3) para inteiro
+
+    # Ordenar a lista de músicas pelo número de visualizações em ordem decrescente
+    for i in range(len(podcastList)):
+        for j in range(i + 1, len(podcastList)):
+            if podcastList[i][2] < podcastList[j][2]:  # Comparar pelo campo de visualizações
+                podcastList[i], podcastList[j] = podcastList[j], podcastList[i]  # Trocar as posições
+
+    # Limitar a exibição às 5 músicas com mais visualizações
+    topTrendingpodcast = podcastList[:10]
+
+    # Loop para criar os botões sem usar enumerate
+    index = 0
+    for podcast in topTrendingpodcast:
+        podcastName = podcast[0]
+        podcastAuthor = podcast[1]
+        podcastViews = podcast[2]
+        podcastCover = coverArtPath + podcast[3]            
+        podcastURL = podcast[4]
+
+        coverArt = customtkinter.CTkImage(Image.open(podcastCover), size=(150, 150))
+
+        button = customtkinter.CTkButton(
+            trendingPodcastsScrollFrame,
+            width=150,
+            height=150,
+            text=f"{podcastName}\n{podcastAuthor}",
+            image=coverArt,
+            fg_color="red",
+            compound="top",
+            command=lambda url=podcastURL, name=podcastName, author=podcastAuthor, art=coverArt: play_podcast(url)
+        )
+
+        button.grid(row=0, column=index, padx=10, pady=40)
+        index += 1  # Incrementar manualmente o índice
+
+    # Frame menu Your Activity
+    MusicYourActivityFrame = customtkinter.CTkFrame(homepageFrame, width=1300, height=300, fg_color="transparent", corner_radius=0)
+    MusicYourActivityFrame.grid(row=2, column=0, padx=20, pady=20, sticky="nsew")
+
+    # Cria um scrollable frame dentro do frame principal
+    MusicScrollFrame = customtkinter.CTkScrollableFrame(
+        MusicYourActivityFrame,
+        orientation="horizontal",
+        width=1200,
+        height=250,
+        fg_color="transparent"
+    )
+    MusicScrollFrame.place(x=0, y=0)
+
+    #Label para mostrar "Your Activity"
+    MusicLabel = customtkinter.CTkLabel(MusicYourActivityFrame,text="Your Activity",font=("Roboto", 25))
+    MusicLabel.place(x=10,y=0)
+
+    activityPath = f"{usersPath}{usernameFinal}{pathFormat}music_activity.csv"
+
+    recentMusic = get_recent_songs(activityPath)
+    activityList = filter_music(musicList, recentMusic)
+
+    index = 0
+    for music in activityList:
+        musicName = music[0]
+        musicAuthor = music[1]
+        musicCategory = music[2]
+        musicViews = music[3]
+        musicCover = coverArtPath + music[4]
+        musicURL = music[5]
+
+        coverArt = customtkinter.CTkImage(Image.open(musicCover), size=(150, 150))
+        coverArt2 = customtkinter.CTkImage(Image.open(musicCover), size=(52, 52))
+
+        button = customtkinter.CTkButton(
+            MusicYourActivityFrame,
+            width=150,
+            height=150,
+            text=f"{musicName}\n{musicAuthor}",
+            image=coverArt,
+            fg_color="red",
+            compound="top",
+            command=lambda url=musicURL, name=musicName, author=musicAuthor, art=coverArt2: play_music(url, name, author, art)
+        )
+
+        button.grid(row=0, column=index, padx=10, pady=40)
+        index += 1  # Incrementar manualmente o índice
+
+    # Frame menu Discover
+    MusicDiscoverFrame = customtkinter.CTkFrame(homepageFrame, width=1300, height=300, fg_color="transparent", corner_radius=0)
+    MusicDiscoverFrame.grid(row=3, column=0, padx=20, pady=20, sticky="nsew")
+
+    # Cria um scrollable frame dentro do frame principal
+    MusicScrollFrame = customtkinter.CTkScrollableFrame(
+        MusicDiscoverFrame,
+        orientation="horizontal",
+        width=1200,
+        height=250,
+        fg_color="transparent"
+    )
+    MusicScrollFrame.place(x=0, y=0)
+
+    #Label para mostrar "Your Activity"
+    MusicLabel = customtkinter.CTkLabel(MusicDiscoverFrame,text="Discover",font=("Roboto", 25))
+    MusicLabel.place(x=10,y=0)
+
+    # Limitar a exibição a 8 músicas random
+    randomMusic = random.sample(musicList, 4)
+
+    index = 0
+    for music in randomMusic:
+        musicName = music[0]
+        musicAuthor = music[1]
+        musicCategory = music[2]
+        musicViews = music[3]
+        musicCover = coverArtPath + music[4]
+        musicURL = music[5]
+
+        coverArt = customtkinter.CTkImage(Image.open(musicCover), size=(150, 150))
+        coverArt2 = customtkinter.CTkImage(Image.open(musicCover), size=(52, 52))
+
+        button = customtkinter.CTkButton(
+            MusicDiscoverFrame,
+            width=150,
+            height=150,
+            text=f"{musicName}\n{musicAuthor}",
+            image=coverArt,
+            fg_color="red",
+            compound="top",
+            command=lambda url=musicURL, name=musicName, author=musicAuthor, art=coverArt2: play_music(url, name, author, art)
+        )
+
+        button.grid(row=0, column=index, padx=10, pady=40)
+        index += 1  # Incrementar manualmente o índice
+
+    #---------------------------------------------------------------------------------------------------------------------------------------#
 
 def musicpage_render(mainContentFrame, oldFrame):
     """Mostra a homepage"""
@@ -1482,23 +1623,22 @@ def musicpage_render(mainContentFrame, oldFrame):
         button.grid(row=0, column=index, padx=10, pady=40)
         index += 1  # Incrementar manualmente o índice
 
-    
 
 def read_content(contentType):
     if contentType == "podcast":
         with open(podcastPath, "r", encoding="utf-8") as file:
-            podcastList = file.readlines()
-        return podcastList
+            lines = file.readlines()
+
     elif contentType == "music":
         with open(musicPath, "r", encoding="utf-8") as file:
             lines = file.readlines()
 
-        musicList = []
-        for line in lines:
-            fields = line.strip().split(";")
-            musicList.append(fields)  # Each entry is a list: [name, author, cover, link]
+    returnList = []
+    for line in lines:
+        fields = line.strip().split(";")
+        returnList.append(fields)  # Each entry is a list: [name, author, cover, link]
 
-        return musicList
+    return returnList
 
 def toggle_play():
     global isPaused
@@ -1522,12 +1662,6 @@ def toggle_mute():
         volumeSlider.set(0)
 
     adjust_volume()
-
-def podcast_video_render(videoURL):
-    """
-    Abre o browser definido por defeito com um url
-    """
-    webbrowser.open(videoURL, new = 0, autoraise=True)
     
 ##########################################################
 

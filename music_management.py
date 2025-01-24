@@ -1,5 +1,6 @@
 from pygame import mixer
 from file_management import *
+import webbrowser                        # https://docs.python.org/3/library/webbrowser.html 
 
 def get_music_length(music):
     """Obtém a duração da música em segundos."""
@@ -32,3 +33,9 @@ def filter_music(musicList, recentMusic):
                 activityList.append(music)
                 break
     return activityList
+
+def play_podcast(videoURL):
+    """
+    Abre o browser definido por defeito com um url
+    """
+    webbrowser.open(videoURL, new = 0, autoraise=True)
