@@ -415,7 +415,12 @@ def refresh_playlists(playlistScrollFrame):
 
     for i in range(len(playLists)):
         #Botão com Icone de playlist
-        btnPlaylist1 = customtkinter.CTkButton(playlistScrollFrame, image=playlistIcon, width=31, height=31, fg_color="transparent", text=f"{playLists[i]}")
+        btnPlaylist1 = customtkinter.CTkButton(playlistScrollFrame,
+                                               image=playlistIcon,
+                                               width=31, height=31,
+                                               fg_color="transparent",
+                                               text=f"{playLists[i]}",
+                                               command=lambda playlistName=playLists[i]:playlist_page_render(mainContentFrame,currentFrame,playlistName))
         btnPlaylist1.grid(row=i+1, column=0,sticky="w")
 
 def get_playlists():
@@ -761,7 +766,7 @@ def add_music():
 def mainwindow_render(oldFrame):
     """Rendriza a frame da janela principal"""
 
-    global currentFrame,nameFull,addIcon,playlistMenuFrame, musicName, artistName, musicLenSlider, volumeSlider, musicCover, playIcon, pauseIcon, btnPlay, playlistScrollFrame,playlistIcon # Variável global do frame em uso
+    global mainContentFrame,currentFrame,nameFull,addIcon,playlistMenuFrame, musicName, artistName, musicLenSlider, volumeSlider, musicCover, playIcon, pauseIcon, btnPlay, playlistScrollFrame,playlistIcon # Variável global do frame em uso
 
     oldFrame.destroy() # Apagar o estilo do frame anterior
 
@@ -867,7 +872,7 @@ def mainwindow_render(oldFrame):
     btnPodcast.place(x=0, y=76)
 
     #Botão com Icon e texto de Favoritos
-    btnFavorites = customtkinter.CTkButton(collectionMenuFrame, image=favoriteIcon, width=31, height=31, fg_color="transparent", text="Favorites")
+    btnFavorites = customtkinter.CTkButton(collectionMenuFrame, image=favoriteIcon, width=31, height=31, fg_color="transparent", text="Favorites",command=lambda:favoritepage_render(mainContentFrame,currentFrame))
     btnFavorites.place(x=0, y=122)
 
     #---------------------------------------------------------------------------------------------------------------------
@@ -944,7 +949,7 @@ def mainwindow_render(oldFrame):
     musicInfoFrame.place(x=72, y=7)
 
     #Capa da Música (substituir por imagem)
-    musicCover = customtkinter.CTkButton(showMusicFrame, width=53, height=53, text="",image="", fg_color="Red")
+    musicCover = customtkinter.CTkButton(showMusicFrame, width=53, height=53, text="",image="", fg_color="transparent")
     musicCover.place(x=0,y=0)
 
     #Nome da música
@@ -1064,7 +1069,7 @@ def userpage_render(mainContentFrame, oldFrame):
     labelPass = customtkinter.CTkLabel(changePassFrame, text="Password", font=("Arial", 20),text_color="white")
     labelPass.place(x=105,y=35)
 
-    btnLogout = customtkinter.CTkButton(changePassFrame, width=100, height=30,text="Logout",command=lambda:login_render(userFrame),fg_color="Red")
+    btnLogout = customtkinter.CTkButton(changePassFrame, width=100, height=30,text="Logout",command=lambda:login_render(userFrame),fg_color="transparent")
     btnLogout.place(x=200, y=85)
 
 def read_content(contentType):
@@ -1292,7 +1297,7 @@ def homepage_render(mainContentFrame, oldFrame):
             height=150,
             text=f"{musicName}\n{musicAuthor}",
             image=coverArt,
-            fg_color="red",
+            fg_color="transparent",
             compound="top",
             command=lambda url=musicURL, name=musicName, author=musicAuthor, art=coverArt2: play_music(url, name, author, art)
         )
@@ -1354,7 +1359,7 @@ def homepage_render(mainContentFrame, oldFrame):
             height=150,
             text=f"{podcastName}\n{podcastAuthor}",
             image=coverArt,
-            fg_color="red",
+            fg_color="transparent",
             compound="top",
             command=lambda url=podcastURL, name=podcastName, author=podcastAuthor, art=coverArt: play_podcast(url)
         )
@@ -1403,7 +1408,7 @@ def homepage_render(mainContentFrame, oldFrame):
             height=150,
             text=f"{musicName}\n{musicAuthor}",
             image=coverArt,
-            fg_color="red",
+            fg_color="transparent",
             compound="top",
             command=lambda url=musicURL, name=musicName, author=musicAuthor, art=coverArt2: play_music(url, name, author, art)
         )
@@ -1450,7 +1455,7 @@ def homepage_render(mainContentFrame, oldFrame):
             height=150,
             text=f"{musicName}\n{musicAuthor}",
             image=coverArt,
-            fg_color="red",
+            fg_color="transparent",
             compound="top",
             command=lambda url=musicURL, name=musicName, author=musicAuthor, art=coverArt2: play_music(url, name, author, art)
         )
@@ -1519,7 +1524,7 @@ def musicpage_render(mainContentFrame, oldFrame):
             height=150,
             text=f"{musicName}\n{musicAuthor}",
             image=coverArt,
-            fg_color="red",
+            fg_color="transparent",
             compound="top",
             command=lambda url=musicURL, name=musicName, author=musicAuthor, art=coverArt2: play_music(url, name, author, art)
         )
@@ -1568,7 +1573,7 @@ def musicpage_render(mainContentFrame, oldFrame):
             height=150,
             text=f"{musicName}\n{musicAuthor}",
             image=coverArt,
-            fg_color="red",
+            fg_color="transparent",
             compound="top",
             command=lambda url=musicURL, name=musicName, author=musicAuthor, art=coverArt2: play_music(url, name, author, art)
         )
@@ -1615,7 +1620,7 @@ def musicpage_render(mainContentFrame, oldFrame):
             height=150,
             text=f"{musicName}\n{musicAuthor}",
             image=coverArt,
-            fg_color="red",
+            fg_color="transparent",
             compound="top",
             command=lambda url=musicURL, name=musicName, author=musicAuthor, art=coverArt2: play_music(url, name, author, art)
         )
@@ -1670,7 +1675,7 @@ def musicpage_render(mainContentFrame, oldFrame):
                 height=150,
                 text=f"{musicName}\n{musicAuthor}",
                 image=coverArt,
-                fg_color="red",
+                fg_color="transparent",
                 compound="top",
                 command=lambda url=musicURL, name=musicName, author=musicAuthor, art=coverArt2: play_music(url, name, author, art)
             )
@@ -1680,6 +1685,207 @@ def musicpage_render(mainContentFrame, oldFrame):
 
         index += 1  # Incrementar índice para o próximo autor
 
+def playlist_page_render(mainContentFrame, oldFrame, playListName):
+    """Mostra a homepage"""
+
+    global currentFrame # Variável global para frame a ser usado
+
+    if oldFrame != None:
+        oldFrame.destroy() # Apagar o estilo do frame anterior
+    
+    
+    #Frame Music Page
+    playlistPageFrame = customtkinter.CTkFrame(mainContentFrame,
+	width=1238,
+	height=appHeight-(90+131),
+	fg_color="black",
+	corner_radius = 0
+	)
+    playlistPageFrame.place(x=0,y=0)
+
+    currentFrame = playlistPageFrame # O frame a ser usado passa a ser o userFrame
+
+    # Frame menu Musicas
+    MusicFrame = customtkinter.CTkFrame(playlistPageFrame, width=1300, height=800, fg_color="transparent", corner_radius=0)
+    MusicFrame.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
+
+    # Cria um scrollable frame dentro do frame principal
+    MusicScrollFrame = customtkinter.CTkScrollableFrame(
+        MusicFrame,
+        orientation="vertical",
+        width=1200,
+        height=500,
+        fg_color="transparent"
+    )
+    MusicScrollFrame.place(x=0, y=50)
+
+    MusicLabel = customtkinter.CTkLabel(MusicFrame,text=f"{playListName}",font=("Roboto", 25))
+    MusicLabel.place(x=20,y=10)
+
+    # Criar botões num ciclo for, na horizontal
+    musicList = read_content("music")  # receber dados da lista (lista com sublistas)
+
+    playlistList=get_playlist_list(musicList, usernameFinal, playListName)
+
+    # Loop para criar os botões sem usar enumerate
+    index = 0
+    for music in playlistList:
+        musicName = music[0]
+        musicAuthor = music[1]
+        musicCategory = music[2]
+        musicViews = music[3]
+        musicCover = coverArtPath + music[4]
+        musicURL = music[5]
+
+        coverArt = customtkinter.CTkImage(Image.open(musicCover), size=(150, 150))
+        coverArt2 = customtkinter.CTkImage(Image.open(musicCover), size=(52, 52))
+
+        button = customtkinter.CTkButton(
+            MusicScrollFrame,
+            width=70,
+            height=70,
+            text="",
+            image=coverArt,
+            fg_color="transparent",
+            command=lambda url=musicURL, name=musicName, author=musicAuthor, art=coverArt2: play_music(url, name, author, art)
+        )
+
+        button.grid(row=index, column=0, padx=40, pady=20)
+
+        nameLabel = customtkinter.CTkLabel(
+            MusicScrollFrame,
+            text=f"{musicName}"
+        )
+        nameLabel.grid(row=index, column=1,padx=40, pady=20)
+
+        authorLabel = customtkinter.CTkLabel(
+            MusicScrollFrame,
+            text=f"{musicAuthor}"
+        )
+        authorLabel.grid(row=index, column=2,padx=40, pady=20)
+
+        viewsLabel = customtkinter.CTkLabel(
+            MusicScrollFrame,
+            text=f"{musicViews} Views"
+        )
+        viewsLabel.grid(row=index, column=3,padx=40, pady=20)
+
+        button2 = customtkinter.CTkButton(
+            MusicScrollFrame,
+            width=150,
+            height=50,
+            text="Remove from Playlist",
+            command=lambda name=musicName, author=musicAuthor: refresh_playlist(name, author,mainContentFrame,currentFrame, playListName)
+        )
+
+        button2.grid(row=index, column=4, padx=40, pady=20)
+
+        index += 1  # Incrementar manualmente o índice
+
+def favoritepage_render(mainContentFrame, oldFrame):
+    """Mostra a homepage"""
+
+    global currentFrame # Variável global para frame a ser usado
+
+    if oldFrame != None:
+        oldFrame.destroy() # Apagar o estilo do frame anterior
+    
+    
+    #Frame Music Page
+    favoritePageFrame = customtkinter.CTkFrame(mainContentFrame,
+	width=1238,
+	height=appHeight-(90+131),
+	fg_color="black",
+	corner_radius = 0
+	)
+    favoritePageFrame.place(x=0,y=0)
+
+    currentFrame = favoritePageFrame # O frame a ser usado passa a ser o userFrame
+
+    # Frame menu Musicas
+    MusicFrame = customtkinter.CTkFrame(favoritePageFrame, width=1300, height=800, fg_color="transparent", corner_radius=0)
+    MusicFrame.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
+
+    # Cria um scrollable frame dentro do frame principal
+    MusicScrollFrame = customtkinter.CTkScrollableFrame(
+        MusicFrame,
+        orientation="vertical",
+        width=1200,
+        height=500,
+        fg_color="transparent"
+    )
+    MusicScrollFrame.place(x=0, y=50)
+
+    MusicLabel = customtkinter.CTkLabel(MusicFrame,text=f"{nameFull} Favorite List",font=("Roboto", 25))
+    MusicLabel.place(x=20,y=10)
+
+    # Criar botões num ciclo for, na horizontal
+    musicList = read_content("music")  # receber dados da lista (lista com sublistas)
+
+    favoritesList=get_favorites(musicList,usernameFinal)
+
+    # Loop para criar os botões sem usar enumerate
+    index = 0
+    for music in favoritesList:
+        musicName = music[0]
+        musicAuthor = music[1]
+        musicCategory = music[2]
+        musicViews = music[3]
+        musicCover = coverArtPath + music[4]
+        musicURL = music[5]
+
+        coverArt = customtkinter.CTkImage(Image.open(musicCover), size=(150, 150))
+        coverArt2 = customtkinter.CTkImage(Image.open(musicCover), size=(52, 52))
+
+        button = customtkinter.CTkButton(
+            MusicScrollFrame,
+            width=70,
+            height=70,
+            text="",
+            image=coverArt,
+            fg_color="transparent",
+            command=lambda url=musicURL, name=musicName, author=musicAuthor, art=coverArt2: play_music(url, name, author, art)
+        )
+
+        button.grid(row=index, column=0, padx=40, pady=20)
+
+        nameLabel = customtkinter.CTkLabel(
+            MusicScrollFrame,
+            text=f"{musicName}"
+        )
+        nameLabel.grid(row=index, column=1,padx=40, pady=20)
+
+        authorLabel = customtkinter.CTkLabel(
+            MusicScrollFrame,
+            text=f"{musicAuthor}"
+        )
+        authorLabel.grid(row=index, column=2,padx=40, pady=20)
+
+        viewsLabel = customtkinter.CTkLabel(
+            MusicScrollFrame,
+            text=f"{musicViews} Views"
+        )
+        viewsLabel.grid(row=index, column=3,padx=40, pady=20)
+
+        button2 = customtkinter.CTkButton(
+            MusicScrollFrame,
+            width=150,
+            height=50,
+            text="Remove from Favorites",
+            command=lambda name=musicName, author=musicAuthor: refresh_favorite(name, author,mainContentFrame,oldFrame)
+        )
+
+        button2.grid(row=index, column=4, padx=40, pady=20)
+
+        index += 1  # Incrementar manualmente o índice
+    
+def refresh_favorite(name, author,mainContentFrame,oldFrame):
+    remove_favorite(name, author, usernameFinal)
+    favoritepage_render(mainContentFrame,oldFrame)
+
+def refresh_playlist(name, author,mainContentFrame,oldFrame,playListName):
+    remove_music_playlist(name, author,usernameFinal, playListName)
+    playlist_page_render(mainContentFrame,oldFrame,playListName)
 
 def read_content(contentType):
     if contentType == "podcast":

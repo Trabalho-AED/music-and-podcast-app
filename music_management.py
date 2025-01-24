@@ -49,3 +49,85 @@ def get_authors(musicList):
             authorList.append(music[1])
 
     return authorList
+
+def get_favorites(musicList, usernameFinal):
+    favoriteList = []
+
+    # Lê o arquivo de favoritos
+    with open(f"{usersPath}{usernameFinal}{pathFormat}favorites.csv", "r", encoding="utf-8") as file:
+        lines = file.readlines()
+
+    for line in lines:
+        fields = line.strip().split(";")
+        # Remove espaços desnecessários em cada campo
+        fields = [field.strip() for field in fields]
+
+        # Verifica se alguma música da musicList coincide com os dois primeiros campos de fields
+        for music in musicList:
+            if music[0] == fields[0] and music[1] == fields[1]:
+                favoriteList.append(music)
+
+    return favoriteList
+
+def remove_favorite(name, author, usernameFinal):
+    file_path = f"{usersPath}{usernameFinal}{pathFormat}favorites.csv"
+
+    # Lê o conteúdo do arquivo
+    with open(file_path, "r", encoding="utf-8") as file:
+        lines = file.readlines()
+
+    # Cria uma nova lista sem a música que será removida
+    updated_lines = []
+    for line in lines:
+        fields = line.strip().split(";")
+        # Remove espaços desnecessários nos campos
+        fields = [field.strip() for field in fields]
+
+        # Se o nome e autor não coincidem, mantém a linha
+        if not (fields[0] == name and fields[1] == author):
+            updated_lines.append(line)
+
+    # Escreve as linhas atualizadas de volta no arquivo
+    with open(file_path, "w", encoding="utf-8") as file:
+        file.writelines(updated_lines)
+
+def remove_music_playlist(name, author, usernameFinal,playListName):
+    file_path = f"{usersPath}{usernameFinal}{pathFormat}playlists{pathFormat}{playListName}.csv"
+
+    # Lê o conteúdo do arquivo
+    with open(file_path, "r", encoding="utf-8") as file:
+        lines = file.readlines()
+
+    # Cria uma nova lista sem a música que será removida
+    updated_lines = []
+    for line in lines:
+        fields = line.strip().split(";")
+        # Remove espaços desnecessários nos campos
+        fields = [field.strip() for field in fields]
+
+        # Se o nome e autor não coincidem, mantém a linha
+        if not (fields[0] == name and fields[1] == author):
+            updated_lines.append(line)
+
+    # Escreve as linhas atualizadas de volta no arquivo
+    with open(file_path, "w", encoding="utf-8") as file:
+        file.writelines(updated_lines)
+
+def get_playlist_list(musicList, usernameFinal, playListName):
+    playlistList = []
+
+    # Lê o arquivo de favoritos
+    with open(f"{usersPath}{usernameFinal}{pathFormat}playlists{pathFormat}{playListName}.csv", "r", encoding="utf-8") as file:
+        lines = file.readlines()
+
+    for line in lines:
+        fields = line.strip().split(";")
+        # Remove espaços desnecessários em cada campo
+        fields = [field.strip() for field in fields]
+
+        # Verifica se alguma música da musicList coincide com os dois primeiros campos de fields
+        for music in musicList:
+            if music[0] == fields[0] and music[1] == fields[1]:
+                playlistList.append(music)
+
+    return playlistList
