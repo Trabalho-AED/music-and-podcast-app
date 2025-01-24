@@ -836,14 +836,15 @@ def mainwindow_render(oldFrame):
     # Icon artista
     artistIcon = customtkinter.CTkImage(Image.open(f"{imagePath}singer_icon.png"), size=(31, 31))
 
-    # Icon favoritos
-    favoriteIcon = customtkinter.CTkImage(Image.open(f"{imagePath}favorite_icon.png"), size=(31, 31))
-
     # Icon playlist
     playlistIcon = customtkinter.CTkImage(Image.open(f"{imagePath}playlist_icon.png"), size=(31, 31))
 
     # Icon add 
     addIcon = customtkinter.CTkImage(Image.open(f"{imagePath}add_icon.png"), size=(31, 31))
+
+    noFavoriteIcon = customtkinter.CTkImage(Image.open(f"{imagePath}nofavorite_icon.png"), size=(31, 31))
+
+    favoriteIcon = customtkinter.CTkImage(Image.open(f"{imagePath}favorite_icon.png"), size=(31, 31))
 
 
     ############################## APLICAÇAO DAS IMAGENS NOS BUTTONS E LAYERS PARA CADA BUTTON######################
@@ -944,6 +945,12 @@ def mainwindow_render(oldFrame):
 
     #-------------------------------------[FRAME INFO]-------------------------------------------------------------
 
+    likeBtn = customtkinter.CTkButton(playFrame,text="", width=50, height=50,image=noFavoriteIcon ,fg_color="transparent")
+    likeBtn.place(x=45,y=50)
+
+    playListAddBtn = customtkinter.CTkButton(playFrame,text="", width=50, height=50,image=addIcon ,fg_color="transparent")
+    playListAddBtn.place(x=95,y=50)
+
     #Frame para mostrar info: Nome da música e artista
     musicInfoFrame = customtkinter.CTkFrame(showMusicFrame, width=300, height=50, fg_color="#0A090C")
     musicInfoFrame.place(x=72, y=7)
@@ -953,11 +960,11 @@ def mainwindow_render(oldFrame):
     musicCover.place(x=0,y=0)
 
     #Nome da música
-    musicName = customtkinter.CTkLabel(musicInfoFrame, text="Music Name", font=("Arial", 17))
+    musicName = customtkinter.CTkLabel(musicInfoFrame, text="No Music Playing", font=("Arial", 17))
     musicName.place(x=0, y=0)
 
     #Nome do artista
-    artistName = customtkinter.CTkLabel(musicInfoFrame, text="Artist Name", font=("Arial", 12) )
+    artistName = customtkinter.CTkLabel(musicInfoFrame, text="", font=("Arial", 12) )
     artistName.place(x=0, y=24)
 
     #------------------------------------[FRAME CONTROLOS MÚSICA]---------------------------------------------------------------------------
