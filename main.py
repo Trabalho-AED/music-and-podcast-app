@@ -1622,6 +1622,63 @@ def musicpage_render(mainContentFrame, oldFrame):
 
         button.grid(row=0, column=index, padx=10, pady=40)
         index += 1  # Incrementar manualmente o índice
+    
+    #--------------------------------------------------------------------------------------------------------------------------------------#
+
+    # Obter lista de autores únicos
+    authorList = get_authors(musicList)
+
+    index = 2  # Começar após as seções Music, Your Activity e Discover
+    for author in authorList:
+        # Criar frame para cada autor
+        musicAuthorFrame = customtkinter.CTkFrame(MusicpageFrame, width=1300, height=300, fg_color="transparent", corner_radius=0)
+        musicAuthorFrame.grid(row=index, column=0, padx=20, pady=20, sticky="nsew")
+
+        # Criar scrollable frame para as músicas do autor
+        MusicAuthorScrollFrame = customtkinter.CTkScrollableFrame(
+            musicAuthorFrame,
+            orientation="horizontal",
+            width=1200,
+            height=250,
+            fg_color="transparent"
+        )
+        MusicAuthorScrollFrame.place(x=0, y=0)
+
+        # Label com o nome do autor
+        MusicLabel = customtkinter.CTkLabel(musicAuthorFrame, text=f"{author}", font=("Roboto", 25))
+        MusicLabel.place(x=10, y=0)
+
+        # Filtrar músicas do autor atual
+        authorMusicList = [music for music in musicList if music[1] == author]
+
+        # Adicionar músicas ao scrollable frame
+        col_index = 0
+        for music in authorMusicList:
+            musicName = music[0]
+            musicAuthor = music[1]
+            musicCategory = music[2]
+            musicViews = music[3]
+            musicCover = coverArtPath + music[4]
+            musicURL = music[5]
+
+            coverArt = customtkinter.CTkImage(Image.open(musicCover), size=(150, 150))
+            coverArt2 = customtkinter.CTkImage(Image.open(musicCover), size=(52, 52))
+
+            button = customtkinter.CTkButton(
+                MusicAuthorScrollFrame,
+                width=150,
+                height=150,
+                text=f"{musicName}\n{musicAuthor}",
+                image=coverArt,
+                fg_color="red",
+                compound="top",
+                command=lambda url=musicURL, name=musicName, author=musicAuthor, art=coverArt2: play_music(url, name, author, art)
+            )
+
+            button.grid(row=0, column=col_index, padx=10, pady=40)
+            col_index += 1  # Incrementar índice para o próximo botão
+
+        index += 1  # Incrementar índice para o próximo autor
 
 
 def read_content(contentType):

@@ -39,3 +39,13 @@ def play_podcast(videoURL):
     Abre o browser definido por defeito com um url
     """
     webbrowser.open(videoURL, new = 0, autoraise=True)
+
+def get_authors(musicList):
+    
+    authorList=[]
+
+    for music in musicList:
+        if music[1] not in authorList:
+            authorList.append(music[1])
+
+    return authorList
