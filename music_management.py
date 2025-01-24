@@ -131,3 +131,46 @@ def get_playlist_list(musicList, usernameFinal, playListName):
                 playlistList.append(music)
 
     return playlistList
+
+def add_favorites(musicName,musicAuthor,usernameFinal):
+    if musicName == None:
+        return
+    else:
+        file_path = f"{usersPath}{usernameFinal}{pathFormat}favorites.csv"
+
+        # Lê o conteúdo atual do arquivo
+        with open(file_path, "r", encoding="utf-8") as file:
+            lines = file.readlines()
+
+        # Verifica se a combinação já existe no arquivo
+        for line in lines:
+            fields = line.strip().split(";")
+            # Remove espaços desnecessários nos campos
+            fields = [field.strip() for field in fields]
+            if fields[0] == musicName and fields[1] == musicAuthor:
+                print(f"'{musicName}' by {musicAuthor} is already in favorites.")
+                return
+
+        # Se não encontrar, adiciona ao arquivo
+        with open(file_path, "a", encoding="utf-8") as file:
+            file.write(f"{musicName};{musicAuthor}\n")
+
+        print(f"'{musicName}' by {musicAuthor} has been added to favorites.")
+
+def check_favorite(musicName,musicAuthor,usernameFinal):
+    file_path = f"{usersPath}{usernameFinal}{pathFormat}favorites.csv"
+
+     # Lê o conteúdo atual do arquivo
+    with open(file_path, "r", encoding="utf-8") as file:
+        lines = file.readlines()
+
+    # Verifica se a combinação existe no arquivo
+    for line in lines:
+        fields = line.strip().split(";")
+        # Remove espaços desnecessários nos campos
+        fields = [field.strip() for field in fields]
+        if fields[0] == musicName and fields[1] == musicAuthor:
+            print(f"'{musicName}' by {musicAuthor} is in favorites.")
+            return True
+
+    return False

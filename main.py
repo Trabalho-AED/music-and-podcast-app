@@ -12,7 +12,7 @@ from io import StringIO
 from tkinter import ttk#from tkVideoPlayer import TkinterVideo   #https://pypi.org/project/tkvideoplayer/ 
 import time #Sleep
 from file_management import *
-#from users import *
+from users import *
 from music_management import *
 from admin_management import *
 import random
@@ -30,6 +30,9 @@ nameFull = None  # Para salvar o nome do utilizador
 currentLevel = 50 # Para Salvar o volume antes de mute
 isPaused = True # Para salvar estado da música
 usernameFinal = None # Para salvar o username no login
+musicNameCurrent = None # Para salvar a musica a ser tocada
+musicAuthorCurrent = None # Para salvar o artista da musica a ser tocada
+isFavorite = False
 ###########################################################
 
 # Inicializar app
@@ -39,7 +42,7 @@ app = customtkinter.CTk(fg_color= "#000000")
 app.title("Music App")
 
 # Define a dimensão da app
-appWidth = 1520
+appWidth = 1500
 appHeight = 800
 
 # App não resizable em x
@@ -49,6 +52,8 @@ appHeight = 800
 screenWidth = app.winfo_screenwidth()
 screenHeight = app.winfo_screenheight()
 
+app.iconbitmap(f"{imagePath}favicon.ico")
+
 # Calcula a posição para centralizar a janela
 x = (screenWidth / 2) - (appWidth / 2)
 y = (screenHeight / 2) - (appHeight / 2)
@@ -57,20 +62,6 @@ y = (screenHeight / 2) - (appHeight / 2)
 app.geometry(f"{appWidth}x{appHeight}+{int(x)}+{int(y)}")
 
 ##################[ALGORITMOS DA APP]################################
-
-def user_check(username):
-    """Verifica se o username já existe.
-    Retorna um booleano"""
-
-    lines = read_file(accountsPath) # Abrir os dados do ficheiro utilizador
-
-    #Para cada linha de dados
-    for line in lines:
-        fields = line.strip().split(";")
-        if fields[0] == username:
-            return True # Se o nome de utilizador(fields na posição 0) for igual ao username
-    
-    return False # Se não for encontrado nenhum username igual
 
 def check_format(value, typeVal):
     """Verifica se o username e password estão no formato pedido"""
@@ -462,7 +453,7 @@ def adjust_volume(event=None):
 def play_music(music,musicName,musicAuthor,coverArt):
     """Toca a música e atualiza a interface."""
 
-    global isPaused
+    global isPaused,musicNameCurrent,musicAuthorCurrent,isFavorite
 
     mixer.init()
     mixer.music.load(musicAudioPath + music)
@@ -470,8 +461,18 @@ def play_music(music,musicName,musicAuthor,coverArt):
     btnPlay.configure(image=pauseIcon)
     isPaused = False
 
+    isFavorite = check_favorite(musicName,musicAuthor,usernameFinal)
+
+    if isFavorite:
+        likeBtn.configure(image=favoriteIcon)
+    else:
+        likeBtn.configure(image=noFavoriteIcon)
+
     # Atualiza informações na interface
     update_music_info(musicName, musicAuthor, coverArt)
+
+    musicNameCurrent = musicName
+    musicAuthorCurrent = musicAuthor
 
     # Configura o slider de progresso
     musicLenSlider.configure(to=get_music_length(music))
@@ -766,7 +767,7 @@ def add_music():
 def mainwindow_render(oldFrame):
     """Rendriza a frame da janela principal"""
 
-    global mainContentFrame,currentFrame,nameFull,addIcon,playlistMenuFrame, musicName, artistName, musicLenSlider, volumeSlider, musicCover, playIcon, pauseIcon, btnPlay, playlistScrollFrame,playlistIcon # Variável global do frame em uso
+    global favoriteIcon,noFavoriteIcon,likeBtn,mainContentFrame,currentFrame,nameFull,addIcon,playlistMenuFrame, musicName, artistName, musicLenSlider, volumeSlider, musicCover, playIcon, pauseIcon, btnPlay, playlistScrollFrame,playlistIcon # Variável global do frame em uso
 
     oldFrame.destroy() # Apagar o estilo do frame anterior
 
@@ -945,10 +946,10 @@ def mainwindow_render(oldFrame):
 
     #-------------------------------------[FRAME INFO]-------------------------------------------------------------
 
-    likeBtn = customtkinter.CTkButton(playFrame,text="", width=50, height=50,image=noFavoriteIcon ,fg_color="transparent")
+    likeBtn = customtkinter.CTkButton(playFrame,text="", width=35, height=35,image=noFavoriteIcon ,fg_color="transparent", command=lambda:add_favorites(musicNameCurrent,musicAuthorCurrent,usernameFinal))
     likeBtn.place(x=45,y=50)
 
-    playListAddBtn = customtkinter.CTkButton(playFrame,text="", width=50, height=50,image=addIcon ,fg_color="transparent")
+    playListAddBtn = customtkinter.CTkButton(playFrame,text="", width=35, height=35,image=addIcon ,fg_color="transparent", command="add_playlist_render")
     playListAddBtn.place(x=95,y=50)
 
     #Frame para mostrar info: Nome da música e artista
