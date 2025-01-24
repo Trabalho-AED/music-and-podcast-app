@@ -16,6 +16,7 @@ from file_management import *
 #from users import *
 from music_management import *
 from admin_management import *
+import random
 
 customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light" Alterar entre tema escuro e claro
 
@@ -138,6 +139,8 @@ def create_account(username, password, name):
     create_sub_folders(f"db{pathFormat}users{pathFormat}{username}")
     create_sub_folders(f"db{pathFormat}users{pathFormat}{username}{pathFormat}playlists")
     create_main_files(f"db{pathFormat}users{pathFormat}{username}{pathFormat}favorites.csv")
+    create_main_files(f"db{pathFormat}users{pathFormat}{username}{pathFormat}music_activity.csv")
+    create_main_files(f"db{pathFormat}users{pathFormat}{username}{pathFormat}podcast_activity.csv")
     with open(accountsPath, "a", encoding="utf-8") as file:
         file.write(accountAdd) # Escreve os dados no ficheiro
 
@@ -469,6 +472,60 @@ def play_music(music,musicName,musicAuthor,coverArt):
     # Configura o slider de progresso
     musicLenSlider.configure(to=get_music_length(music))
     update_slider()
+
+    increment_music_views(musicName, musicAuthor)
+
+    # Update the recent songs file
+    update_recent_songs_file(musicName, musicAuthor)
+
+def update_recent_songs_file(musicName, musicAuthor):
+    """Updates the recent songs file to ensure uniqueness and maintain order."""
+    songInfo = f"{musicName};{musicAuthor}\n"
+    activityPath = f"{usersPath}{usernameFinal}{pathFormat}music_activity.csv"
+
+    # Read all lines from the file
+    try:
+        with open(activityPath, "r", encoding="utf-8") as file:
+            lines = file.readlines()
+    except FileNotFoundError:
+        lines = []
+
+    # Remove the song if it already exists
+    lines = [line for line in lines if line != songInfo]
+
+    # Insert the new song at the beginning
+    lines.insert(0, songInfo)
+
+    # Ensure only the last 8 songs are kept
+    lines = lines[:8]
+
+    # Write back the updated list to the file
+    with open(activityPath, "w", encoding="utf-8") as file:
+        file.writelines(lines)
+
+def increment_music_views(musicName, musicAuthor):
+    """Incrementa o número de visualizações para a música tocada."""
+    global musicPath  # Caminho para o arquivo de músicas
+
+    # Lê o conteúdo atual do arquivo
+    with open(musicPath, "r", encoding="utf-8") as file:
+        lines = file.readlines()
+
+    # Atualiza a linha correspondente
+    updatedLines = []
+    for line in lines:
+        fields = line.strip().split(";")  # Divide os campos da linha
+        if fields[0] == musicName and fields[1] == musicAuthor:
+            fields[3] = str(int(fields[3]) + 1)  # Incrementa visualizações
+
+        # Reconstrói a linha manualmente
+        updatedLine = fields[0] + ";" + fields[1] + ";" + fields[2] + ";" + fields[3] + ";" + fields[4] + ";" + fields[5]
+        updatedLines.append(updatedLine)
+
+    # Escreve o conteúdo atualizado de volta no arquivo
+    with open(musicPath, "w", encoding="utf-8") as file:
+        for updatedLine in updatedLines:
+            file.write(updatedLine + "\n")
 
 def new_playlist():
     """Abre um frame para adicionar playlists"""
@@ -1217,13 +1274,28 @@ def homepage_render(mainContentFrame, oldFrame):
     # Criar botões num ciclo for, na horizontal
     musicList = read_content("music")  # receber dados da lista (lista com sublistas)
 
+    # Converter as visualizações para inteiro e ordenar manualmente
+    for music in musicList:
+        music[3] = int(music[3])  # Converter o campo de visualizações (índice 3) para inteiro
+
+    # Ordenar a lista de músicas pelo número de visualizações em ordem decrescente
     for i in range(len(musicList)):
-        musicName = musicList[i][0]
-        musicAuthor = musicList[i][1]
-        musicCategory = musicList[i][2]
-        musicViews = musicList[i][3]
-        musicCover = coverArtPath + musicList[i][4]
-        musicURL = musicList[i][5]
+        for j in range(i + 1, len(musicList)):
+            if musicList[i][3] < musicList[j][3]:  # Comparar pelo campo de visualizações
+                musicList[i], musicList[j] = musicList[j], musicList[i]  # Trocar as posições
+
+    # Limitar a exibição às 5 músicas com mais visualizações
+    topTrendingMusic = musicList[:10]
+
+    # Loop para criar os botões sem usar enumerate
+    index = 0
+    for music in topTrendingMusic:
+        musicName = music[0]
+        musicAuthor = music[1]
+        musicCategory = music[2]
+        musicViews = music[3]
+        musicCover = coverArtPath + music[4]
+        musicURL = music[5]
 
         coverArt = customtkinter.CTkImage(Image.open(musicCover), size=(150, 150))
         coverArt2 = customtkinter.CTkImage(Image.open(musicCover), size=(52, 52))
@@ -1239,7 +1311,8 @@ def homepage_render(mainContentFrame, oldFrame):
             command=lambda url=musicURL, name=musicName, author=musicAuthor, art=coverArt2: play_music(url, name, author, art)
         )
 
-        button.grid(row=0, column=i, padx=10, pady=40)
+        button.grid(row=0, column=index, padx=10, pady=40)
+        index += 1  # Incrementar manualmente o índice
 
     
 
@@ -1278,10 +1351,40 @@ def musicpage_render(mainContentFrame, oldFrame):
         height=250,
         fg_color="transparent"
     )
-    MusicScrollFrame.place(x=0, y=20)
+    MusicScrollFrame.place(x=0, y=0)
 
     MusicLabel = customtkinter.CTkLabel(MusicFrame,text="Music",font=("Roboto", 25))
     MusicLabel.place(x=20,y=10)
+
+    # Criar botões num ciclo for, na horizontal
+    musicList = read_content("music")  # receber dados da lista (lista com sublistas)
+
+    # Loop para criar os botões sem usar enumerate
+    index = 0
+    for music in musicList:
+        musicName = music[0]
+        musicAuthor = music[1]
+        musicCategory = music[2]
+        musicViews = music[3]
+        musicCover = coverArtPath + music[4]
+        musicURL = music[5]
+
+        coverArt = customtkinter.CTkImage(Image.open(musicCover), size=(150, 150))
+        coverArt2 = customtkinter.CTkImage(Image.open(musicCover), size=(52, 52))
+
+        button = customtkinter.CTkButton(
+            MusicScrollFrame,
+            width=150,
+            height=150,
+            text=f"{musicName}\n{musicAuthor}",
+            image=coverArt,
+            fg_color="red",
+            compound="top",
+            command=lambda url=musicURL, name=musicName, author=musicAuthor, art=coverArt2: play_music(url, name, author, art)
+        )
+
+        button.grid(row=0, column=index, padx=10, pady=40)
+        index += 1  # Incrementar manualmente o índice
 
     # Frame menu Your Activity
     MusicYourActivityFrame = customtkinter.CTkFrame(MusicpageFrame, width=1300, height=300, fg_color="transparent", corner_radius=0)
@@ -1295,11 +1398,42 @@ def musicpage_render(mainContentFrame, oldFrame):
         height=250,
         fg_color="transparent"
     )
-    MusicScrollFrame.place(x=0, y=20)
+    MusicScrollFrame.place(x=0, y=0)
 
     #Label para mostrar "Your Activity"
     MusicLabel = customtkinter.CTkLabel(MusicYourActivityFrame,text="Your Activity",font=("Roboto", 25))
-    MusicLabel.place(x=20,y=10)
+    MusicLabel.place(x=10,y=0)
+
+    activityPath = f"{usersPath}{usernameFinal}{pathFormat}music_activity.csv"
+
+    recentMusic = get_recent_songs(activityPath)
+    activityList = filter_music(musicList, recentMusic)
+
+    index = 0
+    for music in activityList:
+        musicName = music[0]
+        musicAuthor = music[1]
+        musicCategory = music[2]
+        musicViews = music[3]
+        musicCover = coverArtPath + music[4]
+        musicURL = music[5]
+
+        coverArt = customtkinter.CTkImage(Image.open(musicCover), size=(150, 150))
+        coverArt2 = customtkinter.CTkImage(Image.open(musicCover), size=(52, 52))
+
+        button = customtkinter.CTkButton(
+            MusicYourActivityFrame,
+            width=150,
+            height=150,
+            text=f"{musicName}\n{musicAuthor}",
+            image=coverArt,
+            fg_color="red",
+            compound="top",
+            command=lambda url=musicURL, name=musicName, author=musicAuthor, art=coverArt2: play_music(url, name, author, art)
+        )
+
+        button.grid(row=0, column=index, padx=10, pady=40)
+        index += 1  # Incrementar manualmente o índice
 
     # Frame menu Discover
     MusicDiscoverFrame = customtkinter.CTkFrame(MusicpageFrame, width=1300, height=300, fg_color="transparent", corner_radius=0)
@@ -1313,11 +1447,40 @@ def musicpage_render(mainContentFrame, oldFrame):
         height=250,
         fg_color="transparent"
     )
-    MusicScrollFrame.place(x=0, y=20)
+    MusicScrollFrame.place(x=0, y=0)
 
     #Label para mostrar "Your Activity"
     MusicLabel = customtkinter.CTkLabel(MusicDiscoverFrame,text="Discover",font=("Roboto", 25))
-    MusicLabel.place(x=20,y=10)
+    MusicLabel.place(x=10,y=0)
+
+    # Limitar a exibição a 8 músicas random
+    randomMusic = random.sample(musicList, 4)
+
+    index = 0
+    for music in randomMusic:
+        musicName = music[0]
+        musicAuthor = music[1]
+        musicCategory = music[2]
+        musicViews = music[3]
+        musicCover = coverArtPath + music[4]
+        musicURL = music[5]
+
+        coverArt = customtkinter.CTkImage(Image.open(musicCover), size=(150, 150))
+        coverArt2 = customtkinter.CTkImage(Image.open(musicCover), size=(52, 52))
+
+        button = customtkinter.CTkButton(
+            MusicDiscoverFrame,
+            width=150,
+            height=150,
+            text=f"{musicName}\n{musicAuthor}",
+            image=coverArt,
+            fg_color="red",
+            compound="top",
+            command=lambda url=musicURL, name=musicName, author=musicAuthor, art=coverArt2: play_music(url, name, author, art)
+        )
+
+        button.grid(row=0, column=index, padx=10, pady=40)
+        index += 1  # Incrementar manualmente o índice
 
     
 
