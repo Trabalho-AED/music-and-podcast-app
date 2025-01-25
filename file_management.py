@@ -111,6 +111,7 @@ def refresh_tree(tree):
 ##########################################[CAMINHOS]############################################################
 
 imagePath = f".{pathFormat}images{pathFormat}icons{pathFormat}" # Caminho para o diretório onde são armazenadas as imagens
+profileimagePath = f".{pathFormat}images{pathFormat}profile_images{pathFormat}" # Caminho para o diretório onde são armazenadas as imagens de perfil
 accountsPath = f".{pathFormat}db{pathFormat}user_accounts.csv" # Caminho para o ficheiro onde são armazenadas as contas
 musicPath = f".{pathFormat}db{pathFormat}music_list.csv" # Caminho para o ficheiro onde são armazenadas as músicas
 podcastPath = f".{pathFormat}db{pathFormat}podcast_list.csv" # Caminho para o ficheiro onde são armazenadas os podcasts

@@ -1023,62 +1023,80 @@ def userpage_render(mainContentFrame, oldFrame):
 
     #Frame options Menu
     optionsFrame = customtkinter.CTkFrame(userFrame, width=542, height=430, corner_radius=50,fg_color="#242424")
-    optionsFrame.place(x=362,y=140)
+    optionsFrame.place(x=340,y=120)
 
     #Frame Change Image
-    changeImageFrame = customtkinter.CTkFrame(optionsFrame, width=542, height=158, corner_radius=10,fg_color="#242424")
+    changeImageFrame = customtkinter.CTkFrame(optionsFrame, width=542, height=150, corner_radius=10,fg_color="#242424")
     changeImageFrame.place(x=0,y=0)
 
-    #Frame Change Name
-    changeNameFrame = customtkinter.CTkFrame(optionsFrame, width=542, height=158, corner_radius=10,fg_color="#242424")
-    changeNameFrame.place(x=0,y=158)
-
-    #Frame Change Username
-    changeUserNameFrame = customtkinter.CTkFrame(optionsFrame, width=542, height=158, corner_radius=10,fg_color="#242424")
-    changeUserNameFrame.place(x=0,y=224)
-
-    #Frame Change Password
-    changePassFrame = customtkinter.CTkFrame(optionsFrame, width=542, height=158, corner_radius=10,fg_color="#242424")
-    changePassFrame.place(x=0,y=290)
+    #Frame Credentials
+    CredentialsFrame = customtkinter.CTkFrame(optionsFrame, width=542, height=250, corner_radius=10,fg_color="#242424")
+    CredentialsFrame.place(x=0,y=158)
 
     #Titulo
     title = customtkinter.CTkLabel(userFrame, text="User Page", font=("Arial", 30),text_color="white")
-    title.place(x=553,y=70)
+    title.place(x=553,y=30)
 
     # Butao mudar imagem
-    btnChgImage = customtkinter.CTkButton(changeImageFrame, width=150, height=30,text="Change Image")
-    btnChgImage.place(x=300, y=30)
+    btnChgImage = customtkinter.CTkButton(changeImageFrame, width=150, height=30,text="Change Image",command=select_image)
+    btnChgImage.place(x=300, y=70)
 
-    # Butao mudar nome
-    btnChgName = customtkinter.CTkButton(changeNameFrame, width=150, height=30,text="Change Name")
-    btnChgName.place(x=300, y=30)
+    "Por a funcionar"
+    #img = customtkinter.CTkImage(Image.open(f"{profileimagePath}musica_perfil.png"), size=(31, 31))
+    btnSelectImg = customtkinter.CTkButton(changeImageFrame,width=100, height=100,text = "", fg_color="red")
+    btnSelectImg.place(x=100, y=30)
 
-    # Butao mudar Username
-    btnChgUsername = customtkinter.CTkButton(changeUserNameFrame, width=150, height=30,text="Change Username")
-    btnChgUsername.place(x=300, y=30)
-
-    # Butao mudar Password
-    btnChgPass = customtkinter.CTkButton(changePassFrame, width=150, height=30,text="Change Password")
-    btnChgPass.place(x=300, y=30)
-
-    # Label Imagem do User
-    userImg = customtkinter.CTkLabel(changeImageFrame, text="")
-    userImg.place(x=105,y=35)
+    # Butao mudar 
+    btnchgCred = customtkinter.CTkButton(CredentialsFrame, width=150, height=30,text="Change Credentials",command=lambda:change_credentials(mainContentFrame, currentFrame))
+    btnchgCred.place(x=200, y=170)
 
     # Label Nome
-    labelName = customtkinter.CTkLabel(changeNameFrame, text="User Name", font=("Arial", 20),text_color="white")
-    labelName.place(x=105,y=35)
+    labelName = customtkinter.CTkLabel(CredentialsFrame, text="User Name", font=("Arial", 20),text_color="white")
+    labelName.place(x=30,y=65)
     
     # Label Username
-    labelUsername = customtkinter.CTkLabel(changeUserNameFrame, text="username", font=("Arial", 20),text_color="white")
-    labelUsername.place(x=105,y=35)
+    labelUsername = customtkinter.CTkLabel(CredentialsFrame, text="username", font=("Arial", 20),text_color="white")
+    labelUsername.place(x=230,y=65)
 
     # Label Password
-    labelPass = customtkinter.CTkLabel(changePassFrame, text="Password", font=("Arial", 20),text_color="white")
-    labelPass.place(x=105,y=35)
+    labelPass = customtkinter.CTkLabel(CredentialsFrame, text="Password", font=("Arial", 20),text_color="white")
+    labelPass.place(x=410,y=65)
 
-    btnLogout = customtkinter.CTkButton(changePassFrame, width=100, height=30,text="Logout",command=lambda:login_render(userFrame),fg_color="transparent")
-    btnLogout.place(x=200, y=85)
+    btnLogout = customtkinter.CTkButton(userFrame, width=100, height=30,text="Logout",command=lambda:login_render(userFrame),fg_color="red")
+    btnLogout.place(x=1000, y=500)
+
+def change_credentials(mainContentFrame, oldFrame):
+    """Mostra a pagina de mudar credenciais"""
+
+    global currentFrame # Variável global para frame a ser usado
+
+    oldFrame.destroy() # Apagar o estilo do frame anterior
+
+    #Frame Home Page
+    ChangeinfosFrame =customtkinter.CTkFrame(mainContentFrame, width=1674, height=890, fg_color="#242424",corner_radius=0)
+    ChangeinfosFrame.place(x=0,y=0)
+
+    currentFrame = ChangeinfosFrame # O frame a ser usado passa a ser o ChangeinfosFrame
+
+    Title = customtkinter.CTkLabel(ChangeinfosFrame, text="Change Your Credentials", font=("Arial", 30))
+    Title.place(x=400,y=30)
+
+    usernameEntry = customtkinter.CTkEntry(ChangeinfosFrame, placeholder_text="Name...",width=310)
+    usernameEntry.place(x=400,y=200)
+
+    nameEntry = customtkinter.CTkEntry(ChangeinfosFrame, placeholder_text="Username...",width=310)
+    nameEntry.place(x=400,y=300)
+
+    passEntry = customtkinter.CTkEntry(ChangeinfosFrame, placeholder_text="Password...",width=310)
+    passEntry.place(x=400,y=400)
+
+    confirmBtn = customtkinter.CTkButton(ChangeinfosFrame, width=100, height=30,text="Confirm")
+    confirmBtn.place(x=400, y=500)
+
+
+
+def select_image():
+    filename =filedialog.askopenfilename(title='select file',initialdir = 'images',filetypes=(('png files','*.png'),('gif files','*.gif'),('all files','*.*')))
 
 def read_content(contentType):
     if contentType == "podcast":
