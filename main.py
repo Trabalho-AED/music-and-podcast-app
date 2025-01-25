@@ -46,7 +46,7 @@ appWidth = 1500
 appHeight = 800
 
 # App não resizable em x
-#app.resizable(width=False, height=False)
+app.resizable(width=False, height=False)
 
 # Obtém a dimensão do ecrã
 screenWidth = app.winfo_screenwidth()
