@@ -1030,16 +1030,12 @@ def userpage_render(mainContentFrame, oldFrame):
     changeImageFrame.place(x=0,y=0)
 
     #Frame Credentials
-    CredentialsFrame = customtkinter.CTkFrame(optionsFrame, width=542, height=250, corner_radius=10,fg_color="#242424")
-    CredentialsFrame.place(x=0,y=158)
+    credentialsFrame = customtkinter.CTkFrame(optionsFrame, width=542, height=250, corner_radius=10,fg_color="#242424")
+    credentialsFrame.place(x=0,y=158)
 
     #Titulo
     title = customtkinter.CTkLabel(userFrame, text="User Page", font=("Arial", 30),text_color="white")
     title.place(x=553,y=30)
-
-    # Butao mudar imagem
-    btnChgImage = customtkinter.CTkButton(changeImageFrame, width=150, height=30,text="Change Image",command=select_image)
-    btnChgImage.place(x=300, y=70)
 
     "Por a funcionar"
     #img = customtkinter.CTkImage(Image.open(f"{profileimagePath}musica_perfil.png"), size=(31, 31))
@@ -1047,23 +1043,23 @@ def userpage_render(mainContentFrame, oldFrame):
     btnSelectImg.place(x=100, y=30)
 
     # Butao mudar 
-    btnchgCred = customtkinter.CTkButton(CredentialsFrame, width=150, height=30,text="Change Credentials",command=lambda:change_credentials(mainContentFrame, currentFrame))
+    btnchgCred = customtkinter.CTkButton(credentialsFrame, width=150, height=30,text="Edit Profile",command=lambda:change_credentials(mainContentFrame, currentFrame))
     btnchgCred.place(x=200, y=170)
 
     # Label Nome
-    labelName = customtkinter.CTkLabel(CredentialsFrame, text="User Name", font=("Arial", 20),text_color="white")
+    labelName = customtkinter.CTkLabel(credentialsFrame, text="User Name", font=("Arial", 20),text_color="white")
     labelName.place(x=30,y=65)
     
     # Label Username
-    labelUsername = customtkinter.CTkLabel(CredentialsFrame, text="username", font=("Arial", 20),text_color="white")
+    labelUsername = customtkinter.CTkLabel(credentialsFrame, text="username", font=("Arial", 20),text_color="white")
     labelUsername.place(x=230,y=65)
 
     # Label Password
-    labelPass = customtkinter.CTkLabel(CredentialsFrame, text="Password", font=("Arial", 20),text_color="white")
+    labelPass = customtkinter.CTkLabel(credentialsFrame, text="Password", font=("Arial", 20),text_color="white")
     labelPass.place(x=410,y=65)
 
-    btnLogout = customtkinter.CTkButton(userFrame, width=100, height=30,text="Logout",command=lambda:login_render(userFrame),fg_color="red")
-    btnLogout.place(x=1000, y=500)
+    btnLogout = customtkinter.CTkButton(userFrame, width=100, height=30,text="Logout",command="",fg_color="red")
+    btnLogout.place(x=570, y=500)
 
 def change_credentials(mainContentFrame, oldFrame):
     """Mostra a pagina de mudar credenciais"""
@@ -1092,6 +1088,9 @@ def change_credentials(mainContentFrame, oldFrame):
 
     confirmBtn = customtkinter.CTkButton(ChangeinfosFrame, width=100, height=30,text="Confirm")
     confirmBtn.place(x=400, y=500)
+
+    cancelBtn = customtkinter.CTkButton(ChangeinfosFrame, width=100, height=30,text="Cancel",command=lambda:userpage_render(mainContentFrame, oldFrame))
+    cancelBtn.place(x=600, y=500)
 
 
 
