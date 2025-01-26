@@ -449,7 +449,7 @@ def update_slider():
     if mixer.music.get_busy():
         current_time = mixer.music.get_pos() // 1000  # Em segundos
         musicLenSlider.set(current_time)
-    app.after(200, update_slider)  # Atualiza a cada 200ms
+    app.after(100, update_slider)  # Atualiza a cada 200ms
 
 def adjust_volume(event=None):
     """Ajusta o volume da música baseado no slider."""
@@ -1386,6 +1386,131 @@ def manage_podcast_render(mainContentFrame, oldFrame):
 
     refresh_tree(tree, "podcast")
 
+def manage_users_render(mainContentFrame, oldFrame):
+    """Mostra a pagina de gerir podcasts"""
+
+    global currentFrame # Variável global para frame a ser usado
+
+    if oldFrame != None:
+        oldFrame.destroy() # Apagar o estilo do frame anterior
+
+    #Frame Home Page
+    usersManageFrame = customtkinter.CTkScrollableFrame(mainContentFrame,
+	orientation="vertical",
+	width=1238,
+	height=appHeight-(90+131),
+	fg_color="black",
+	corner_radius = 0
+	)
+    usersManageFrame.place(x=0,y=0)
+
+    currentFrame = usersManageFrame # O frame a ser usado passa a ser o userFrame
+
+    #Label para mostrar o texto "Admin Dashboard"
+    trendingLabel = customtkinter.CTkLabel(usersManageFrame, text="Manage userss", font=("Roboto", 30))
+    trendingLabel.grid(row=0, column=0,padx=20, pady=20, sticky="nsew")
+
+    #Botão para gerir músicas
+    manageusersBtn = customtkinter.CTkButton(usersManageFrame, width=200, height=50, text="Add users", command=lambda:"add_users(tree)")
+    manageusersBtn.grid(row=1, column=1, padx=0, pady=10, sticky="w")
+
+    #Botão para gerir músicas
+    deleteusersBtn = customtkinter.CTkButton(usersManageFrame, width=200, height=50, text="Delete users", command=lambda:delete_type(tree,"users"))
+    deleteusersBtn.grid(row=3, column=1, padx=0, pady=10, sticky="w")
+
+    # define columns
+    columns = ('users_name', 'users_username', 'users_password')
+
+    tree = ttk.Treeview(usersManageFrame, columns=columns, show='headings')
+
+    # define headings
+    tree.heading('users_name', text='Name')
+    tree.heading('users_username', text='Username')
+    tree.heading('users_password', text='Password')
+
+    tree.grid(row=1,rowspan=3, column=0,padx=70, pady=20,  sticky='nsew')
+
+    refresh_tree(tree, "users")
+
+def manage_categories_render(mainContentFrame, oldFrame):
+    """Mostra a pagina de gerir podcasts"""
+
+    global currentFrame # Variável global para frame a ser usado
+
+    if oldFrame != None:
+        oldFrame.destroy() # Apagar o estilo do frame anterior
+
+    #Frame Home Page
+    categoriesManageFrame = customtkinter.CTkScrollableFrame(mainContentFrame,
+	orientation="vertical",
+	width=1238,
+	height=appHeight-(90+131),
+	fg_color="black",
+	corner_radius = 0
+	)
+    categoriesManageFrame.place(x=0,y=0)
+
+    currentFrame = categoriesManageFrame # O frame a ser usado passa a ser o userFrame
+
+    #Label para mostrar o texto "Admin Dashboard"
+    trendingLabel = customtkinter.CTkLabel(categoriesManageFrame, text="Manage Categories", font=("Roboto", 30))
+    trendingLabel.grid(row=0, column=0,padx=20, pady=20, sticky="nsew")
+
+    #Botão para gerir músicas
+    managecategoriesBtn = customtkinter.CTkButton(categoriesManageFrame, width=200, height=50, text="Add Category", command=lambda:add_categories_render(tree))
+    managecategoriesBtn.grid(row=1, column=1, padx=0, pady=10, sticky="w")
+
+    #Botão para gerir músicas
+    deletecategoriesBtn = customtkinter.CTkButton(categoriesManageFrame, width=200, height=50, text="Delete Category", command=lambda:delete_category(tree))
+    deletecategoriesBtn.grid(row=3, column=1, padx=0, pady=10, sticky="w")
+
+    # define columns
+    columns = ('categories_name')
+
+    tree = ttk.Treeview(categoriesManageFrame, columns=columns, show='headings')
+
+    # define headings
+    tree.heading('categories_name', text='Name')
+
+    tree.grid(row=1,rowspan=3, column=0,padx=70, pady=20,  sticky='nsew')
+
+    refresh_tree(tree, "categories")
+
+def add_categories_render(tree):
+    """Abre um frame para adicionar músicas"""
+
+    #Frame para adicionar música
+    categoriesFrame = customtkinter.CTkFrame(app, width=appWidth-246, height=916, border_width=2, border_color="white", fg_color="#0A090C")
+    categoriesFrame.place(x=830,y=200) #Abre o frame no canto superior direito
+    
+    #----------------------------[Nome da Música]--------------------------------#
+
+    #Label para mostar o texto "categories Name:"
+    categoriesNameLabel = customtkinter.CTkLabel(categoriesFrame, text="Category Name:")
+    categoriesNameLabel.grid(row=0,column=0, pady=20, padx=10)
+
+    #Entry para o nome da música
+    categoriesNameEntry = customtkinter.CTkEntry(categoriesFrame)
+    categoriesNameEntry.grid(row=0,column=1, padx=10)
+
+    #----------------------------------------------------------------------------#
+
+    #Botão para salvar a os dados
+    confirmBtn = customtkinter.CTkButton(categoriesFrame, width=160, height=30, text="Confirm", command=lambda:add_categories_refresh(categoriesNameEntry, erroradd_categoriesLabel,tree))
+    confirmBtn.grid(row=9,column=0, columnspan=2,pady=15)
+
+    #Botão para cancelar os dados
+    cancelBtn = customtkinter.CTkButton(categoriesFrame, width=160, height=30, text="Cancel", command=lambda:categoriesFrame.destroy())
+    cancelBtn.grid(row=10,column=0, columnspan=2)
+
+    #Label para mostrar erros
+    erroradd_categoriesLabel = customtkinter.CTkLabel(categoriesFrame, text="")
+    erroradd_categoriesLabel.grid(row=11,column=0, columnspan=2)
+
+def add_categories_refresh(categoriesNameEntry, erroradd_categoriesLabel,tree):
+    confirm_categories(categoriesNameEntry, erroradd_categoriesLabel)
+    refresh_tree(tree, "categories")
+
 def adminpage_render(mainContentFrame, oldFrame):
     """Mostra a homepage"""
 
@@ -1406,7 +1531,7 @@ def adminpage_render(mainContentFrame, oldFrame):
 
     currentFrame = homepageFrame # O frame a ser usado passa a ser o userFrame
     
-   # Configure the grid to center the elements
+    #Configure the grid to center the elements
     homepageFrame.grid_rowconfigure(0, weight=1)
     homepageFrame.grid_rowconfigure(1, weight=1)
     homepageFrame.grid_rowconfigure(2, weight=1)
@@ -1428,33 +1553,49 @@ def adminpage_render(mainContentFrame, oldFrame):
     labelMusics = customtkinter.CTkLabel(homepageFrame, text="Music", font=("Roboto", 25))
     labelMusics.grid(row=3, column=1, padx=20, pady=10, sticky="e")
 
-    #Label para mostrar Podcasts"
-    labelPodcasts = customtkinter.CTkLabel(homepageFrame, text="Podcasts", font=("Roboto", 25))
-    labelPodcasts.grid(row=4, column=1, padx=20, pady=10, sticky="e")
-
     #Botão para gerir músicas
-    ManageMusicsbtn = customtkinter.CTkButton(homepageFrame, width=200, height=50, text="Manage Musics", command=lambda:manage_music_render(mainContentFrame,currentFrame))
-    ManageMusicsbtn.grid(row=3, column=2, padx=20, pady=10, sticky="w")
+    manageMusicsbtn = customtkinter.CTkButton(homepageFrame, width=200, height=50, text="Manage Musics", command=lambda:manage_music_render(mainContentFrame,currentFrame))
+    manageMusicsbtn.grid(row=3, column=2, padx=20, pady=10, sticky="w")
 
-    #Botão para gerir podcasts
-    ManagePodcastsbtn = customtkinter.CTkButton(homepageFrame, width=200, height=50, text="Manage Podcasts", command=lambda:manage_podcast_render(mainContentFrame,currentFrame))
-    ManagePodcastsbtn.grid(row=4, column=2, padx=20, pady=10, sticky="w")
-    
     #Label para mostrar Categorias
-    labelManageUsers = customtkinter.CTkLabel(homepageFrame, text="Manage Categories", font=("Roboto", 25))
-    labelManageUsers.grid(row=5, column=1, padx=20, pady=10, sticky="e")
+    labelManageCategories = customtkinter.CTkLabel(homepageFrame, text="Categories", font=("Roboto", 25))
+    labelManageCategories.grid(row=4, column=1, padx=20, pady=10, sticky="e")
     
     #Botão para gerir Categorias
-    ManageUsersbtn = customtkinter.CTkButton(homepageFrame, width=200, height=50, text="Manage Categories")
-    ManageUsersbtn.grid(row=5, column=2, padx=20, pady=10, sticky="w")
+    manageCategoriesbtn = customtkinter.CTkButton(homepageFrame, width=200, height=50, text="Manage Categories", command=lambda:manage_categories_render(mainContentFrame,currentFrame))
+    manageCategoriesbtn.grid(row=4, column=2, padx=20, pady=10, sticky="w")
+
+    #Label para mostrar Podcasts"
+    labelPodcasts = customtkinter.CTkLabel(homepageFrame, text="Podcasts", font=("Roboto", 25))
+    labelPodcasts.grid(row=5, column=1, padx=20, pady=10, sticky="e")
+
+    #Botão para gerir episódios
+    manageEpisodesbtn = customtkinter.CTkButton(homepageFrame, width=200, height=50, text="Manage Episodes", command=lambda:manage_podcast_render(mainContentFrame,currentFrame))
+    manageEpisodesbtn.grid(row=5, column=2, padx=20, pady=10, sticky="w")
+
+    #Label para mostrar Episódios
+    labelManageEpisodes = customtkinter.CTkLabel(homepageFrame, text="Episodes", font=("Roboto", 25))
+    labelManageEpisodes.grid(row=6, column=1, padx=20, pady=10, sticky="e")
+    
+    #Botão para gerir utilizadores
+    manageUsersbtn = customtkinter.CTkButton(homepageFrame, width=200, height=50, text="Manage Users", command=lambda:manage_users_render(mainContentFrame,currentFrame))
+    manageUsersbtn.grid(row=6, column=2, padx=20, pady=10, sticky="w")
 
     #Label para mostrar Users
     labelManageUsers = customtkinter.CTkLabel(homepageFrame, text="Users", font=("Roboto", 25))
-    labelManageUsers.grid(row=6, column=1, padx=20, pady=10, sticky="e")
+    labelManageUsers.grid(row=7, column=1, padx=20, pady=10, sticky="e")
     
     #Botão para gerir utilizadores
-    ManageUsersbtn = customtkinter.CTkButton(homepageFrame, width=200, height=50, text="Manage Users")
-    ManageUsersbtn.grid(row=6, column=2, padx=20, pady=10, sticky="w")
+    manageUsersbtn = customtkinter.CTkButton(homepageFrame, width=200, height=50, text="Manage Users", command=lambda:manage_users_render(mainContentFrame,currentFrame))
+    manageUsersbtn.grid(row=7, column=2, padx=20, pady=10, sticky="w")
+
+    #Label para mostrar Admins
+    labelManageAdmins = customtkinter.CTkLabel(homepageFrame, text="Admins", font=("Roboto", 25))
+    labelManageAdmins.grid(row=8, column=1, padx=20, pady=10, sticky="e")
+    
+    #Botão para gerir Admins
+    manageAdminsbtn = customtkinter.CTkButton(homepageFrame, width=200, height=50, text="Manage Admins", command=lambda:manage_users_render(mainContentFrame,currentFrame))
+    manageAdminsbtn.grid(row=8, column=2, padx=20, pady=10, sticky="w")
 
 
 def homepage_render(mainContentFrame, oldFrame):
@@ -2277,19 +2418,19 @@ def favoritepage_render(mainContentFrame, oldFrame):
         musicURL = music[5]
 
         coverArt = customtkinter.CTkImage(Image.open(musicCover), size=(150, 150))
-        coverArt2 = customtkinter.CTkImage(Image.open(musicCover), size=(52, 52))
 
         button = customtkinter.CTkButton(
             MusicScrollFrame,
-            width=70,
-            height=70,
+            width=150,
+            height=150,
             text="",
             image=coverArt,
             fg_color="transparent",
-            command=lambda url=musicURL, name=musicName, author=musicAuthor, art=coverArt2: play_music(url, name, author, art)
+            compound="top",
+            command=lambda idx=index, playlist=favoritesList: play_music(idx, playlist) 
         )
 
-        button.grid(row=index, column=0, padx=40, pady=20)
+        button.grid(row=index, column=0, padx=10, pady=40)
 
         nameLabel = customtkinter.CTkLabel(
             MusicScrollFrame,

@@ -1,4 +1,5 @@
 import os
+import shutil 
 
 ################################[VERIFICAR SISTEMA OPERATIVO]######################################
 def path_format():
@@ -101,11 +102,38 @@ def get_categories():
 
     return categoriesList
 
+def confirm_categories(categoriesNameEntry, erroradd_categoriesLabel):
+    """Guarda os dados da música a adicionar"""
+
+    if categoriesNameEntry.get():
+        #Variável com a estrutura de dados
+        categoryData = f"{categoriesNameEntry.get()}\n"
+
+        #Abre o caminho da música no formato "append" para adicionar a linha sem apagar o conteúdo existente
+        with open(categoriesFile, "a", encoding="utf-8") as file:
+            file.writelines(categoryData) # escreve os dados com a estrutura anteriormente definida
+            file.close
+        
+        #Apagar conteúdo
+        categoriesNameEntry.delete(0,"end")
+        erroradd_categoriesLabel.configure(text="Category added with success!")
+
+        return
+
+    else:
+        erroradd_categoriesLabel.configure(text="Fill all fields!")
+        return
+
+
 def refresh_tree(tree, type):
     if type=="podcast":
         path=podcastPath
-    else:
+    elif type=="music":
         path=musicPath
+    elif type=="users":
+        path=accountsPath
+    elif type=="categories":
+        path=categoriesFile
 
     # Delete all rows in the Treeview
     for row in tree.get_children():  # Iterate over all row IDs in the Treeview
@@ -118,10 +146,24 @@ def refresh_tree(tree, type):
         for line in lines:
             fields = line.strip().split(";")
             tree.insert("","end", values=(fields[0], fields[1],fields[2], fields[3]))
-    else:
+    elif type=="podcast":
         for line in lines:
             fields = line.strip().split(";")
             tree.insert("","end", values=(fields[0], fields[1]))
+    elif type=="users":
+        for line in lines:
+            fields = line.strip().split(";")
+            tree.insert("","end", values=(fields[2],fields[0], fields[1])) #Nome, username, password
+    elif type=="categories":
+        for line in lines:
+            fields = line.strip()
+            tree.insert("","end", values=(fields)) 
+
+def delete_folder(username):
+    shutil.rmtree(usersPath+username)
+
+    print(f"Folder {usersPath+username} deleted.")
+
 ##########################################[CAMINHOS]############################################################
 
 imagePath = f".{pathFormat}images{pathFormat}icons{pathFormat}" # Caminho para o diretório onde são armazenadas as imagens
