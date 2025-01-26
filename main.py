@@ -1187,7 +1187,7 @@ def userpage_render(mainContentFrame, oldFrame):
     labelUsername.grid(row=2,column=0, columnspan=2, pady=20)
 
     # Label Password
-    labelPass = customtkinter.CTkLabel(credentialsFrame, text=f"Password: {"*" * len(passwordFinal)}", font=("Arial", 20),text_color="white")
+    labelPass = customtkinter.CTkLabel(credentialsFrame, text=f"Password: {'*' * len(passwordFinal)}", font=("Arial", 20),text_color="white")
     labelPass.grid(row=3,column=0, columnspan=2,pady=10)
     
     # Butao mudar 
@@ -1255,7 +1255,6 @@ def change_credentials(mainContentFrame, oldFrame):
 
     cancelBtn = customtkinter.CTkButton(changeInfosFrame, width=100, height=30,text="Cancel",command=lambda:userpage_render(mainContentFrame, oldFrame))
     cancelBtn.place(x=600, y=500)
-
 
 
 def select_image():
