@@ -174,3 +174,16 @@ def check_favorite(musicName,musicAuthor,usernameFinal):
             return True
 
     return False
+
+def get_podcast(podcastList):
+    podcastMainList=[]
+    
+    for podcast in podcastList:
+        if podcast[1] not in podcastMainList:
+            podcastMainList.append(podcast[1])
+
+    return podcastMainList
+
+# Ensure you are extracting all unique categories
+def get_categories_music(musicList):
+    return list(set(music[2] for music in musicList))  # Extract unique categories from the music list

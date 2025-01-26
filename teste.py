@@ -97,13 +97,13 @@ def check_format(value, typeVal):
     #Caso seja password
     else:
         if not re.findall(onlyNumberRegex, value):
-            return "Password doesn't meet the requirements.\nMust have at least one number." # Texto a apresentar
+            return "Password doesn"t meet the requirements.\nMust have at least one number." # Texto a apresentar
         elif not re.findall(onlyLowerNumberRegex, value):
-            return "Password doesn't meet the requirements.\nMust have at least one lowercase character." # Texto a apresentar
+            return "Password doesn"t meet the requirements.\nMust have at least one lowercase character." # Texto a apresentar
         elif not re.findall(onlyUpperNumberRegex, value):
-            return "Password doesn't meet the requirements.\nMust have at least one uppercase character." # Texto a apresentar
+            return "Password doesn"t meet the requirements.\nMust have at least one uppercase character." # Texto a apresentar
         elif not re.findall(fullPasswordRegex, value):
-            return "Password doesn't meet the requirements.\nMust be between 8 and 16 characters long." # Texto a apresentar
+            return "Password doesn"t meet the requirements.\nMust be between 8 and 16 characters long." # Texto a apresentar
         elif value.count(";") > 0:
             return "Password cannot have "";"" character" # Texto a apresentar
         else:
@@ -249,16 +249,16 @@ def register_render(oldFrame):
 
     # Labels e campos de entrada
     nameLabel = customtkinter.CTkLabel(frameRegister, text="Nome:", font=("Roboto", 18))
-    nameLabel.place(x=230, y=120,anchor='w')
+    nameLabel.place(x=230, y=120,anchor="w")
 
     nameEntry = customtkinter.CTkEntry(frameRegister, placeholder_text="Nome...",width=310)
-    nameEntry.place(x=230,y=150, anchor='w')
+    nameEntry.place(x=230,y=150, anchor="w")
 
     usernameLabel = customtkinter.CTkLabel(frameRegister, text="Username:",font=("Roboto", 18))
-    usernameLabel.place(x=230, y=210, anchor='w')
+    usernameLabel.place(x=230, y=210, anchor="w")
 
     usernameEntry = customtkinter.CTkEntry(frameRegister, placeholder_text="Username...",width=310)
-    usernameEntry.place(x=230, y=240, anchor='w')
+    usernameEntry.place(x=230, y=240, anchor="w")
 
     passwordLabel = customtkinter.CTkLabel(frameRegister, text="Password:", font=("Roboto", 18))
     passwordLabel.place(x=230, y=280)
@@ -303,24 +303,24 @@ def login_render(oldFrame):
 
     # Labels e campos de entrada
     usernameLabel = customtkinter.CTkLabel(frameLogin, text="Username:", font=("Roboto", 18))
-    usernameLabel.place(x=230, y=150,anchor='w')
+    usernameLabel.place(x=230, y=150,anchor="w")
 
     usernameEntry = customtkinter.CTkEntry(frameLogin, placeholder_text="Username...", width=310)
-    usernameEntry.place(x=230,y=180, anchor='w')
+    usernameEntry.place(x=230,y=180, anchor="w")
 
     passwordLabel = customtkinter.CTkLabel(frameLogin, text="Password:",font=("Roboto", 18))
-    passwordLabel.place(x=230, y=240, anchor='w')
+    passwordLabel.place(x=230, y=240, anchor="w")
 
     passwordEntry = customtkinter.CTkEntry(frameLogin, placeholder_text="Password...", show="*", width=310)
-    passwordEntry.place(x=230, y=270, anchor='w')
+    passwordEntry.place(x=230, y=270, anchor="w")
 
     # Botão de login
     loginButton = customtkinter.CTkButton(frameLogin,height=40,width=200,text="Login",font=("Roboto", 18), command=lambda:login_action(usernameEntry, passwordEntry, resultLabel, frameLogin))
-    loginButton.place(x=300, y=330, anchor='w')
+    loginButton.place(x=300, y=330, anchor="w")
 
     # Botão de criar conta
     createaccButton = customtkinter.CTkButton(frameLogin,width=50,text="Create User", command=lambda:register_render(frameLogin))
-    createaccButton.place(x=440, y=380, anchor='w')
+    createaccButton.place(x=440, y=380, anchor="w")
 
     # Label New User
     NewUserLabel = customtkinter.CTkLabel(frameLogin, text="New User? Create an account!",font=("Roboto", 12))
@@ -456,90 +456,65 @@ def adjust_volume(event=None):
     volume = volumeSlider.get() / 100  # Converte para intervalo de 0 a 1
     mixer.music.set_volume(volume)
 
-def play_music(index, playlist):
-    """Inicia a reprodução da música com base no índice e na playlist selecionados."""
-    global currentIndex, currentPlaylist, isPaused
+def play_music(index):
+    """Starts music playback on a separate thread."""
+    global currentPlaylist, currentIndex, isPaused
 
-    # Atualiza a playlist e o índice
-    currentPlaylist = playlist
+    # Check if the playlist is not empty and the index is valid
+    if not currentPlaylist or index < 0 or index >= len(currentPlaylist):
+        print("No music available or invalid index.")
+        return
+
     currentIndex = index
-
-    # Acessa a música correspondente ao índice na playlist
     music = currentPlaylist[currentIndex]
+    musicURL = music[5]  # Path to music file
     musicName = music[0]
     musicAuthor = music[1]
-    musicCover = coverArtPath + music[4]
-    musicURL = music[5]
-
-    # Atualiza a interface e inicia a música
+    musicCover = coverArtPath + music[4]  # Path to cover art
     coverArt = customtkinter.CTkImage(Image.open(musicCover), size=(52, 52))
-    play_music_audio(musicURL, musicName, musicAuthor, coverArt)
 
-    # Atualiza as informações da interface
-    update_music_info(musicName, musicAuthor, coverArt)
-    update_slider()
-    increment_music_views(musicName, musicAuthor)
-    update_recent_songs_file(musicName, musicAuthor)
+    def playback():
+        try:
+            mixer.init()
+            mixer.music.load(musicAudioPath+musicURL)  # Load music file
+            mixer.music.play(loops=0)  # Play once
+            btnPlay.configure(image=pauseIcon)
+            isPaused = False
 
-    # Altera o botão de play para pause
-    btnPlay.configure(image=pauseIcon)
-    isPaused = False
+            # Update UI (must be done on the main thread)
+            update_music_info_safe(musicName, musicAuthor, coverArt)
+            musicLenSlider.configure(to=get_music_length(musicURL))
+            update_slider()
 
-def play_music_audio(musicURL, musicName, musicAuthor, coverArt):
-    """Inicia a reprodução da música, usando mixer para tocar o áudio."""
-    global isPaused, isFavorite, musicNameCurrent, musicAuthorCurrent
+            # Increment views and update recent songs
+            increment_music_views(musicName, musicAuthor)
+            update_recent_songs_file(musicName, musicAuthor)
+        except Exception as e:
+            print(f"Error while playing music: {e}")
 
-    mixer.init()
-    mixer.music.load(musicAudioPath+musicURL)  # Carrega a música
-    mixer.music.play(loops=0)   # Toca a música uma vez
-
-    musicNameCurrent = musicName
-    musicAuthorCurrent = musicAuthor
-
-    isFavorite = check_favorite(musicName,musicAuthor,usernameFinal)
-
-    if isFavorite:
-        likeBtn.configure(image=favoriteIcon)
-    else:
-        likeBtn.configure(image=noFavoriteIcon)
-
-    # Atualiza as informações de música no GUI
-    update_music_info(musicName, musicAuthor, coverArt)
-    musicLenSlider.configure(to=get_music_length(musicURL))  # Configura o slider de progresso
-    isPaused = False  # Assume que a música começa não pausada
-
+    # Start playback in a new thread
+    playback_thread = threading.Thread(target=playback)
+    playback_thread.daemon = True  # Ensure the thread exits when the app is closed
+    playback_thread.start()
 
 def update_music_info_safe(name, author, cover_art):
     currentFrame.after(0, update_music_info, name, author, cover_art)
 
 def play_next():
     """Toca a próxima música da playlist."""
-    global currentIndex, currentPlaylist
-
-    # Incrementa o índice para a próxima música
-    currentIndex += 1
-
-    # Verifica se o índice não ultrapassa o tamanho da playlist
-    if currentIndex >= len(currentPlaylist):
-        currentIndex = 0  # Volta para a primeira música se atingir o final
-
-    # Chama a função play_music, passando o índice e a playlist
-    play_music(currentIndex, currentPlaylist)
+    global currentIndex
+    if currentIndex + 1 < len(currentPlaylist):
+        play_music(currentIndex + 1)
+    else:
+        print("Fim da playlist.")
 
 def play_previous():
     """Toca a música anterior da playlist."""
-    global currentIndex, currentPlaylist
-
-    # Decrementa o índice para a música anterior
-    currentIndex -= 1
-
-    # Verifica se o índice é menor que 0 (primeira música), caso em que vai para a última música
-    if currentIndex < 0:
-        currentIndex = len(currentPlaylist) - 1  # Vai para a última música da playlist
-
-    # Chama a função play_music, passando o índice e a playlist
-    play_music(currentIndex, currentPlaylist)
-
+    global currentIndex
+    if currentIndex - 1 >= 0:
+        play_music(currentIndex - 1)
+    else:
+        print("Você está no início da playlist.")
 
 def update_recent_songs_file(musicName, musicAuthor):
     """Updates the recent songs file to ensure uniqueness and maintain order."""
@@ -632,20 +607,8 @@ def new_playlist():
     errorLabel = customtkinter.CTkLabel(playlistCreateFrame, text="")
     errorLabel.pack(expand=True, pady=5)
 
-def edit_music_render(tree):
-    """Abre um frame para editar música"""
-
-    rowId = tree.focus()
-
-    line = tree.item(rowId)
-
-    if not rowId:
-        print("No row selected!")
-        return
-
-    oldMusicName = line["values"][0]
-    oldArtistName = line["values"][1]
-    oldCategory = line["values"][2]
+def edit_music_render():
+    """Abre um frame para adicionar músicas"""
 
     #Frame para adicionar música
     editFrame = customtkinter.CTkFrame(app, width=appWidth-246, height=916, border_width=2, border_color="white", fg_color="#0A090C")
@@ -656,9 +619,6 @@ def edit_music_render(tree):
     #Label para mostar o texto "Music Name:"
     musicNameLabel = customtkinter.CTkLabel(editFrame, text="Music Name:")
     musicNameLabel.grid(row=0,column=0, pady=20)
-    
-    musicNameNew = customtkinter.StringVar()
-    musicNameNew.set(oldMusicName)
 
     #Entry para o nome da música
     musicNameEntry = customtkinter.CTkEntry(editFrame)
@@ -666,17 +626,15 @@ def edit_music_render(tree):
 
     #----------------------------------------------------------------------------#
 
+
     #----------------------------[Autor da Música]-------------------------------#
     
     #Label para mostrar o texto "Author:"
     musicAuthorLabel = customtkinter.CTkLabel(editFrame, text="Author:")
     musicAuthorLabel.grid(row=1,column=0)
 
-    musicAuthorNew = customtkinter.StringVar()
-    musicAuthorNew.set(oldArtistName)
-
     #Entry para o nome do autor
-    musicAuthorEntry = customtkinter.CTkEntry(editFrame, textvariable=musicAuthorNew)
+    musicAuthorEntry = customtkinter.CTkEntry(editFrame)
     musicAuthorEntry.grid(row=1,column=1)
 
     #----------------------------------------------------------------------------#
@@ -686,10 +644,10 @@ def edit_music_render(tree):
     categoriesList = get_categories()
 
     strCategories = customtkinter.StringVar()
-    strCategories.set(oldCategory)
+    strCategories.set(categoriesList[0])
 
-    #Label para mostrar o texto "Category:"
-    categoriesLabel = customtkinter.CTkLabel(editFrame, text="Category:")
+    #Label para mostrar o texto "Author:"
+    categoriesLabel = customtkinter.CTkLabel(editFrame, text="Author:")
     categoriesLabel.grid(row=2,column=0)
 
     categoriesCombo = customtkinter.CTkComboBox(editFrame,variable=strCategories,values=categoriesList, width=100, command="")
@@ -697,20 +655,51 @@ def edit_music_render(tree):
 
     #----------------------------------------------------------------------------#
 
+    #----------------------------[Imagem da Música]------------------------------#
+    
+    #Label para mostrar o texto "Cover Art:"
+    musicCoverLabel = customtkinter.CTkLabel(editFrame, text="Cover Art:")
+    musicCoverLabel.grid(row=3,column=0, columnspan=2)
+
+    #Label para mostrar a imagem escolhida
+    musicCoverImg = customtkinter.CTkLabel(editFrame, text="")
+    musicCoverImg.grid(row=4,column=0, columnspan=2)
+
+    #Botão para escolher a imagem da música
+    musicCoverBtn = customtkinter.CTkButton(editFrame, width=200, height=50, text="Add cover art", command=lambda:select_file(musicCoverImg, ""))
+    musicCoverBtn.grid(row=5,column=0, columnspan=2)
+
+    #--------------------------------------------------------------------------#
+
+
+    #----------------------------[Aúdio da Música]-----------------------------#
+    
+    #Label para mostrar a o texto "Audio:"
+    musicAudioLabel = customtkinter.CTkLabel(editFrame, text="Audio:")
+    musicAudioLabel.grid(row=6,column=0, columnspan=2)
+
+    #Label para mostrar o aúdio a ser adicionado
+    musicAudioPathLabel = customtkinter.CTkLabel(editFrame, text="")
+    musicAudioPathLabel.grid(row=7,column=0, columnspan=2)
+
+    #Botão para escolher o aúdio
+    musicAudioBtn = customtkinter.CTkButton(editFrame, width=200, height=50, text="Add audio", command=lambda:select_file("", musicAudioPathLabel))
+    musicAudioBtn.grid(row=8,column=0, columnspan=2, pady=10)
+
     #--------------------------------------------------------------------------#
 
 
     #Botão para salvar a os dados
-    confirmBtn = customtkinter.CTkButton(editFrame, width=160, height=30, text="Confirm", command=lambda:edit_music(musicNameEntry, musicAuthorEntry, strCategories))
-    confirmBtn.grid(row=3,column=0, columnspan=2)
+    confirmBtn = customtkinter.CTkButton(editFrame, width=160, height=30, text="Confirm", command=lambda:confirm_music(musicNameEntry, musicAuthorEntry,musicCoverImg,musicAudioPathLabel, erroradd_musicLabel, strCategories))
+    confirmBtn.grid(row=9,column=0, columnspan=2)
 
     #Botão para salvar a os dados
     cancelBtn = customtkinter.CTkButton(editFrame, width=160, height=30, text="Cancel", command=lambda:editFrame.destroy())
-    cancelBtn.grid(row=4,column=0, columnspan=2)
+    cancelBtn.grid(row=10,column=0, columnspan=2)
 
     #Label para mostrar erros
     erroradd_musicLabel = customtkinter.CTkLabel(editFrame, text="")
-    erroradd_musicLabel.grid(row=5,column=0, columnspan=2)
+    erroradd_musicLabel.grid(row=11,column=0, columnspan=2)
 
 
 def add_music():
@@ -752,8 +741,8 @@ def add_music():
     strCategories = customtkinter.StringVar()
     strCategories.set(categoriesList[0])
 
-    #Label para mostrar o texto "Category:"
-    categoriesLabel = customtkinter.CTkLabel(musicFrame, text="Category:")
+    #Label para mostrar o texto "Author:"
+    categoriesLabel = customtkinter.CTkLabel(musicFrame, text="Author:")
     categoriesLabel.grid(row=2,column=0)
 
     categoriesCombo = customtkinter.CTkComboBox(musicFrame,variable=strCategories,values=categoriesList, width=100, command="")
@@ -977,7 +966,7 @@ def mainwindow_render(oldFrame):
     #Frame com conteúdo
     # Frame com conteúdo
     musicContentFrame = customtkinter.CTkFrame(playFrame, width=2000, height=70, fg_color="#0A090C")
-    musicContentFrame.place(x=107, y=35)
+    musicContentFrame.place(x=107, y=43)
 
     # Configurar o layout em grid com proporções
     musicContentFrame.columnconfigure(0, weight=1)  # Coluna para `showMusicFrame`
@@ -994,7 +983,7 @@ def mainwindow_render(oldFrame):
 
     # Frame slider de áudio
     audioSliderFrame = customtkinter.CTkFrame(musicContentFrame, fg_color="#0A090C",width=170, height=20)
-    audioSliderFrame.grid(row=0, column=2, sticky="nsew", padx=50, pady=10)  # Alinhado e espaçado
+    audioSliderFrame.grid(row=0, column=2, sticky="nsew", padx=50, pady=5)  # Alinhado e espaçado
 
 
     #-------------------------------------------------------------------------------------------------------
@@ -1165,7 +1154,7 @@ def change_credentials(mainContentFrame, oldFrame):
 
 
 def select_image():
-    filename =filedialog.askopenfilename(title='select file',initialdir = 'images',filetypes=(('png files','*.png'),('gif files','*.gif'),('all files','*.*')))
+    filename =filedialog.askopenfilename(title="select file",initialdir = "images",filetypes=(("png files","*.png"),("gif files","*.gif"),("all files","*.*")))
 
 def read_content(contentType):
     if contentType == "podcast":
@@ -1225,7 +1214,7 @@ def manageMusic_render(mainContentFrame, oldFrame):
     manageMusicsbtn.grid(row=1, column=1, padx=0, pady=10, sticky="w")
 
     #Botão para gerir músicas
-    editMusicBtn = customtkinter.CTkButton(musicManageFrame, width=200, height=50, text="Editar Música", command=lambda:edit_music_render(tree))
+    editMusicBtn = customtkinter.CTkButton(musicManageFrame, width=200, height=50, text="Editar Música", command=edit_music_render)
     editMusicBtn.grid(row=2, column=1, padx=0, pady=10, sticky="w")
 
     #Botão para gerir músicas
@@ -1233,16 +1222,17 @@ def manageMusic_render(mainContentFrame, oldFrame):
     deleteMusicBtn.grid(row=3, column=1, padx=0, pady=10, sticky="w")
 
     # define columns
-    columns = ('music_name', 'artist_name', 'views')
+    columns = ("music_name", "artist_name", "category", "views")
 
-    tree = ttk.Treeview(musicManageFrame, columns=columns, show='headings')
+    tree = ttk.Treeview(musicManageFrame, columns=columns, show="headings")
 
     # define headings
-    tree.heading('music_name', text='Music Name')
-    tree.heading('artist_name', text='Artist')
-    tree.heading('views', text='Views')
+    tree.heading("music_name", text="Music Name")
+    tree.heading("artist_name", text="Artist")
+    tree.heading("category", text="Category")
+    tree.heading("views", text="Views")
 
-    tree.grid(row=1,rowspan=3, column=0,padx=70, pady=20,  sticky='nsew')
+    tree.grid(row=1,rowspan=3, column=0,padx=70, pady=20,  sticky="nsew")
 
     refresh_tree(tree)
 
@@ -1394,7 +1384,7 @@ def homepage_render(mainContentFrame, oldFrame):
             image=coverArt,
             fg_color="transparent",
             compound="top",
-            command=lambda idx=index, playlist=topTrendingMusic: play_music(idx, playlist) 
+            command=lambda url=musicURL, name=musicName, author=musicAuthor, art=coverArt2: play_music(url, name, author, art)
         )
 
         button.grid(row=0, column=index, padx=10, pady=40)
@@ -1426,12 +1416,12 @@ def homepage_render(mainContentFrame, oldFrame):
 
     # Converter as visualizações para inteiro e ordenar manualmente
     for podcast in podcastList:
-        podcast[3] = int(podcast[3])  # Converter o campo de visualizações (índice 3) para inteiro
+        podcast[2] = int(podcast[2])  # Converter o campo de visualizações (índice 3) para inteiro
 
     # Ordenar a lista de músicas pelo número de visualizações em ordem decrescente
     for i in range(len(podcastList)):
         for j in range(i + 1, len(podcastList)):
-            if podcastList[i][3] < podcastList[j][3]:  # Comparar pelo campo de visualizações
+            if podcastList[i][2] < podcastList[j][2]:  # Comparar pelo campo de visualizações
                 podcastList[i], podcastList[j] = podcastList[j], podcastList[i]  # Trocar as posições
 
     # Limitar a exibição às 5 músicas com mais visualizações
@@ -1440,17 +1430,11 @@ def homepage_render(mainContentFrame, oldFrame):
     # Loop para criar os botões sem usar enumerate
     index = 0
     for podcast in topTrendingpodcast:
-        podcastEpisode = podcast[0]
-        podcastName = podcast[1]
-        podcastViews = podcast[3]
-        podcastCover = coverArtPath + podcast[4]            
-        podcastURL = podcast[5]
-
-        if len(podcastEpisode) > 20:
-            podcastEpisode = podcastEpisode[:17]+"..."
-        
-        if len(podcastName) > 20:
-            podcastName = podcastName[:17]+"..."
+        podcastName = podcast[0]
+        podcastAuthor = podcast[1]
+        podcastViews = podcast[2]
+        podcastCover = coverArtPath + podcast[3]            
+        podcastURL = podcast[4]
 
         coverArt = customtkinter.CTkImage(Image.open(podcastCover), size=(150, 150))
 
@@ -1458,11 +1442,11 @@ def homepage_render(mainContentFrame, oldFrame):
             trendingPodcastsScrollFrame,
             width=150,
             height=150,
-            text=f"{podcastEpisode}\n{podcastName}",
+            text=f"{podcastName}\n{podcastAuthor}",
             image=coverArt,
             fg_color="transparent",
             compound="top",
-            command=lambda url=podcastURL: play_podcast(url)
+            command=lambda url=podcastURL, name=podcastName, author=podcastAuthor, art=coverArt: play_podcast(url)
         )
 
         button.grid(row=0, column=index, padx=10, pady=40)
@@ -1606,6 +1590,9 @@ def musicpage_render(mainContentFrame, oldFrame):
     # Criar botões num ciclo for, na horizontal
     musicList = read_content("music")  # receber dados da lista (lista com sublistas)
 
+    # Criar playlist global com a lista de músicas
+    currentPlaylist = musicList  # Atualiza a playlist global com todas as músicas exibidas
+
     index = 0
     for music in musicList:
         musicName = music[0]
@@ -1616,6 +1603,7 @@ def musicpage_render(mainContentFrame, oldFrame):
         musicURL = music[5]
 
         coverArt = customtkinter.CTkImage(Image.open(musicCover), size=(150, 150))
+        coverArt2 = customtkinter.CTkImage(Image.open(musicCover), size=(52, 52))
 
         button = customtkinter.CTkButton(
             MusicScrollFrame,
@@ -1625,7 +1613,7 @@ def musicpage_render(mainContentFrame, oldFrame):
             image=coverArt,
             fg_color="transparent",
             compound="top",
-            command=lambda idx=index: play_music(idx,musicList)  # Passa o índice para a função
+            command=lambda idx=index: play_music(idx)  # Passa o índice para a função
         )
 
         button.grid(row=0, column=index, padx=10, pady=40)
@@ -1664,20 +1652,21 @@ def musicpage_render(mainContentFrame, oldFrame):
         musicURL = music[5]
 
         coverArt = customtkinter.CTkImage(Image.open(musicCover), size=(150, 150))
+        coverArt2 = customtkinter.CTkImage(Image.open(musicCover), size=(52, 52))
 
         button = customtkinter.CTkButton(
-            MusicScrollFrame,
+            MusicYourActivityFrame,
             width=150,
             height=150,
             text=f"{musicName}\n{musicAuthor}",
             image=coverArt,
             fg_color="transparent",
             compound="top",
-            command=lambda idx=index: play_music(idx,activityList)  # Passa o índice para a função
+            command=lambda url=musicURL, name=musicName, author=musicAuthor, art=coverArt2: play_music(url, name, author, art)
         )
 
         button.grid(row=0, column=index, padx=10, pady=40)
-        index += 1
+        index += 1  # Incrementar manualmente o índice
 
     # Frame menu Discover
     MusicDiscoverFrame = customtkinter.CTkFrame(MusicpageFrame, width=1300, height=300, fg_color="transparent", corner_radius=0)
@@ -1710,96 +1699,28 @@ def musicpage_render(mainContentFrame, oldFrame):
         musicURL = music[5]
 
         coverArt = customtkinter.CTkImage(Image.open(musicCover), size=(150, 150))
+        coverArt2 = customtkinter.CTkImage(Image.open(musicCover), size=(52, 52))
 
         button = customtkinter.CTkButton(
-            MusicScrollFrame,
+            MusicDiscoverFrame,
             width=150,
             height=150,
             text=f"{musicName}\n{musicAuthor}",
             image=coverArt,
             fg_color="transparent",
             compound="top",
-            command=lambda idx=index: play_music(idx,randomMusic)  # Passa o índice para a função
+            command=lambda url=musicURL, name=musicName, author=musicAuthor, art=coverArt2: play_music(url, name, author, art)
         )
 
         button.grid(row=0, column=index, padx=10, pady=40)
-        index += 1
+        index += 1  # Incrementar manualmente o índice
     
     #--------------------------------------------------------------------------------------------------------------------------------------#
 
-    # Main loop to display music by category
-    categoryList = get_categories_music(musicList)  # Get all unique categories
-    index = 2  # Start after Music, Your Activity, and Discover sections
-
-    # Loop through each category
-    for category in categoryList:
-        # Print the category being processed for debugging
-        print(f"Processing category: {category}")  # Debugging statement
-
-        # Create frame for each category
-        musicCategoryFrame = customtkinter.CTkFrame(MusicpageFrame, width=1300, height=300, fg_color="transparent", corner_radius=0)
-        musicCategoryFrame.grid(row=index, column=0, padx=20, pady=20, sticky="nsew")
-
-        # Create scrollable frame for the songs of the current category
-        MusicCategoryScrollFrame = customtkinter.CTkScrollableFrame(
-            musicCategoryFrame,
-            orientation="horizontal",
-            width=1200,
-            height=250,
-            fg_color="transparent"
-        )
-        MusicCategoryScrollFrame.place(x=0, y=0)
-
-        # Label with the category name
-        MusicLabel = customtkinter.CTkLabel(musicCategoryFrame, text=f"{category}", font=("Roboto", 25))
-        MusicLabel.place(x=10, y=0)
-
-        # Filter songs for the current category
-        categoryMusicList = [music for music in musicList if music[2] == category]  # Filter songs based on category
-
-        # Debugging: Check how many songs are being filtered for the category
-        print(f"Songs in category '{category}': {len(categoryMusicList)}")  # Debugging statement
-
-        if categoryMusicList:  # If there are songs for this category
-            # Add songs to the scrollable frame
-            col_index = 0
-            for music in categoryMusicList:
-                musicName = music[0]
-                musicAuthor = music[1]
-                musicCategory = music[2]
-                musicViews = music[3]
-                musicCover = coverArtPath + music[4]
-                musicURL = music[5]
-
-                coverArt = customtkinter.CTkImage(Image.open(musicCover), size=(150, 150))
-                coverArt2 = customtkinter.CTkImage(Image.open(musicCover), size=(52, 52))
-
-                # Create a button for each music, passing the category music list to play_music
-                button = customtkinter.CTkButton(
-                    MusicCategoryScrollFrame,
-                    width=150,
-                    height=150,
-                    text=f"{musicName}\n{musicAuthor}",
-                    image=coverArt,
-                    fg_color="transparent",
-                    compound="top",
-                    command=lambda idx=col_index, playlist=categoryMusicList: play_music(idx, playlist)  # Passing the category music list
-                )
-
-                button.grid(row=0, column=col_index, padx=10, pady=40)
-                col_index += 1  # Increment index for the next button
-        else:
-            # If no songs are available for the category, display a message
-            MusicLabel = customtkinter.CTkLabel(musicCategoryFrame, text="No songs available for this category.", font=("Roboto", 20))
-            MusicLabel.place(x=10, y=0)
-
-        index += 1  # Increment index for the next category
-        lastIndex=index
-    
     # Obter lista de autores únicos
     authorList = get_authors(musicList)
 
-    index = lastIndex+1  # Começar após as seções Music, Your Activity e Discover
+    index = 2  # Começar após as seções Music, Your Activity e Discover
     for author in authorList:
         # Criar frame para cada autor
         musicAuthorFrame = customtkinter.CTkFrame(MusicpageFrame, width=1300, height=300, fg_color="transparent", corner_radius=0)
@@ -1835,7 +1756,6 @@ def musicpage_render(mainContentFrame, oldFrame):
             coverArt = customtkinter.CTkImage(Image.open(musicCover), size=(150, 150))
             coverArt2 = customtkinter.CTkImage(Image.open(musicCover), size=(52, 52))
 
-            # Criar botão para a música, passando a lista de músicas do autor para o play_music
             button = customtkinter.CTkButton(
                 MusicAuthorScrollFrame,
                 width=150,
@@ -1844,15 +1764,13 @@ def musicpage_render(mainContentFrame, oldFrame):
                 image=coverArt,
                 fg_color="transparent",
                 compound="top",
-                command=lambda idx=col_index, playlist=authorMusicList: play_music(idx, playlist)  # Passando a música e a lista do autor
+                command=lambda url=musicURL, name=musicName, author=musicAuthor, art=coverArt2: play_music(url, name, author, art)
             )
 
             button.grid(row=0, column=col_index, padx=10, pady=40)
             col_index += 1  # Incrementar índice para o próximo botão
 
         index += 1  # Incrementar índice para o próximo autor
-    
-    #--------------------------------------------------------------------------------------------------------------------------------------#
 
 def podcastpage_render(mainContentFrame, oldFrame):
     """Mostra a homepage"""

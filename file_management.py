@@ -120,4 +120,5 @@ categoriesFile = f".{pathFormat}db{pathFormat}categories.csv" # Caminho para o f
 coverArtPath = f".{pathFormat}images{pathFormat}cover_art{pathFormat}" # Caminho para o diretório onde são armazenadas as imagens das músicas
 musicAudioPath = f".{pathFormat}audios{pathFormat}music{pathFormat}" # Caminho para o diretório onde são armazenadas as músicas
 usersPath = f".{pathFormat}db{pathFormat}users{pathFormat}" # Caminho para o diretório onde são armazenadas os users na db
+podcastEpisodesPath = f".{pathFormat}db{pathFormat}podcast_episodes.csv"
 #################################################################################################################
