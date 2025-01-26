@@ -33,6 +33,7 @@ usernameFinal = None # Para salvar o username no login
 musicNameCurrent = None # Para salvar a musica a ser tocada
 musicAuthorCurrent = None # Para salvar o artista da musica a ser tocada
 isFavorite = False
+passwordFinal = None
 ###########################################################
 
 # Inicializar app
@@ -131,6 +132,7 @@ def create_account(username, password, name):
     create_main_files(f"db{pathFormat}users{pathFormat}{username}{pathFormat}favorites.csv")
     create_main_files(f"db{pathFormat}users{pathFormat}{username}{pathFormat}music_activity.csv")
     create_main_files(f"db{pathFormat}users{pathFormat}{username}{pathFormat}podcast_activity.csv")
+    create_main_files(f"db{pathFormat}users{pathFormat}{username}{pathFormat}notification.csv")
     with open(accountsPath, "a", encoding="utf-8") as file:
         file.write(accountAdd) # Escreve os dados no ficheiro
 
@@ -193,7 +195,7 @@ def register_action(usernameEntry, passwordEntry,nameEntry, resultLabel, frameRe
 def login_action(usernameEntry, passwordEntry, resultLabel,loginFrame):
     """Gere o algoritmo de login"""
 
-    global nameFull, usernameFinal
+    global nameFull, usernameFinal, passwordFinal
 
     username = usernameEntry.get() # Recebe o valor que está na entry do username
     password = passwordEntry.get() # Recebe o valor que está na entry da password
@@ -221,6 +223,7 @@ def login_action(usernameEntry, passwordEntry, resultLabel,loginFrame):
         print(username, password, adminflag) # Confirmação
         nameFull = name
         usernameFinal = username
+        passwordFinal = password
         mainwindow_render(loginFrame) # Passa para a janela principal
 ##########################################################
 
@@ -870,7 +873,7 @@ def mainwindow_render(oldFrame):
     btnMusic.place(x=0, y=30)
 
     #Botão com Icon e texto de podcast
-    btnPodcast = customtkinter.CTkButton(collectionMenuFrame, image=artistIcon, width=31, height=31, fg_color="transparent", text="Podcast")
+    btnPodcast = customtkinter.CTkButton(collectionMenuFrame, image=artistIcon, width=31, height=31, fg_color="transparent", text="Podcast",command=lambda:podcastpage_render(mainContentFrame, currentFrame))
     btnPodcast.place(x=0, y=76)
 
     #Botão com Icon e texto de Favoritos
@@ -1021,45 +1024,60 @@ def userpage_render(mainContentFrame, oldFrame):
 
     currentFrame = userFrame # O frame a ser usado passa a ser o userFrame
 
-    #Frame options Menu
-    optionsFrame = customtkinter.CTkFrame(userFrame, width=542, height=430, corner_radius=50,fg_color="#242424")
-    optionsFrame.place(x=340,y=120)
-
-    #Frame Change Image
-    changeImageFrame = customtkinter.CTkFrame(optionsFrame, width=542, height=150, corner_radius=10,fg_color="#242424")
-    changeImageFrame.place(x=0,y=0)
-
     #Frame Credentials
-    credentialsFrame = customtkinter.CTkFrame(optionsFrame, width=542, height=250, corner_radius=10,fg_color="#242424")
-    credentialsFrame.place(x=0,y=158)
+    credentialsFrame = customtkinter.CTkFrame(userFrame, width=542, height=250, corner_radius=10,fg_color="#242424")
+    credentialsFrame.grid(row=0, column=0, padx=350)
 
     #Titulo
-    title = customtkinter.CTkLabel(userFrame, text="User Page", font=("Arial", 30),text_color="white")
-    title.place(x=553,y=30)
-
-    "Por a funcionar"
-    #img = customtkinter.CTkImage(Image.open(f"{profileimagePath}musica_perfil.png"), size=(31, 31))
-    btnSelectImg = customtkinter.CTkButton(changeImageFrame,width=100, height=100,text = "", fg_color="red")
-    btnSelectImg.place(x=100, y=30)
-
-    # Butao mudar 
-    btnchgCred = customtkinter.CTkButton(credentialsFrame, width=150, height=30,text="Edit Profile",command=lambda:change_credentials(mainContentFrame, currentFrame))
-    btnchgCred.place(x=200, y=170)
+    title = customtkinter.CTkLabel(credentialsFrame, text="User Page", font=("Arial", 30),text_color="white")
+    title.grid(row=0, column=0, columnspan=2,pady=20)
 
     # Label Nome
-    labelName = customtkinter.CTkLabel(credentialsFrame, text="User Name", font=("Arial", 20),text_color="white")
-    labelName.place(x=30,y=65)
+    labelName = customtkinter.CTkLabel(credentialsFrame, text=f"Name: {nameFull}", font=("Arial", 20),text_color="white")
+    labelName.grid(row=1,column=0, columnspan=2,pady=10)
     
     # Label Username
-    labelUsername = customtkinter.CTkLabel(credentialsFrame, text="username", font=("Arial", 20),text_color="white")
-    labelUsername.place(x=230,y=65)
+    labelUsername = customtkinter.CTkLabel(credentialsFrame, text=f"Username: {usernameFinal}", font=("Arial", 20),text_color="white")
+    labelUsername.grid(row=2,column=0, columnspan=2, pady=20)
 
     # Label Password
-    labelPass = customtkinter.CTkLabel(credentialsFrame, text="Password", font=("Arial", 20),text_color="white")
-    labelPass.place(x=410,y=65)
+    labelPass = customtkinter.CTkLabel(credentialsFrame, text=f"Password: {"*" * len(passwordFinal)}", font=("Arial", 20),text_color="white")
+    labelPass.grid(row=3,column=0, columnspan=2,pady=10)
+    
+    # Butao mudar 
+    btnchgCred = customtkinter.CTkButton(credentialsFrame, width=150, height=30,text="Edit Profile",command=lambda:change_credentials(mainContentFrame, currentFrame))
+    btnchgCred.grid(row=4,column=0, padx=20)
 
-    btnLogout = customtkinter.CTkButton(userFrame, width=100, height=30,text="Logout",command="",fg_color="red")
-    btnLogout.place(x=570, y=500)
+    btnLogout = customtkinter.CTkButton(credentialsFrame, width=100, height=30,text="Logout",command="",fg_color="red")
+    btnLogout.grid(row=4, column=1,pady=20)
+
+    #Frame Notificações
+    notificationsFrame = customtkinter.CTkFrame(userFrame, width=542, height=250, corner_radius=10,fg_color="#242424")
+    notificationsFrame.grid(row=1, column=0, padx=350, pady=50)
+
+    notificationsLabel = customtkinter.CTkLabel(notificationsFrame,text="Notfications:", font=("Arial", 30))
+    notificationsLabel.grid(row=0, column=0, padx=20, rowspan=3)
+
+    #Variáveis checkbox
+    checkVarMusic = customtkinter.StringVar(value="off")
+    checkVarPodcast = customtkinter.StringVar(value="off")
+    checkVarOthers = customtkinter.StringVar(value="off")
+
+    set_check_var(usernameFinal, checkVarMusic, checkVarPodcast, checkVarOthers)
+
+    #Checkboxes 
+    checkboxMusic = customtkinter.CTkCheckBox(notificationsFrame, text="Musics", variable=checkVarMusic, onvalue="on", offvalue="off")
+    checkboxPodcast = customtkinter.CTkCheckBox(notificationsFrame, text="Podcasts", variable=checkVarPodcast, onvalue="on", offvalue="off")
+    checkboxOthers = customtkinter.CTkCheckBox(notificationsFrame, text="Others", variable=checkVarOthers, onvalue="on", offvalue="off")
+
+    checkboxMusic.grid(row=0, column=1, pady=10)
+    checkboxPodcast.grid(row=1, column=1, pady=10)
+    checkboxOthers.grid(row=2, column=1, pady=10)
+
+    #Botão preferências
+    savePreferencesBtn = customtkinter.CTkButton(notificationsFrame, text="Save Preferences", command=lambda:save_preferences(usernameFinal, checkVarMusic, checkVarPodcast, checkVarOthers))
+    savePreferencesBtn.grid(row=0,column=2, rowspan=3)
+
 
 def change_credentials(mainContentFrame, oldFrame):
     """Mostra a pagina de mudar credenciais"""
@@ -1069,27 +1087,27 @@ def change_credentials(mainContentFrame, oldFrame):
     oldFrame.destroy() # Apagar o estilo do frame anterior
 
     #Frame Home Page
-    ChangeinfosFrame =customtkinter.CTkFrame(mainContentFrame, width=1674, height=890, fg_color="#242424",corner_radius=0)
-    ChangeinfosFrame.place(x=0,y=0)
+    changeInfosFrame =customtkinter.CTkFrame(mainContentFrame, width=1674, height=890, fg_color="#242424",corner_radius=0)
+    changeInfosFrame.place(x=0,y=0)
 
-    currentFrame = ChangeinfosFrame # O frame a ser usado passa a ser o ChangeinfosFrame
+    currentFrame = changeInfosFrame # O frame a ser usado passa a ser o changeInfosFrame
 
-    Title = customtkinter.CTkLabel(ChangeinfosFrame, text="Change Your Credentials", font=("Arial", 30))
+    Title = customtkinter.CTkLabel(changeInfosFrame, text="Change Your Credentials", font=("Arial", 30))
     Title.place(x=400,y=30)
 
-    usernameEntry = customtkinter.CTkEntry(ChangeinfosFrame, placeholder_text="Name...",width=310)
+    usernameEntry = customtkinter.CTkEntry(changeInfosFrame, placeholder_text="Name...",width=310)
     usernameEntry.place(x=400,y=200)
 
-    nameEntry = customtkinter.CTkEntry(ChangeinfosFrame, placeholder_text="Username...",width=310)
+    nameEntry = customtkinter.CTkEntry(changeInfosFrame, placeholder_text="Username...",width=310)
     nameEntry.place(x=400,y=300)
 
-    passEntry = customtkinter.CTkEntry(ChangeinfosFrame, placeholder_text="Password...",width=310)
+    passEntry = customtkinter.CTkEntry(changeInfosFrame, placeholder_text="Password...",width=310)
     passEntry.place(x=400,y=400)
 
-    confirmBtn = customtkinter.CTkButton(ChangeinfosFrame, width=100, height=30,text="Confirm")
+    confirmBtn = customtkinter.CTkButton(changeInfosFrame, width=100, height=30,text="Confirm")
     confirmBtn.place(x=400, y=500)
 
-    cancelBtn = customtkinter.CTkButton(ChangeinfosFrame, width=100, height=30,text="Cancel",command=lambda:userpage_render(mainContentFrame, oldFrame))
+    cancelBtn = customtkinter.CTkButton(changeInfosFrame, width=100, height=30,text="Cancel",command=lambda:userpage_render(mainContentFrame, oldFrame))
     cancelBtn.place(x=600, y=500)
 
 
@@ -1491,6 +1509,226 @@ def homepage_render(mainContentFrame, oldFrame):
     #---------------------------------------------------------------------------------------------------------------------------------------#
 
 def musicpage_render(mainContentFrame, oldFrame):
+    """Mostra a homepage"""
+
+    global currentFrame # Variável global para frame a ser usado
+
+    if oldFrame != None:
+        oldFrame.destroy() # Apagar o estilo do frame anterior
+    
+    #Frame Music Page
+    MusicpageFrame = customtkinter.CTkScrollableFrame(mainContentFrame,
+	orientation="vertical",
+	width=1238,
+	height=appHeight-(90+131),
+	fg_color="black",
+	corner_radius = 0
+	)
+    MusicpageFrame.place(x=0,y=0)
+
+    currentFrame = MusicpageFrame # O frame a ser usado passa a ser o userFrame
+
+    # Frame menu Musicas
+    MusicFrame = customtkinter.CTkFrame(MusicpageFrame, width=1300, height=300, fg_color="transparent", corner_radius=0)
+    MusicFrame.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
+
+    # Cria um scrollable frame dentro do frame principal
+    MusicScrollFrame = customtkinter.CTkScrollableFrame(
+        MusicFrame,
+        orientation="horizontal",
+        width=1200,
+        height=250,
+        fg_color="transparent"
+    )
+    MusicScrollFrame.place(x=0, y=0)
+
+    MusicLabel = customtkinter.CTkLabel(MusicFrame,text="Music",font=("Roboto", 25))
+    MusicLabel.place(x=20,y=10)
+
+    # Criar botões num ciclo for, na horizontal
+    musicList = read_content("music")  # receber dados da lista (lista com sublistas)
+
+    # Loop para criar os botões sem usar enumerate
+    index = 0
+    for music in musicList:
+        musicName = music[0]
+        musicAuthor = music[1]
+        musicCategory = music[2]
+        musicViews = music[3]
+        musicCover = coverArtPath + music[4]
+        musicURL = music[5]
+
+        coverArt = customtkinter.CTkImage(Image.open(musicCover), size=(150, 150))
+        coverArt2 = customtkinter.CTkImage(Image.open(musicCover), size=(52, 52))
+
+        button = customtkinter.CTkButton(
+            MusicScrollFrame,
+            width=150,
+            height=150,
+            text=f"{musicName}\n{musicAuthor}",
+            image=coverArt,
+            fg_color="transparent",
+            compound="top",
+            command=lambda url=musicURL, name=musicName, author=musicAuthor, art=coverArt2: play_music(url, name, author, art)
+        )
+
+        button.grid(row=0, column=index, padx=10, pady=40)
+        index += 1  # Incrementar manualmente o índice
+
+    # Frame menu Your Activity
+    MusicYourActivityFrame = customtkinter.CTkFrame(MusicpageFrame, width=1300, height=300, fg_color="transparent", corner_radius=0)
+    MusicYourActivityFrame.grid(row=1, column=0, padx=20, pady=20, sticky="nsew")
+
+    # Cria um scrollable frame dentro do frame principal
+    MusicScrollFrame = customtkinter.CTkScrollableFrame(
+        MusicYourActivityFrame,
+        orientation="horizontal",
+        width=1200,
+        height=250,
+        fg_color="transparent"
+    )
+    MusicScrollFrame.place(x=0, y=0)
+
+    #Label para mostrar "Your Activity"
+    MusicLabel = customtkinter.CTkLabel(MusicYourActivityFrame,text="Your Activity",font=("Roboto", 25))
+    MusicLabel.place(x=10,y=0)
+
+    activityPath = f"{usersPath}{usernameFinal}{pathFormat}music_activity.csv"
+
+    recentMusic = get_recent_songs(activityPath)
+    activityList = filter_music(musicList, recentMusic)
+
+    index = 0
+    for music in activityList:
+        musicName = music[0]
+        musicAuthor = music[1]
+        musicCategory = music[2]
+        musicViews = music[3]
+        musicCover = coverArtPath + music[4]
+        musicURL = music[5]
+
+        coverArt = customtkinter.CTkImage(Image.open(musicCover), size=(150, 150))
+        coverArt2 = customtkinter.CTkImage(Image.open(musicCover), size=(52, 52))
+
+        button = customtkinter.CTkButton(
+            MusicYourActivityFrame,
+            width=150,
+            height=150,
+            text=f"{musicName}\n{musicAuthor}",
+            image=coverArt,
+            fg_color="transparent",
+            compound="top",
+            command=lambda url=musicURL, name=musicName, author=musicAuthor, art=coverArt2: play_music(url, name, author, art)
+        )
+
+        button.grid(row=0, column=index, padx=10, pady=40)
+        index += 1  # Incrementar manualmente o índice
+
+    # Frame menu Discover
+    MusicDiscoverFrame = customtkinter.CTkFrame(MusicpageFrame, width=1300, height=300, fg_color="transparent", corner_radius=0)
+    MusicDiscoverFrame.grid(row=2, column=0, padx=20, pady=20, sticky="nsew")
+
+    # Cria um scrollable frame dentro do frame principal
+    MusicScrollFrame = customtkinter.CTkScrollableFrame(
+        MusicDiscoverFrame,
+        orientation="horizontal",
+        width=1200,
+        height=250,
+        fg_color="transparent"
+    )
+    MusicScrollFrame.place(x=0, y=0)
+
+    #Label para mostrar "Your Activity"
+    MusicLabel = customtkinter.CTkLabel(MusicDiscoverFrame,text="Discover",font=("Roboto", 25))
+    MusicLabel.place(x=10,y=0)
+
+    # Limitar a exibição a 8 músicas random
+    randomMusic = random.sample(musicList, 4)
+
+    index = 0
+    for music in randomMusic:
+        musicName = music[0]
+        musicAuthor = music[1]
+        musicCategory = music[2]
+        musicViews = music[3]
+        musicCover = coverArtPath + music[4]
+        musicURL = music[5]
+
+        coverArt = customtkinter.CTkImage(Image.open(musicCover), size=(150, 150))
+        coverArt2 = customtkinter.CTkImage(Image.open(musicCover), size=(52, 52))
+
+        button = customtkinter.CTkButton(
+            MusicDiscoverFrame,
+            width=150,
+            height=150,
+            text=f"{musicName}\n{musicAuthor}",
+            image=coverArt,
+            fg_color="transparent",
+            compound="top",
+            command=lambda url=musicURL, name=musicName, author=musicAuthor, art=coverArt2: play_music(url, name, author, art)
+        )
+
+        button.grid(row=0, column=index, padx=10, pady=40)
+        index += 1  # Incrementar manualmente o índice
+    
+    #--------------------------------------------------------------------------------------------------------------------------------------#
+
+    # Obter lista de autores únicos
+    authorList = get_authors(musicList)
+
+    index = 2  # Começar após as seções Music, Your Activity e Discover
+    for author in authorList:
+        # Criar frame para cada autor
+        musicAuthorFrame = customtkinter.CTkFrame(MusicpageFrame, width=1300, height=300, fg_color="transparent", corner_radius=0)
+        musicAuthorFrame.grid(row=index, column=0, padx=20, pady=20, sticky="nsew")
+
+        # Criar scrollable frame para as músicas do autor
+        MusicAuthorScrollFrame = customtkinter.CTkScrollableFrame(
+            musicAuthorFrame,
+            orientation="horizontal",
+            width=1200,
+            height=250,
+            fg_color="transparent"
+        )
+        MusicAuthorScrollFrame.place(x=0, y=0)
+
+        # Label com o nome do autor
+        MusicLabel = customtkinter.CTkLabel(musicAuthorFrame, text=f"{author}", font=("Roboto", 25))
+        MusicLabel.place(x=10, y=0)
+
+        # Filtrar músicas do autor atual
+        authorMusicList = [music for music in musicList if music[1] == author]
+
+        # Adicionar músicas ao scrollable frame
+        col_index = 0
+        for music in authorMusicList:
+            musicName = music[0]
+            musicAuthor = music[1]
+            musicCategory = music[2]
+            musicViews = music[3]
+            musicCover = coverArtPath + music[4]
+            musicURL = music[5]
+
+            coverArt = customtkinter.CTkImage(Image.open(musicCover), size=(150, 150))
+            coverArt2 = customtkinter.CTkImage(Image.open(musicCover), size=(52, 52))
+
+            button = customtkinter.CTkButton(
+                MusicAuthorScrollFrame,
+                width=150,
+                height=150,
+                text=f"{musicName}\n{musicAuthor}",
+                image=coverArt,
+                fg_color="transparent",
+                compound="top",
+                command=lambda url=musicURL, name=musicName, author=musicAuthor, art=coverArt2: play_music(url, name, author, art)
+            )
+
+            button.grid(row=0, column=col_index, padx=10, pady=40)
+            col_index += 1  # Incrementar índice para o próximo botão
+
+        index += 1  # Incrementar índice para o próximo autor
+
+def podcastpage_render(mainContentFrame, oldFrame):
     """Mostra a homepage"""
 
     global currentFrame # Variável global para frame a ser usado
