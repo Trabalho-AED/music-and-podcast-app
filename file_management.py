@@ -101,13 +101,27 @@ def get_categories():
 
     return categoriesList
 
-def refresh_tree(tree):
-    with open(musicPath, "r", encoding="utf-8") as file:
+def refresh_tree(tree, type):
+    if type=="podcast":
+        path=podcastPath
+    else:
+        path=musicPath
+
+    # Delete all rows in the Treeview
+    for row in tree.get_children():  # Iterate over all row IDs in the Treeview
+        tree.delete(row)  # Delete each row
+
+    with open(path, "r", encoding="utf-8") as file:
         lines = file.readlines()
     
-    for line in lines:
-        fields = line.strip().split(";")
-        tree.insert("","end", values=(fields[0], fields[1], fields[3]))
+    if type=="music":
+        for line in lines:
+            fields = line.strip().split(";")
+            tree.insert("","end", values=(fields[0], fields[1],fields[2], fields[3]))
+    else:
+        for line in lines:
+            fields = line.strip().split(";")
+            tree.insert("","end", values=(fields[0], fields[1]))
 ##########################################[CAMINHOS]############################################################
 
 imagePath = f".{pathFormat}images{pathFormat}icons{pathFormat}" # Caminho para o diretório onde são armazenadas as imagens

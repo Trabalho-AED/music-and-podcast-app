@@ -649,20 +649,20 @@ def edit_music_render(tree):
 
     #Frame para adicionar música
     editFrame = customtkinter.CTkFrame(app, width=appWidth-246, height=916, border_width=2, border_color="white", fg_color="#0A090C")
-    editFrame.place(x=1200,y=100) #Abre o frame no canto superior direito
+    editFrame.place(x=1180,y=180) #Abre o frame no canto superior direito
     
     #----------------------------[Nome da Música]--------------------------------#
 
     #Label para mostar o texto "Music Name:"
     musicNameLabel = customtkinter.CTkLabel(editFrame, text="Music Name:")
-    musicNameLabel.grid(row=0,column=0, pady=20)
+    musicNameLabel.grid(row=0,column=0, pady=20, padx=10)
     
     musicNameNew = customtkinter.StringVar()
     musicNameNew.set(oldMusicName)
 
     #Entry para o nome da música
-    musicNameEntry = customtkinter.CTkEntry(editFrame)
-    musicNameEntry.grid(row=0,column=1)
+    musicNameEntry = customtkinter.CTkEntry(editFrame, textvariable=musicNameNew)
+    musicNameEntry.grid(row=0,column=1, padx=10)
 
     #----------------------------------------------------------------------------#
 
@@ -690,7 +690,7 @@ def edit_music_render(tree):
 
     #Label para mostrar o texto "Category:"
     categoriesLabel = customtkinter.CTkLabel(editFrame, text="Category:")
-    categoriesLabel.grid(row=2,column=0)
+    categoriesLabel.grid(row=2,column=0, pady=20)
 
     categoriesCombo = customtkinter.CTkComboBox(editFrame,variable=strCategories,values=categoriesList, width=100, command="")
     categoriesCombo.grid(row=2, column=1)
@@ -701,7 +701,7 @@ def edit_music_render(tree):
 
 
     #Botão para salvar a os dados
-    confirmBtn = customtkinter.CTkButton(editFrame, width=160, height=30, text="Confirm", command=lambda:edit_music(musicNameEntry, musicAuthorEntry, strCategories))
+    confirmBtn = customtkinter.CTkButton(editFrame, width=160, height=30, text="Confirm", command=lambda:edit_music_refresh(musicNameNew, musicAuthorNew, strCategories, tree))
     confirmBtn.grid(row=3,column=0, columnspan=2)
 
     #Botão para salvar a os dados
@@ -712,23 +712,26 @@ def edit_music_render(tree):
     erroradd_musicLabel = customtkinter.CTkLabel(editFrame, text="")
     erroradd_musicLabel.grid(row=5,column=0, columnspan=2)
 
+def edit_music_refresh(oldMusicName, oldArtistName, oldCategory, tree):
+    edit_music(oldMusicName, oldArtistName, oldCategory,tree)
+    refresh_tree(tree,"music")
 
 def add_music():
     """Abre um frame para adicionar músicas"""
 
     #Frame para adicionar música
     musicFrame = customtkinter.CTkFrame(app, width=appWidth-246, height=916, border_width=2, border_color="white", fg_color="#0A090C")
-    musicFrame.place(x=1200,y=100) #Abre o frame no canto superior direito
+    musicFrame.place(x=1180,y=100) #Abre o frame no canto superior direito
     
     #----------------------------[Nome da Música]--------------------------------#
 
     #Label para mostar o texto "Music Name:"
     musicNameLabel = customtkinter.CTkLabel(musicFrame, text="Music Name:")
-    musicNameLabel.grid(row=0,column=0, pady=20)
+    musicNameLabel.grid(row=0,column=0, pady=20, padx=10)
 
     #Entry para o nome da música
     musicNameEntry = customtkinter.CTkEntry(musicFrame)
-    musicNameEntry.grid(row=0,column=1)
+    musicNameEntry.grid(row=0,column=1, padx=10)
 
     #----------------------------------------------------------------------------#
 
@@ -806,6 +809,97 @@ def add_music():
     #Label para mostrar erros
     erroradd_musicLabel = customtkinter.CTkLabel(musicFrame, text="")
     erroradd_musicLabel.grid(row=11,column=0, columnspan=2)
+
+def add_podcast(tree):
+    """Abre um frame para adicionar músicas"""
+
+    #Frame para adicionar música
+    podcastFrame = customtkinter.CTkFrame(app, width=appWidth-246, height=916, border_width=2, border_color="white", fg_color="#0A090C")
+    podcastFrame.place(x=1180,y=100) #Abre o frame no canto superior direito
+    
+    #----------------------------[Nome da Música]--------------------------------#
+
+    #Label para mostar o texto "podcast Name:"
+    podcastNameLabel = customtkinter.CTkLabel(podcastFrame, text="podcast Name:")
+    podcastNameLabel.grid(row=0,column=0, pady=20, padx=10)
+
+    #Entry para o nome da música
+    podcastNameEntry = customtkinter.CTkEntry(podcastFrame)
+    podcastNameEntry.grid(row=0,column=1, padx=10)
+
+    #----------------------------------------------------------------------------#
+
+
+    #----------------------------[Autor da Música]-------------------------------#
+    
+    #Label para mostrar o texto "Author:"
+    podcastAuthorLabel = customtkinter.CTkLabel(podcastFrame, text="Author:")
+    podcastAuthorLabel.grid(row=1,column=0)
+
+    #Entry para o nome do autor
+    podcastAuthorEntry = customtkinter.CTkEntry(podcastFrame)
+    podcastAuthorEntry.grid(row=1,column=1)
+
+    #----------------------------------------------------------------------------#
+
+    #----------------------------[Imagem do Podcast]------------------------------#
+    
+    #Label para mostrar o texto "Cover Art:"
+    podcastCoverLabel = customtkinter.CTkLabel(podcastFrame, text="Cover Art:")
+    podcastCoverLabel.grid(row=3,column=0, columnspan=2)
+
+    #Label para mostrar a imagem escolhida
+    podcastCoverImg = customtkinter.CTkLabel(podcastFrame, text="")
+    podcastCoverImg.grid(row=4,column=0, columnspan=2)
+
+    #Botão para escolher a imagem do podcast
+    podcastCoverBtn = customtkinter.CTkButton(podcastFrame, width=200, height=50, text="Add cover art", command=lambda:select_file(podcastCoverImg, ""))
+    podcastCoverBtn.grid(row=5,column=0, columnspan=2)
+
+
+    #--------------------------------------------------------------------------#
+
+
+    #Botão para salvar a os dados
+    confirmBtn = customtkinter.CTkButton(podcastFrame, width=160, height=30, text="Confirm", command=lambda:confirm_podcast(podcastNameEntry, podcastAuthorEntry,podcastCoverImg, erroradd_podcastLabel,tree))
+    confirmBtn.grid(row=9,column=0, columnspan=2,pady=15)
+
+    #Botão para salvar a os dados
+    cancelBtn = customtkinter.CTkButton(podcastFrame, width=160, height=30, text="Cancel", command=lambda:podcastFrame.destroy())
+    cancelBtn.grid(row=10,column=0, columnspan=2)
+
+    #Label para mostrar erros
+    erroradd_podcastLabel = customtkinter.CTkLabel(podcastFrame, text="")
+    erroradd_podcastLabel.grid(row=11,column=0, columnspan=2)
+
+def confirm_podcast(podcastNameEntry, podcastAuthorEntry,podcastCoverImg, erroradd_podcastLabel,tree):
+    """Guarda os dados da música a adicionar"""
+    
+    global tempCoverName, tempAudioName  # Indicar as variáveis globais
+
+    if podcastNameEntry.get() and podcastAuthorEntry.get() and tempCoverName:
+        #Variável com a estrutura de dados
+        podcastData = f"{podcastNameEntry.get()};{podcastAuthorEntry.get()};{tempCoverName}\n"
+
+        #Abre o caminho da música no formato "append" para adicionar a linha sem apagar o conteúdo existente
+        with open(podcastPath, "a", encoding="utf-8") as file:
+            file.writelines(podcastData) # escreve os dados com a estrutura anteriormente definida
+            file.close
+        
+        #Apagar conteúdo
+        podcastNameEntry.delete(0,"end")
+        podcastAuthorEntry.delete(0,"end")
+        podcastCoverImg.configure(image=None)
+        erroradd_podcastLabel.configure(text="podcast added with success!")
+
+        tempCoverName = None
+        tempAudioName = None
+        refresh_tree(tree, "podcast")
+        return
+
+    else:
+        erroradd_podcastLabel.configure(text="Fill all fields!")
+        return
 
 def toggle_favorites(musicNameCurrent,musicAuthorCurrent,usernameFinal):
     global isFavorite
@@ -1196,7 +1290,7 @@ def create_playlist(playListName, playlistCreateFrame, errorLabel):
 
         playlistCreateFrame.destroy()
 
-def manageMusic_render(mainContentFrame, oldFrame):
+def manage_music_render(mainContentFrame, oldFrame):
     """Mostra a pagina de gerir musicas"""
 
     global currentFrame # Variável global para frame a ser usado
@@ -1217,34 +1311,80 @@ def manageMusic_render(mainContentFrame, oldFrame):
     currentFrame = musicManageFrame # O frame a ser usado passa a ser o userFrame
 
     #Label para mostrar o texto "Admin Dashboard"
-    trendingLabel = customtkinter.CTkLabel(musicManageFrame, text="Gerir Músicas", font=("Roboto", 30))
+    trendingLabel = customtkinter.CTkLabel(musicManageFrame, text="Manage Musics", font=("Roboto", 30))
     trendingLabel.grid(row=0, column=0,padx=20, pady=20, sticky="nsew")
 
     #Botão para gerir músicas
-    manageMusicsbtn = customtkinter.CTkButton(musicManageFrame, width=200, height=50, text="Adicionar Música", command=add_music)
+    manageMusicsbtn = customtkinter.CTkButton(musicManageFrame, width=200, height=50, text="Add Music", command=add_music)
     manageMusicsbtn.grid(row=1, column=1, padx=0, pady=10, sticky="w")
 
     #Botão para gerir músicas
-    editMusicBtn = customtkinter.CTkButton(musicManageFrame, width=200, height=50, text="Editar Música", command=lambda:edit_music_render(tree))
+    editMusicBtn = customtkinter.CTkButton(musicManageFrame, width=200, height=50, text="Edit Music", command=lambda:edit_music_render(tree))
     editMusicBtn.grid(row=2, column=1, padx=0, pady=10, sticky="w")
 
     #Botão para gerir músicas
-    deleteMusicBtn = customtkinter.CTkButton(musicManageFrame, width=200, height=50, text="Apagar Música", command=lambda:delete_music(tree))
+    deleteMusicBtn = customtkinter.CTkButton(musicManageFrame, width=200, height=50, text="Delete Music", command=lambda:delete_type(tree, "music"))
     deleteMusicBtn.grid(row=3, column=1, padx=0, pady=10, sticky="w")
 
     # define columns
-    columns = ('music_name', 'artist_name', 'views')
+    columns = ('music_name', 'artist_name','category', 'views')
 
     tree = ttk.Treeview(musicManageFrame, columns=columns, show='headings')
 
     # define headings
     tree.heading('music_name', text='Music Name')
     tree.heading('artist_name', text='Artist')
+    tree.heading('category', text='Category')
     tree.heading('views', text='Views')
 
     tree.grid(row=1,rowspan=3, column=0,padx=70, pady=20,  sticky='nsew')
 
-    refresh_tree(tree)
+    refresh_tree(tree,"music")
+
+def manage_podcast_render(mainContentFrame, oldFrame):
+    """Mostra a pagina de gerir podcasts"""
+
+    global currentFrame # Variável global para frame a ser usado
+
+    if oldFrame != None:
+        oldFrame.destroy() # Apagar o estilo do frame anterior
+
+    #Frame Home Page
+    podcastManageFrame = customtkinter.CTkScrollableFrame(mainContentFrame,
+	orientation="vertical",
+	width=1238,
+	height=appHeight-(90+131),
+	fg_color="black",
+	corner_radius = 0
+	)
+    podcastManageFrame.place(x=0,y=0)
+
+    currentFrame = podcastManageFrame # O frame a ser usado passa a ser o userFrame
+
+    #Label para mostrar o texto "Admin Dashboard"
+    trendingLabel = customtkinter.CTkLabel(podcastManageFrame, text="Manage Podcasts", font=("Roboto", 30))
+    trendingLabel.grid(row=0, column=0,padx=20, pady=20, sticky="nsew")
+
+    #Botão para gerir músicas
+    managepodcastsbtn = customtkinter.CTkButton(podcastManageFrame, width=200, height=50, text="Add Podcast", command=lambda:add_podcast(tree))
+    managepodcastsbtn.grid(row=1, column=1, padx=0, pady=10, sticky="w")
+
+    #Botão para gerir músicas
+    deletepodcastBtn = customtkinter.CTkButton(podcastManageFrame, width=200, height=50, text="Delete Podcast", command=lambda:delete_type(tree,"podcast"))
+    deletepodcastBtn.grid(row=3, column=1, padx=0, pady=10, sticky="w")
+
+    # define columns
+    columns = ('podcast_name', 'host_name')
+
+    tree = ttk.Treeview(podcastManageFrame, columns=columns, show='headings')
+
+    # define headings
+    tree.heading('podcast_name', text='Podcast Name')
+    tree.heading('host_name', text='Host')
+
+    tree.grid(row=1,rowspan=3, column=0,padx=70, pady=20,  sticky='nsew')
+
+    refresh_tree(tree, "podcast")
 
 def adminpage_render(mainContentFrame, oldFrame):
     """Mostra a homepage"""
@@ -1293,11 +1433,11 @@ def adminpage_render(mainContentFrame, oldFrame):
     labelPodcasts.grid(row=4, column=1, padx=20, pady=10, sticky="e")
 
     #Botão para gerir músicas
-    ManageMusicsbtn = customtkinter.CTkButton(homepageFrame, width=200, height=50, text="Manage Musics", command=lambda:manageMusic_render(mainContentFrame,currentFrame))
+    ManageMusicsbtn = customtkinter.CTkButton(homepageFrame, width=200, height=50, text="Manage Musics", command=lambda:manage_music_render(mainContentFrame,currentFrame))
     ManageMusicsbtn.grid(row=3, column=2, padx=20, pady=10, sticky="w")
 
     #Botão para gerir podcasts
-    ManagePodcastsbtn = customtkinter.CTkButton(homepageFrame, width=200, height=50, text="Manage Podcasts")
+    ManagePodcastsbtn = customtkinter.CTkButton(homepageFrame, width=200, height=50, text="Manage Podcasts", command=lambda:manage_podcast_render(mainContentFrame,currentFrame))
     ManagePodcastsbtn.grid(row=4, column=2, padx=20, pady=10, sticky="w")
     
     #Label para mostrar Categorias
