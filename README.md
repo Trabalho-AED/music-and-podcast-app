@@ -20,4 +20,8 @@ Conta User - Registo na app
 
 Bibliotecas que devem ser instaladas para correr o programa:
 
+customtkinter
+Pillow
+Pygame
+CTKMessagebox
 
