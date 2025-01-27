@@ -7,6 +7,7 @@ from tkinter import ttk, filedialog # treeview
 import time #Sleep
 import random 
 import CTkMessagebox
+import pygame
 
 from file_management import *
 from users import *
@@ -32,6 +33,7 @@ isFavorite = False # Booleano que verifica se a musica a tocar está nos favorit
 passwordFinal = None # Para salvar a password
 currentPlaylist = []  # Lista com todas as músicas sendo exibidas
 currentIndex = 0  # Índice da música atual
+slider_dragging = False  # Variável global para verificar se o slider está a ser arrastado
 ###########################################################
 
 # Inicializar app
@@ -262,12 +264,26 @@ def update_music_info(musicNameNew, musicAuthorNew,coverArtNew):
     artistName.configure(text=musicAuthorNew)
     musicCover.configure(image=coverArtNew,fg_color="transparent")
 
+def on_slider_press(event):
+    """Função chamada quando o usuário começa a interagir com o slider."""
+    global slider_dragging
+    slider_dragging = True  # Interrompe a atualização automática do slider
+
+def on_slider_release(event):
+    """Função chamada quando o usuário solta o slider."""
+    global slider_dragging
+    slider_dragging = False
+    newTime = musicLenSlider.get()  # Obtém o novo valor do slider (em segundos)
+    mixer.music.stop()  # Para a música
+    mixer.music.play(start=newTime)  # Reinicia a música a partir da nova posição
+    musicLenSlider.set(newTime)  # Atualiza o slider para refletir a nova posição
+
 def update_slider():
-    """Atualiza o slider de progresso da música."""
-    if mixer.music.get_busy():
-        current_time = mixer.music.get_pos() // 1000  # Em segundos
-        musicLenSlider.set(current_time)
-    app.after(100, update_slider)  # Atualiza a cada 200ms
+    """Atualiza o slider de progresso da música automaticamente."""
+    if mixer.music.get_busy() and not slider_dragging:  # Só atualiza se o slider não estiver sendo arrastado
+        current_time = mixer.music.get_pos() // 1000  # Posição atual da música em segundos
+        musicLenSlider.set(current_time)  # Atualiza a posição do slider
+    app.after(1000, update_slider)  # Reexecuta a cada 100ms
 
 def adjust_volume(event=None):
     """Ajusta o volume da música baseado no slider."""
@@ -326,8 +342,13 @@ def play_music_audio(musicURL, musicName, musicAuthor, coverArt):
     musicLenSlider.configure(to=get_music_length(musicURL))  # Configura o slider de progresso
     isPaused = False  # Assume que a música começa não pausada
 
-def update_music_info_safe(name, author, cover_art):
-    currentFrame.after(0, update_music_info, name, author, cover_art)
+    # Configura um evento para quando a música terminar
+    mixer.music.set_endevent(pygame.USEREVENT)  # Define evento para o fim da música
+
+def handle_music_end(event):
+    """Função chamada quando a música termina."""
+    if event.type == pygame.USEREVENT:
+        play_next()
 
 def play_next():
     """Toca a próxima música da playlist."""
@@ -342,6 +363,13 @@ def play_next():
 
     # Chama a função play_music, passando o índice e a playlist
     play_music(currentIndex, currentPlaylist)
+
+# Função principal para gerir eventos
+def handle_events():
+    """Verifica os eventos do mixer e executa as funções apropriadas."""
+    for event in pygame.event.get():
+        if event.type == pygame.USEREVENT:
+            handle_music_end(event)
 
 def play_previous():
     """Toca a música anterior da playlist."""
@@ -1265,6 +1293,9 @@ def mainwindow_render(oldFrame):
     # Associar o controlo de volume ao slider
     volumeSlider.bind("<B1-Motion>", adjust_volume)  # <B1-Motion>: Movimento com o botão do mouse pressionado
     volumeSlider.bind("<ButtonRelease-1>", adjust_volume)  # Para garantir ajuste no final
+    musicLenSlider.bind("<Button-1>", on_slider_press)  # Quando o botão do mouse é pressionado
+    musicLenSlider.bind("<ButtonRelease-1>", on_slider_release)  # Quando o botão do mouse é solto
+
 
     homepage_render(mainContentFrame, currentFrame) # Mostra a homepage por defeito
 
