@@ -6,7 +6,7 @@ import re #Regex for expression check(username and password)
 import os
 from pygame import mixer #https://www.pygame.org/docs/ref/mixer.html
 #from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
-#from comtypes import CLSCTX_ALLd
+#from comtypes import CLSCTX_ALL
 import tkinter as tk
 from io import StringIO
 from tkinter import ttk#from tkVideoPlayer import TkinterVideo   #https://pypi.org/project/tkvideoplayer/ 
