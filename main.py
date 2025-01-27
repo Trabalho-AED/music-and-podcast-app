@@ -1324,7 +1324,7 @@ def search_frame(searchEntry, oldFrame):
         height=500,
         fg_color="transparent"
     )
-    MusicScrollFrame.place(x=0, y=50)
+    MusicScrollFrame.place(x=100, y=50)
 
     MusicLabel = customtkinter.CTkLabel(MusicFrame, text=f"'{searchEntry.get()}' Results", font=("Roboto", 25))
     MusicLabel.place(x=20, y=10)
@@ -1375,18 +1375,11 @@ def search_frame(searchEntry, oldFrame):
         authorLabel = customtkinter.CTkLabel(MusicScrollFrame, text=f"{musicAuthor}")
         authorLabel.grid(row=index, column=2, padx=40, pady=20)
 
+        categoryLabel = customtkinter.CTkLabel(MusicScrollFrame, text=f"{musicCategory}")
+        categoryLabel.grid(row=index, column=3, padx=40, pady=20)
+
         viewsLabel = customtkinter.CTkLabel(MusicScrollFrame, text=f"{musicViews} Views")
-        viewsLabel.grid(row=index, column=3, padx=40, pady=20)
-
-        button2 = customtkinter.CTkButton(
-            MusicScrollFrame,
-            width=150,
-            height=50,
-            text="Remove from Playlist",
-            command=lambda name=musicName, author=musicAuthor: refresh_playlist(name, author, mainContentFrame, currentFrame, playListName)
-        )
-
-        button2.grid(row=index, column=4, padx=40, pady=20)
+        viewsLabel.grid(row=index, column=4, padx=40, pady=20)
 
         index += 1  # Increment index for the next music
 
