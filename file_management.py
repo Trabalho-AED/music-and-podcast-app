@@ -48,8 +48,8 @@ def create_sub_folders(folderPath):
     else:
         print(f"Sub Folder already exists: {folderPath}")
 
-mainFolders = ["audios", "images", "db"] # Lista com as pastas principais
-subFolders = [f"images{pathFormat}cover_art", f"images{pathFormat}icons", f"audios{pathFormat}music", f"db{pathFormat}users" ] # Lista com as pastas secundárias
+mainFolders = ["audios", "images", "files"] # Lista com as pastas principais
+subFolders = [f"images{pathFormat}cover_art", f"images{pathFormat}icons", f"audios{pathFormat}music", f"files{pathFormat}users" ] # Lista com as pastas secundárias
 
 #Criar Pastas
 for folder in mainFolders:
@@ -70,11 +70,11 @@ def create_main_files(filePath):
         # Abre o ficheiro no modo write, criando-o caso não exista.
         with open(filePath, "w", encoding="utf-8") as file:
             #Adiciona o username admin por defeito à lista de admins
-            if filePath == f".{pathFormat}db{pathFormat}admin_list.csv":
+            if filePath == f".{pathFormat}files{pathFormat}admin_list.csv":
                 file.writelines("admin")
                 file.close()
             #Adiciona o user admin com o username admin e password admin por defeito à lista de utilizadores por defeito
-            elif filePath == f".{pathFormat}db{pathFormat}user_accounts.csv":
+            elif filePath == f".{pathFormat}files{pathFormat}user_accounts.csv":
                 file.writelines("admin;admin;Admin")
                 file.close()
             else:
@@ -85,41 +85,42 @@ def create_main_files(filePath):
         print(f"File already exists: {filePath}")
 
 #Lista com os ficheiros da base de dados
-mainFiles = [f".{pathFormat}db{pathFormat}auto_notifications.txt", f".{pathFormat}db{pathFormat}custom_notifications.txt",f".{pathFormat}db{pathFormat}categories.csv",f".{pathFormat}db{pathFormat}user_accounts.csv",f".{pathFormat}db{pathFormat}podcast_list.csv",f".{pathFormat}db{pathFormat}music_list.csv",f".{pathFormat}db{pathFormat}admin_list.csv"]
+mainFiles = [f".{pathFormat}files{pathFormat}auto_notifications.txt", f".{pathFormat}files{pathFormat}custom_notifications.txt",f".{pathFormat}files{pathFormat}categories.csv",f".{pathFormat}files{pathFormat}user_accounts.csv",f".{pathFormat}files{pathFormat}podcast_list.csv",f".{pathFormat}files{pathFormat}music_list.csv",f".{pathFormat}files{pathFormat}admin_list.csv"]
 
 #Criar ficheiros
 for file in mainFiles:
     create_main_files(file)
 ############################################################################################################
-def write_notifications(name,author,type):
-    updatedLine = f"{type};{name};{author}\n"  # Create the new line to write
+def write_notifications(name, author, type):
+    updatedLine = f"{type};{name};{author}\n"  # Cria a nova linha para escrever
 
-    # Read the current contents of the file
+    # Lê o conteúdo atual do ficheiro
     with open(autoNotificationFile, "r", encoding="utf-8") as file:
         lines = file.readlines()
 
-    # Initialize an empty list for modified lines
+    # Inicializa uma lista vazia para as linhas modificadas
     modifiedLines = []
     replaced = False
 
-    # Check and replace the existing line by type
+    # Verifica e substitui a linha existente pelo tipo
     for line in lines:
-        if line.startswith(f"{type};"):  # Match the type (music or podcast)
-            modifiedLines.append(updatedLine)  # Replace the line
+        if line.startswith(f"{type};"):  # Verifica o tipo (música ou podcast)
+            modifiedLines.append(updatedLine)  # Substitui a linha
             replaced = True
         else:
-            modifiedLines.append(line)  # Keep the other lines as they are
+            modifiedLines.append(line)  # Mantém as outras linhas como estão
 
     if not replaced:
-        modifiedLines.append(updatedLine)  # Add the new line if no match was found
+        modifiedLines.append(updatedLine)  # Adiciona a nova linha se nenhuma correspondência for encontrada
 
-    # Write all modified lines back to the file
+    # Escreve todas as linhas modificadas de volta no ficheiro
     with open(autoNotificationFile, "w", encoding="utf-8") as file:
         file.writelines(modifiedLines)
 
 def get_categories():
     categoriesList = []
 
+    # Lê o ficheiro de categorias
     with open(categoriesFile, "r", encoding="utf-8") as file:
         lines = file.readlines()
     
@@ -129,99 +130,116 @@ def get_categories():
     return categoriesList
 
 def confirm_categories(categoriesNameEntry, erroradd_categoriesLabel):
-    """Guarda os dados da música a adicionar"""
+    """Guarda os dados da categoria a adicionar"""
 
     if categoriesNameEntry.get():
-        #Variável com a estrutura de dados
+        # Variável com a estrutura de dados
         categoryData = f"{categoriesNameEntry.get()}\n"
 
-        #Abre o caminho da música no formato "append" para adicionar a linha sem apagar o conteúdo existente
+        # Abre o ficheiro de categorias em formato "append" para adicionar a linha sem apagar o conteúdo existente
         with open(categoriesFile, "a", encoding="utf-8") as file:
-            file.writelines(categoryData) # escreve os dados com a estrutura anteriormente definida
-            file.close
+            file.writelines(categoryData)  # Escreve os dados com a estrutura definida
+            file.close()
         
-        #Apagar conteúdo
+        # Apaga o conteúdo do campo de entrada
         categoriesNameEntry.delete(0,"end")
-        erroradd_categoriesLabel.configure(text="Category added with success!")
+        erroradd_categoriesLabel.configure(text="Categoria adicionada com sucesso!")
 
         return
 
     else:
-        erroradd_categoriesLabel.configure(text="Fill all fields!")
+        erroradd_categoriesLabel.configure(text="Preencha todos os campos!")
         return
 
-
-def confirm_episode(episodeNameEntry, strPodcast,episodeUrlEntry, erroradd_episodeLabel):
+def confirm_episode(episodeNameEntry, strPodcast, episodeUrlEntry, erroradd_episodeLabel):
     """Guarda os dados do episódio a adicionar"""
 
     if episodeNameEntry.get() and episodeUrlEntry.get():
-        #Variável com a estrutura de dados
+        # Variável com a estrutura de dados
         episodeData = f"{episodeNameEntry.get()};{strPodcast.get()};0;{episodeUrlEntry.get()}\n"
 
-        #Abre o caminho da música no formato "append" para adicionar a linha sem apagar o conteúdo existente
+        # Abre o ficheiro de episódios em formato "append" para adicionar a linha sem apagar o conteúdo existente
         with open(podcastEpisodesPath, "a", encoding="utf-8") as file:
-            file.writelines(episodeData) # escreve os dados com a estrutura anteriormente definida
-            file.close
+            file.writelines(episodeData)  # Escreve os dados com a estrutura definida
+            file.close()
         
-        #Apagar conteúdo
+        # Apaga o conteúdo dos campos de entrada
         episodeNameEntry.delete(0,"end")
         episodeUrlEntry.delete(0,"end")
-        erroradd_episodeLabel.configure(text="Category added with success!")
+        erroradd_episodeLabel.configure(text="Episódio adicionado com sucesso!")
 
         return
 
     else:
-        erroradd_episodeLabel.configure(text="Fill all fields!")
+        erroradd_episodeLabel.configure(text="Preencha todos os campos!")
         return
 
-def refresh_tree(tree, type):
-    if type=="podcast":
-        path=podcastPath
-    elif type=="music":
-        path=musicPath
-    elif type=="users":
-        path=accountsPath
-    elif type=="categories":
-        path=categoriesFile
-    elif type=="episodes":
-        path=podcastEpisodesPath
-    elif type=="admin":
-        path=adminListfile
+def read_content(contentType):
+    """Lê o conteúdo de um tipo específico (podcast ou música)"""
+    if contentType == "podcast":
+        with open(podcastEpisodesPath, "r", encoding="utf-8") as file:
+            lines = file.readlines()
 
-    # Delete all rows in the Treeview
-    for row in tree.get_children():  # Iterate over all row IDs in the Treeview
-        tree.delete(row)  # Delete each row
+    elif contentType == "music":
+        with open(musicPath, "r", encoding="utf-8") as file:
+            lines = file.readlines()
+
+    returnList = []
+    for line in lines:
+        fields = line.strip().split(";")  # Divide cada linha pelo delimitador ";"
+        returnList.append(fields)  # Cada entrada é uma lista: [name, author, cover, link]
+
+    return returnList
+
+def refresh_tree(tree, type):
+    """Atualiza a árvore de visualização (Treeview) de acordo com o tipo especificado"""
+    if type == "podcast":
+        path = podcastPath
+    elif type == "music":
+        path = musicPath
+    elif type == "users":
+        path = accountsPath
+    elif type == "categories":
+        path = categoriesFile
+    elif type == "episodes":
+        path = podcastEpisodesPath
+    elif type == "admin":
+        path = adminListfile
+
+    # Apaga todas as linhas na árvore
+    for row in tree.get_children():  # Itera sobre todos os IDs das linhas na árvore
+        tree.delete(row)  # Apaga cada linha
 
     with open(path, "r", encoding="utf-8") as file:
         lines = file.readlines()
-    
-    if type=="music":
+
+    if type == "music":
         for line in lines:
             fields = line.strip().split(";")
             tree.insert("","end", values=(fields[0], fields[1],fields[2], fields[3]))
-    elif type=="podcast":
+    elif type == "podcast":
         for line in lines:
             fields = line.strip().split(";")
             tree.insert("","end", values=(fields[0], fields[1]))
-    elif type=="users":
+    elif type == "users":
         for line in lines:
             fields = line.strip().split(";")
-            tree.insert("","end", values=(fields[2],fields[0], fields[1])) #Nome, username, password
-    elif type=="categories" or type=="admin":
+            tree.insert("","end", values=(fields[2],fields[0], fields[1]))  # Nome, username, password
+    elif type == "categories" or type == "admin":
         for line in lines:
             fields = line.strip()
             tree.insert("","end", values=(fields))
-    elif type=="episodes":
+    elif type == "episodes":
         for line in lines:
             fields = line.strip().split(";")
-            tree.insert("","end", values=(fields[0], fields[1] ,fields[2] ,fields[3]))
+            tree.insert("","end", values=(fields[0], fields[1], fields[2], fields[3]))
 
-def confirm_change(usernameEntry, nameEntry,usernameCurrent,NameCurrent):
+def confirm_change(usernameEntry, nameEntry, usernameCurrent, NameCurrent):
      # Lê o conteúdo do arquivo
     with open(accountsPath, "r", encoding="utf-8") as file:
         lines = file.readlines()
 
-    # Cria uma nova lista sem a música que será removida
+    # Cria uma nova lista sem o utilizador que será alterado
     updated_lines = []
     for line in lines:
         fields = line.strip().split(";")
@@ -230,25 +248,25 @@ def confirm_change(usernameEntry, nameEntry,usernameCurrent,NameCurrent):
         if not (fields[0] == usernameCurrent and fields[2] == NameCurrent):
             updated_lines.append(line)
         if (fields[0] == usernameCurrent and fields[2] == NameCurrent):
-            if nameEntry.get()=="" or nameEntry.get==" ":
-                newName=NameCurrent
+            if nameEntry.get() == "" or nameEntry.get() == " ":
+                newName = NameCurrent
             else:
-                newName=nameEntry.get()
-            if usernameEntry.get()=="" or usernameEntry.get==" ":
-                newuserName=usernameCurrent
+                newName = nameEntry.get()
+            if usernameEntry.get() == "" or usernameEntry.get() == " ":
+                newuserName = usernameCurrent
             else:
-                newuserName=usernameEntry.get()
+                newuserName = usernameEntry.get()
             updated_lines.append(f"{newuserName};{fields[1]};{newName}\n")
 
-    # Escreve as linhas atualizadas de volta no arquivo
+    # Escreve as linhas atualizadas de volta no ficheiro
     with open(accountsPath, "w", encoding="utf-8") as file:
         file.writelines(updated_lines)
 
-     # Lê o conteúdo do arquivo
+    # Lê o conteúdo do ficheiro admin
     with open(adminListfile, "r", encoding="utf-8") as file:
         lines = file.readlines()
 
-    # Cria uma nova lista sem a música que será removida
+    # Cria uma nova lista sem o utilizador que será alterado
     updated_lines = []
     for line in lines:
         # Se o nome
@@ -257,14 +275,14 @@ def confirm_change(usernameEntry, nameEntry,usernameCurrent,NameCurrent):
         if fields[0] == usernameCurrent:
             updated_lines.append(f"{newuserName}\n")
 
-    # Escreve as linhas atualizadas de volta no arquivo
+    # Escreve as linhas atualizadas de volta no ficheiro
     with open(adminListfile, "w", encoding="utf-8") as file:
         file.writelines(updated_lines)
 
     return newuserName, newName
 
 def save_notifications(notificationsText):
-
+    """Guarda as notificações no ficheiro"""
     textSave = notificationsText.get("0.0", "end")
     
     if textSave == "":
@@ -276,27 +294,29 @@ def save_notifications(notificationsText):
         file.write(newText)
 
 def delete_notifications():
+    """Apaga todas as notificações do ficheiro"""
     with open(customNotificationFile, "w", encoding="utf-8") as file:
         pass
 
 def delete_folder(username):
-    shutil.rmtree(usersPath+username)
+    """Apaga a pasta do utilizador especificado"""
+    shutil.rmtree(usersPath + username)
 
-    print(f"Folder {usersPath+username} deleted.")
+    print(f"Pasta {usersPath + username} apagada.")
 
 ##########################################[CAMINHOS]############################################################
 
 imagePath = f".{pathFormat}images{pathFormat}icons{pathFormat}" # Caminho para o diretório onde são armazenadas as imagens
 profileimagePath = f".{pathFormat}images{pathFormat}profile_images{pathFormat}" # Caminho para o diretório onde são armazenadas as imagens de perfil
-accountsPath = f".{pathFormat}db{pathFormat}user_accounts.csv" # Caminho para o ficheiro onde são armazenadas as contas
-musicPath = f".{pathFormat}db{pathFormat}music_list.csv" # Caminho para o ficheiro onde são armazenadas as músicas
-podcastPath = f".{pathFormat}db{pathFormat}podcast_list.csv" # Caminho para o ficheiro onde são armazenadas os podcasts
-adminListfile = f".{pathFormat}db{pathFormat}admin_list.csv" # Caminho para o ficheiro onde são armazenadas as contas admin
-categoriesFile = f".{pathFormat}db{pathFormat}categories.csv" # Caminho para o ficheiro onde são armazenadas as categorias
+accountsPath = f".{pathFormat}files{pathFormat}user_accounts.csv" # Caminho para o ficheiro onde são armazenadas as contas
+musicPath = f".{pathFormat}files{pathFormat}music_list.csv" # Caminho para o ficheiro onde são armazenadas as músicas
+podcastPath = f".{pathFormat}files{pathFormat}podcast_list.csv" # Caminho para o ficheiro onde são armazenadas os podcasts
+adminListfile = f".{pathFormat}files{pathFormat}admin_list.csv" # Caminho para o ficheiro onde são armazenadas as contas admin
+categoriesFile = f".{pathFormat}files{pathFormat}categories.csv" # Caminho para o ficheiro onde são armazenadas as categorias
 coverArtPath = f".{pathFormat}images{pathFormat}cover_art{pathFormat}" # Caminho para o diretório onde são armazenadas as imagens das músicas
 musicAudioPath = f".{pathFormat}audios{pathFormat}music{pathFormat}" # Caminho para o diretório onde são armazenadas as músicas
-usersPath = f".{pathFormat}db{pathFormat}users{pathFormat}" # Caminho para o diretório onde são armazenadas os users na db
-podcastEpisodesPath = f".{pathFormat}db{pathFormat}podcast_episodes.csv"
-customNotificationFile = f".{pathFormat}db{pathFormat}custom_notifications.txt"
-autoNotificationFile = f".{pathFormat}db{pathFormat}auto_notifications.txt"
+usersPath = f".{pathFormat}files{pathFormat}users{pathFormat}" # Caminho para o diretório onde são armazenadas os users na files
+podcastEpisodesPath = f".{pathFormat}files{pathFormat}podcast_episodes.csv"
+customNotificationFile = f".{pathFormat}files{pathFormat}custom_notifications.txt"
+autoNotificationFile = f".{pathFormat}files{pathFormat}auto_notifications.txt"
 #################################################################################################################

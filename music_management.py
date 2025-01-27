@@ -1,4 +1,3 @@
-from pygame import mixer
 from file_management import *
 import webbrowser                        # https://docs.python.org/3/library/webbrowser.html 
 
@@ -256,3 +255,7 @@ def get_podcast_combo():
         podcastList.append(fields[0])
 
     return podcastList
+
+def add_categories_refresh(categoriesNameEntry, erroradd_categoriesLabel,tree):
+    confirm_categories(categoriesNameEntry, erroradd_categoriesLabel)
+    refresh_tree(tree, "categories")
