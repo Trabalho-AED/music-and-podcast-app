@@ -97,6 +97,10 @@ def delete_type(tree,type):
         path = musicPath
     elif type=="users":
         path = accountsPath
+    elif type=="episodes":
+        path = podcastEpisodesPath
+    elif type=="admin":
+        path = adminListfile
 
     # Get the selected row ID from the Treeview
     rowId = tree.focus()
@@ -124,6 +128,12 @@ def delete_type(tree,type):
             if fields[0] == values[1] and fields[1] == values[2]:
                 username=fields[1]
                 continue  # Skip this line as it matches the selected row
+        elif type=="episodes" or type=="podcast":
+            if fields[0] == values[0] and fields[1] == values[1]:
+                continue  # Skip this line as it matches the selected row
+        elif type=="admin":
+            if line.strip() == values[0]:
+                continue
         else:
             if fields[0] == values[0] and fields[1] == values[1]:
                 coverArt=fields[4]
@@ -146,6 +156,8 @@ def delete_type(tree,type):
     
     if type=="users":
         delete_folder(username)
+    if type=="admin":
+        print(f"{values[0]} is no longer admin.")
     if type=="music":
         os.remove(coverArtPath+coverArt)
         print(f"Deleted {coverArtPath+coverArt} successfully!")

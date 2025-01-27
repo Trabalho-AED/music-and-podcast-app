@@ -34,11 +34,63 @@ def filter_music(musicList, recentMusic):
                 break
     return activityList
 
-def play_podcast(videoURL):
+def play_podcast(podcast_url):
     """
-    Abre o browser definido por defeito com um url
+    Reads podcast data from a file, plays the specified podcast by URL, increments its view count,
+    and updates the file.
+    
+    Args:
+        file_path (str): Path to the file containing podcast info.
+        podcast_url (str): The URL of the podcast to play.
     """
-    webbrowser.open(videoURL, new = 0, autoraise=True)
+    updated_lines = []  # To store updated lines
+    podcast_found = False
+
+    file_path=podcastEpisodesPath
+
+    # Open the file and read its contents
+    with open(file_path, "r") as file:
+        lines = file.readlines()
+        for line in lines:
+            parts = line.strip().split(";")
+            if len(parts) != 4:
+                continue  # Skip invalid lines
+            
+            title, p_id, views, url = parts
+            if url == podcast_url:
+                podcast_found = True
+                try:
+                    views = int(views)  # Convert views to an integer
+                except ValueError:
+                    raise ValueError("Invalid view count in file")
+
+                # Increment the view count
+                views += 1
+
+                # Play the podcast
+                webbrowser.open(url, new=0, autoraise=True)
+
+                # Update the line with the incremented view count
+                updated_lines.append(f"{title};{p_id};{views};{url}\n")
+            else:
+                # Leave the line unchanged for other podcasts
+                updated_lines.append(line)
+
+    if not podcast_found:
+        raise ValueError(f"Podcast with URL {podcast_url} not found in the file.")
+
+    # Write the updated data back to the file
+    with open(file_path, "w") as file:
+        file.writelines(updated_lines)
+
+def get_cover_art(podcastName):
+    with open(podcastPath, "r", encoding="utf-8") as file:
+        lines = file.readlines()
+        for line in lines:
+            fields = line.strip().split(";")
+            if fields[0] == podcastName:
+                return fields[2]  
+    return None
 
 def get_authors(musicList):
     
@@ -186,4 +238,21 @@ def get_podcast(podcastList):
 
 # Ensure you are extracting all unique categories
 def get_categories_music(musicList):
-    return list(set(music[2] for music in musicList))  # Extract unique categories from the music list
+    unique_categories = [] 
+    for music in musicList: 
+        category = music[2]  
+        if category not in unique_categories:  
+            unique_categories.append(category)  
+    return unique_categories  
+
+def get_podcast_combo():
+    podcastList=[]
+
+    with open(podcastPath,"r",encoding="utf-8") as file:
+        lines=file.readlines()
+    
+    for line in lines:
+        fields=line.strip().split(";")
+        podcastList.append(fields[0])
+
+    return podcastList
